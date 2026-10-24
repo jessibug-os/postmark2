@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>POSTMARK — Audio Lab</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎧</text></svg>" />
+<style>
+  :root {
+    --ink: #2c2620; --paper: #f4ecd8; --card: #fbf6e9; --edge: #d8cba8;
+    --accent: #8a5a2b; --muted: #7a6f5a; --good: #4a7a4c; --warn: #a06a2a;
+    --stage: #20242c; --stage-edge: #3a4150; --stage-ink: #c9d2de; --stage-dim: #8d97a6;
+    --lead: #e8b45c; --counter: #7fae6d; --bass: #6f92c4; --arp: #c98fc0;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 15px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    display: flex; flex-direction: column;
+  }
+  .topbar { background: #2c2620; color: #f4ecd8; padding: 14px 22px; display: flex; align-items: baseline; gap: 14px; flex: none; }
+  .topbar b { letter-spacing: .06em; }
+  .topbar .sub { color: #c9b98f; font-size: 13px; }
+  .topbar nav { margin-left: auto; display: flex; gap: 16px; }
+  .topbar a { color: #e8d9a8; text-decoration: none; font-size: 13px; }
+
+  .lab { flex: 1; min-height: 0; display: grid; grid-template-columns: 274px minmax(0, 1fr); }
+
+  /* ---- catalog ------------------------------------------------------- */
+  .catalog { border-right: 1px solid var(--edge); background: var(--card); display: flex; flex-direction: column; min-height: 0; }
+  .catalog-head { padding: 12px 14px 10px; border-bottom: 1px solid var(--edge); }
+  .catalog-head h1 { margin: 0 0 8px; font-size: 15px; letter-spacing: .02em; color: var(--accent); }
+  .catalog-head input[type="search"] {
+    width: 100%; padding: 6px 9px; border: 1px solid var(--edge); border-radius: 7px;
+    background: #fffdf6; color: var(--ink); font: 12.5px/1.4 ui-monospace, monospace;
+  }
+  .catalog-count { color: var(--muted); font: 11.5px/1.5 ui-monospace, monospace; margin-top: 6px; }
+  .world-knobs { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+  .catalog-list { overflow-y: auto; padding: 8px 8px 40px; flex: 1; }
+  .catalog-group { margin: 0 0 10px; }
+  .catalog-group > h2 {
+    margin: 0 0 4px; padding: 0 6px; font: 11px/1.6 ui-monospace, monospace;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  }
+  .catalog-list button {
+    appearance: none; display: flex; align-items: baseline; gap: 8px; width: 100%;
+    text-align: left; border: 1px solid transparent; border-radius: 7px;
+    background: none; color: var(--ink); padding: 5px 8px; cursor: pointer;
+    font: 12.5px/1.5 ui-monospace, monospace;
+  }
+  .catalog-list button:hover { background: #efe4c6; }
+  .catalog-list button[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: #fff8e8; }
+  .catalog-list button[aria-current="true"] .note { color: #e8d3ac; }
+  .catalog-list .note { margin-left: auto; color: var(--muted); font-size: 11px; text-align: right; }
+
+  /* ---- stage --------------------------------------------------------- */
+  .stage-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 14px; gap: 10px; overflow-y: auto; }
+  .stage {
+    position: relative; flex: 1; min-height: 260px; border: 1px solid var(--stage-edge); border-radius: 10px;
+    background: linear-gradient(180deg, #2b323d 0%, #20252c 100%); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .stage-head { padding: 12px 14px 0; color: var(--stage-ink); flex: none; }
+  .stage-head h2 { margin: 0; font-size: 18px; letter-spacing: .01em; }
+  .stage-head .desc { margin: 3px 0 0; color: var(--stage-dim); font-size: 13px; font-style: italic; }
+  .roll { flex: 1; min-height: 0; position: relative; margin: 10px 0 0; }
+  .roll canvas { display: block; width: 100%; height: 100%; }
+  .stage-note {
+    position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 0 24px;
+    color: var(--stage-dim); font: 12px/1.7 ui-monospace, monospace;
+  }
+  .stage-note[hidden] { display: none; }
+  .stats {
+    display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 8px 14px 10px; flex: none;
+    color: var(--stage-dim); font: 11px/1.5 ui-monospace, monospace;
+  }
+  .stats b { color: var(--stage-ink); font-weight: 500; }
+  .legend { display: flex; gap: 12px; margin-left: auto; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  /* ---- panels -------------------------------------------------------- */
+  .panel {
+    flex: none; border: 1px solid var(--edge); border-radius: 10px; background: var(--card);
+    padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .panel > h3 {
+    margin: 0; font: 11px/1.5 ui-monospace, monospace; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 30px; }
+  .row .label { font: 11px/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .row .label.spaced { margin-left: 8px; }
+  button.chip {
+    appearance: none; border: 1px solid var(--edge); border-radius: 999px;
+    background: #efe4c6; color: var(--ink); padding: 5px 11px; cursor: pointer;
+    font: 12px/1.2 ui-monospace, monospace;
+  }
+  button.chip:hover:not(:disabled) { border-color: var(--accent); }
+  button.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff8e8; }
+  button.chip:disabled { opacity: .45; cursor: default; }
+  button.chip.small { padding: 3px 9px; font-size: 11px; }
+  input[type="range"] { accent-color: var(--accent); }
+  .knob { display: flex; align-items: center; gap: 6px; min-width: 168px; }
+  .knob input[type="range"] { flex: 1; min-width: 70px; }
+  .read { font: 11px/1.5 ui-monospace, monospace; color: var(--muted); min-width: 38px; text-align: right; }
+  .hint { font: 11px/1.6 ui-monospace, monospace; color: var(--muted); font-style: italic; }
+  .layer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(196px, 1fr)); gap: 6px 14px; }
+  .voice-table { width: 100%; border-collapse: collapse; font: 11.5px/1.5 ui-monospace, monospace; }
+  .voice-table th, .voice-table td { padding: 4px 7px; border-bottom: 1px solid var(--edge); text-align: left; }
+  .voice-table th { color: var(--muted); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; font-weight: 400; }
+  .voice-table td.dim { color: var(--muted); }
+  .voice-key { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 6px; }
+
+  .gate {
+    position: fixed; inset: 0; z-index: 5; display: grid; place-items: center;
+    background: rgba(30, 26, 20, .82); backdrop-filter: blur(2px);
+  }
+  .gate[hidden] { display: none; }
+  .gate button {
+    appearance: none; border: 1px solid var(--edge); border-radius: 12px; cursor: pointer;
+    background: var(--card); color: var(--ink); padding: 20px 30px; max-width: 420px;
+    font: 15px/1.6 "Iowan Old Style", Palatino, Georgia, serif; text-align: center;
+  }
+  .gate strong { display: block; font-size: 19px; margin-bottom: 6px; }
+  .gate small { color: var(--muted); font-size: 12.5px; font-style: italic; }
+
+  @media (max-width: 760px) {
+    .lab { grid-template-columns: 1fr; }
+    .catalog { border-right: none; border-bottom: 1px solid var(--edge); max-height: 44vh; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span><b>POSTMARK</b> · Audio Lab</span>
+  <span class="sub">every song and sound the game can make, played by the game's own code</span>
+  <nav>
+    <a href="/review">Review →</a>
+    <a href="/models">Model lab →</a>
+    <a href="/wiki">Wiki →</a>
+  </nav>
+</header>
+
+<div class="lab">
+  <aside class="catalog">
+    <div class="catalog-head">
+      <h1>Catalog</h1>
+      <input id="filter" type="search" placeholder="filter by name…" aria-label="Filter sounds by name" autocomplete="off" />
+      <div class="world-knobs" id="world-knobs" role="group" aria-label="Season and location for the hourly themes"></div>
+      <div class="catalog-count" id="catalog-count">…</div>
+    </div>
+    <div class="catalog-list" id="catalog-list"></div>
+  </aside>
+
+  <main class="stage-wrap">
+    <section class="stage">
+      <div class="stage-head">
+        <h2 id="stage-title">Audio Lab</h2>
+        <p class="desc" id="stage-desc">Pick anything on the left.</p>
+      </div>
+      <div class="roll">
+        <canvas id="roll"></canvas>
+        <p class="stage-note" id="stage-note">
+          The score of whatever is playing is drawn here.<br />
+          One full cycle, left to right, with the playhead where the music actually is.
+        </p>
+      </div>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section class="panel" id="transport-panel">
+      <h3>Transport</h3>
+      <div class="row">
+        <button class="chip" id="play" type="button">▶ Play</button>
+        <button class="chip" id="stop" type="button">■ Silence</button>
+        <button class="chip" id="immediate" type="button" aria-pressed="false" title="Skip the 0.8s / 1.2s crossfade the game uses between themes">Cut, don't crossfade</button>
+        <button class="chip" id="duck" type="button" aria-pressed="false" title="What the music does while a dialogue box is open">Duck under dialogue</button>
+        <span class="label spaced">Master</span>
+        <span class="knob"><input id="volume" type="range" min="0" max="1" step="0.01" value="0.5" aria-label="Master volume" /><span class="read" id="volume-read">0.50</span></span>
+      </div>
+      <div class="row" id="voice-row" hidden>
+        <table class="voice-table" id="voice-table"></table>
+      </div>
+    </section>
+
+    <section class="panel" id="layer-panel">
+      <h3>Layers <span class="hint">— what a scene cue does to the arrangement without changing the tune</span></h3>
+      <div class="layer-grid" id="layer-grid"></div>
+      <div class="row"><button class="chip small" id="layers-reset" type="button">Restore every layer</button></div>
+    </section>
+
+    <section class="panel" id="ambience-panel">
+      <h3>Ambience <span class="hint">— always running, exactly as <code>updateAmbience</code> is called each frame in play</span></h3>
+      <div class="layer-grid" id="ambience-grid"></div>
+      <div class="row">
+        <button class="chip" id="indoors" type="button" aria-pressed="false">Indoors</button>
+        <span class="hint" id="ambience-read">—</span>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="gate" id="gate">
+  <button type="button" id="gate-button">
+    <strong>🎧 Start audio</strong>
+    A browser will not make a sound until you ask it to.
+    <br /><br />
+    <small>Headphones recommended — the mix pans parts across the stereo field, and most of what changed lives in the reverb tail.</small>
+  </button>
+</div>
+
+<!-- Absolute, not relative: this page is reachable at a bare `/audio` with no
+     trailing slash, where `./audio-lab.js` would resolve to the site root. -->
+<script type="module" src="/audio/audio-lab.js"></script>
+</body>
+</html>

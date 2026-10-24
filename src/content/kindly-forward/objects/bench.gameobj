@@ -1,0 +1,17 @@
+# object: bench
+# name: Timber bench
+# model: bench.glb
+# note: Backrest is at -Z, so a sitter faces +Z.
+
+collide circle 0.55 at -0.6 0
+collide circle 0.55 at 0.6 0
+# **One seat, not two.** The bench is 1.66 wide and the Postmaster is 1.34, so a
+# pair at either end put her overhanging the slats with nowhere for a second
+# sitter to go.
+# 
+# Both numbers are measured off the mesh, not estimated: the slats top out at
+# 0.78 and the backrest sits at z -0.23, and her hips ride 0.3 above her own
+# origin in the seated pose. 0.78 - 0.3 = 0.48 puts her on the slats rather
+# than through them, and +0.06 clears the backrest.
+seat middle at 0 0.48 0.06
+interact sit middle sit down

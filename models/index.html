@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>POSTMARK — Model Lab</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗿</text></svg>" />
+<style>
+  :root {
+    --ink: #2c2620; --paper: #f4ecd8; --card: #fbf6e9; --edge: #d8cba8;
+    --accent: #8a5a2b; --muted: #7a6f5a; --good: #4a7a4c;
+    --stage: #20242c; --stage-edge: #3a4150; --stage-ink: #c9d2de; --stage-dim: #8d97a6;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 15px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    display: flex; flex-direction: column;
+  }
+  .topbar { background: #2c2620; color: #f4ecd8; padding: 14px 22px; display: flex; align-items: baseline; gap: 14px; flex: none; }
+  .topbar b { letter-spacing: .06em; }
+  .topbar .sub { color: #c9b98f; font-size: 13px; }
+  .topbar nav { margin-left: auto; display: flex; gap: 16px; }
+  .topbar a { color: #e8d9a8; text-decoration: none; font-size: 13px; }
+
+  .lab { flex: 1; min-height: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); }
+
+  /* ---- catalog ------------------------------------------------------- */
+  .catalog { border-right: 1px solid var(--edge); background: var(--card); display: flex; flex-direction: column; min-height: 0; }
+  .catalog-head { padding: 12px 14px 10px; border-bottom: 1px solid var(--edge); }
+  .catalog-head h1 { margin: 0 0 8px; font-size: 15px; letter-spacing: .02em; color: var(--accent); }
+  .catalog-head input {
+    width: 100%; padding: 6px 9px; border: 1px solid var(--edge); border-radius: 7px;
+    background: #fffdf6; color: var(--ink); font: 12.5px/1.4 ui-monospace, monospace;
+  }
+  .catalog-count { color: var(--muted); font: 11.5px/1.5 ui-monospace, monospace; margin-top: 6px; }
+  .catalog-list { overflow-y: auto; padding: 8px 8px 40px; flex: 1; }
+  .catalog-group { margin: 0 0 10px; }
+  .catalog-group > h2 {
+    margin: 0 0 4px; padding: 0 6px; font: 11px/1.6 ui-monospace, monospace;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  }
+  .catalog-list .catalog-entry {
+    appearance: none; display: flex; align-items: baseline; gap: 8px; width: 100%;
+    text-align: left; border: 1px solid transparent; border-radius: 7px;
+    background: none; color: var(--ink); padding: 5px 8px; cursor: pointer;
+    font: 12.5px/1.5 ui-monospace, monospace; text-decoration: none;
+  }
+  .catalog-list .catalog-entry:hover, .catalog-list .catalog-entry:focus-visible { background: #efe4c6; }
+  .catalog-list .catalog-entry:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .catalog-list .catalog-entry[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: #fff8e8; }
+  .catalog-list .catalog-entry[aria-current="true"] .size { color: #e8d3ac; }
+  .catalog-list .size { margin-left: auto; color: var(--muted); font-size: 11px; }
+  .pill {
+    font: 9.5px/1.4 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase;
+    padding: 1px 5px; border-radius: 999px; border: 1px solid var(--edge); background: #e2eed9; color: var(--good);
+  }
+  .catalog-list .catalog-entry[aria-current="true"] .pill { background: #6d4520; border-color: #a8763f; color: #ffeccd; }
+
+  /* ---- stage --------------------------------------------------------- */
+  .stage-wrap { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: 14px; gap: 10px; }
+  .stage {
+    position: relative; flex: 1; min-height: 0; border: 1px solid var(--stage-edge); border-radius: 10px;
+    background: linear-gradient(180deg, #2b323d 0%, #20252c 100%); overflow: hidden;
+  }
+  .stage canvas { display: block; cursor: grab; touch-action: none; }
+  .stage canvas:active { cursor: grabbing; }
+  .stage-note {
+    position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 0 20px;
+    color: var(--stage-dim); font: 12px/1.6 ui-monospace, monospace; pointer-events: none;
+  }
+  .stage-note[hidden] { display: none; }
+  .stats {
+    position: absolute; left: 10px; bottom: 10px; display: flex; flex-wrap: wrap; gap: 4px 12px;
+    color: var(--stage-dim); font: 11px/1.5 ui-monospace, monospace; pointer-events: none;
+  }
+  .stats b { color: var(--stage-ink); font-weight: 500; }
+  .hint {
+    position: absolute; right: 10px; bottom: 10px; color: #6d7684;
+    font: 10.5px/1.5 ui-monospace, monospace; pointer-events: none;
+  }
+
+  /* ---- controls ------------------------------------------------------ */
+  .controls { flex: none; display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 30px; }
+  .row .label { font: 11px/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  button.chip {
+    appearance: none; border: 1px solid var(--edge); border-radius: 999px;
+    background: #efe4c6; color: var(--ink); padding: 5px 11px; cursor: pointer;
+    font: 12px/1.2 ui-monospace, monospace;
+  }
+  button.chip:hover:not(:disabled) { border-color: var(--accent); }
+  button.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff8e8; }
+  button.chip:disabled { opacity: .45; cursor: default; }
+  .scrub { flex: 1; min-width: 140px; accent-color: var(--accent); }
+  .speed { width: 110px; accent-color: var(--accent); }
+  .row .label.spaced { margin-left: 10px; }
+  .time { font: 11.5px/1.5 ui-monospace, monospace; color: var(--muted); min-width: 92px; text-align: right; }
+  .no-clips { font: 12px/1.5 ui-monospace, monospace; color: var(--muted); font-style: italic; }
+  .equipment-row {
+    padding: 9px 10px; border: 1px solid var(--edge); border-radius: 9px;
+    background: #fbf6e9; align-items: end;
+  }
+  .field { display: flex; flex-direction: column; gap: 3px; min-width: 118px; }
+  .field.character { min-width: 160px; }
+  .field.version { min-width: 150px; }
+  .field.animation { min-width: 210px; }
+  .field select {
+    min-height: 31px; padding: 4px 25px 4px 7px; border: 1px solid var(--edge);
+    border-radius: 7px; background: #fffdf6; color: var(--ink);
+    font: 12px/1.3 ui-monospace, monospace;
+  }
+  .field select:disabled { opacity: .48; }
+  .equipment-state {
+    flex: 1; min-width: 220px; padding: 6px 9px; border-radius: 7px;
+    background: #e9e0c7; color: var(--muted); font: 11px/1.45 ui-monospace, monospace;
+  }
+  .equipment-state b { color: var(--ink); font-weight: 600; }
+  .equipment-state[data-warning="true"] { background: #f3dfbd; color: #76532b; }
+
+  @media (max-width: 720px) {
+    .lab { grid-template-columns: 1fr; }
+    .catalog { border-right: none; border-bottom: 1px solid var(--edge); max-height: 40vh; }
+  }
+  @media (max-width: 900px) {
+    .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span><b>POSTMARK</b> · Model Lab</span>
+  <span class="sub">every authored GLB, turned and played</span>
+  <nav>
+    <a href="/review">Review →</a>
+    <a href="/audio">Audio lab →</a>
+    <a href="/wiki">Wiki →</a>
+  </nav>
+</header>
+
+<div class="lab">
+  <aside class="catalog">
+    <div class="catalog-head">
+      <h1>Models</h1>
+      <input id="filter" type="search" placeholder="filter by name…" aria-label="Filter models by name" autocomplete="off" />
+      <div class="catalog-count" id="catalog-count">reading catalog…</div>
+    </div>
+    <div class="catalog-list" id="catalog-list"></div>
+  </aside>
+
+  <main class="stage-wrap">
+    <div class="stage" id="stage">
+      <p class="stage-note" id="stage-note">choose a model</p>
+      <div class="stats" id="stats"></div>
+      <div class="hint">drag or scroll to turn · ⌥/⇧ + scroll to zoom · space plays</div>
+    </div>
+
+    <div class="controls">
+      <div class="row equipment-row" aria-label="Equipment state preview controls">
+        <label class="field character">
+          <span class="label">Model</span>
+          <select id="equipment-character"></select>
+        </label>
+        <label class="field version">
+          <span class="label">Version</span>
+          <select id="model-version"></select>
+        </label>
+        <label class="field">
+          <span class="label">Held item</span>
+          <select id="equipment-item">
+            <option value="none">None</option>
+            <option value="bunny">Bunny</option>
+            <option value="staff">Staff</option>
+            <option value="flower-pot">Flower pot</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="label">Primary hand</span>
+          <select id="equipment-hand">
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="label">Equipment motion</span>
+          <select id="equipment-motion">
+            <option value="idle">Idle</option>
+            <option value="walk">Walk</option>
+            <option value="run">Run</option>
+          </select>
+        </label>
+        <output class="equipment-state" id="equipment-state" aria-live="polite">
+          <b>Hands:</b> left free · right free
+        </output>
+      </div>
+      <div class="row" id="clip-row">
+        <span class="label">Clips</span>
+        <label class="field animation">
+          <span class="label">Embedded animation</span>
+          <select id="animation-select" disabled>
+            <option value="">No clips</option>
+          </select>
+        </label>
+        <span class="no-clips" id="clip-empty">—</span>
+      </div>
+      <div class="row">
+        <button class="chip" id="play" type="button" disabled>▶ Play</button>
+        <button class="chip" id="loop" type="button" aria-pressed="true" disabled>↻ Loop</button>
+        <input class="scrub" id="scrub" type="range" min="0" max="1000" value="0" step="1" disabled aria-label="Scrub animation" />
+        <span class="time" id="time">0.00 / 0.00s</span>
+        <span class="label spaced">Speed</span>
+        <input class="speed" id="speed" type="range" min="0.1" max="2" step="0.1" value="1" aria-label="Playback speed" />
+        <span class="time" id="speed-read">1.0×</span>
+        <button class="chip" id="reset-view" type="button">Reset view</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Absolute, not relative: this page is reachable at a bare `/models` with no
+     trailing slash, where `./model-lab.js` would resolve to the site root. -->
+<script type="module" src="/models/model-lab.js"></script>
+</body>
+</html>

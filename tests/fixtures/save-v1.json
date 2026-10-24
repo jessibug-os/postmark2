@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "playerName": "Fixture Postmaster",
+  "createdAt": 1721952000000,
+  "playedSeconds": 7325,
+  "player": {
+    "x": -8,
+    "z": 8,
+    "coatItemId": "coat-postal",
+    "equippedTool": "tool-net"
+  },
+  "inventory": {
+    "slots": [
+      { "itemId": "tool-net", "count": 1 },
+      { "itemId": "tool-rod", "count": 1 },
+      { "itemId": "orchard-apple", "count": 3 }
+    ],
+    "gears": 2450
+  },
+  "museum": ["rust-carp", "ivory-butterfly"],
+  "discovered": ["rust-carp", "ivory-butterfly"],
+  "questSteps": { "main": 2 },
+  "completedQuests": ["4"],
+  "reactivatedNpcs": ["sparks", "reggie", "cataloger-734"],
+  "constructedBuildings": ["emporium", "archive"],
+  "unlockedZones": ["town", "forest", "meadow"],
+  "placedFurniture": [
+    { "itemId": "furn-bench", "x": -12, "z": 2, "rotY": 0 }
+  ],
+  "lastDigRefresh": 1721952000000,
+  "introSeen": true,
+  "houseTier": 1,
+  "housePaper": "plaster",
+  "houseFloor": "pine",
+  "friendship": {
+    "sparks": {
+      "points": 130,
+      "lastTalkDay": "Thu Jul 25 2026",
+      "lastGiftDay": "",
+      "seenScenes": [0],
+      "keepsakeGiven": false,
+      "favorItem": null
+    }
+  },
+  "mail": {
+    "delivered": ["letter-order"],
+    "carrying": null,
+    "fragments": ["The evacuation order was never sent."],
+    "finaleSeen": false,
+    "mailboxSeen": ["mail-sparks-1"],
+    "lastMailDay": "2026-07-25"
+  },
+  "mailboxDelivered": ["mail-sparks-1"],
+  "dailyLoop": {
+    "day": "2026-07-25",
+    "npcId": "sparks",
+    "itemId": "orchard-apple",
+    "surprise": "stone"
+  },
+  "achievements": ["first-bond"],
+  "settings": {
+    "volume": 0.6,
+    "music": true,
+    "sfx": true,
+    "shake": false
+  }
+}

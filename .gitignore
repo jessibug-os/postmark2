@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.claude/settings.local.json
+__pycache__/
+*.blend1
+
+# Recorded cutscene takes. A take is scratch for judging a cut — a few hundred
+# frames per recording, several recordings per session — and committing them
+# would put a megabyte of near-identical stills in the history for every shot
+# anyone tried. A take worth keeping gets copied into the review queue by hand.
+docs/review-queue/takes/

@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kindly Forward — Water</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>" />
+<style>
+  :root{
+    --ink:#29231f;--paper:#e9e2d3;--card:#f8f1e2;--edge:#bbaa88;
+    --navy:#26374d;--storm:#435766;--water:#55747a;--shallow:#8fb0c0;
+    --sage:#697761;--earth:#775b3f;--sand:#bd9858;--gold:#b6813e;
+    --plum:#684b5d;--muted:#756d61;--bad:#8d4b3a;--good:#4f6b4a;
+    --shadow:rgba(27,31,34,.18);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;color:var(--ink);
+    background:
+      radial-gradient(circle at 88% 0,rgba(38,55,77,.20),transparent 36rem),
+      linear-gradient(90deg,rgba(38,55,77,.035) 1px,transparent 1px),
+      var(--paper);
+    background-size:auto,34px 34px,auto;
+    font:15px/1.6 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  }
+  button,input,select{font:inherit}
+  a{color:#745128}
+  code{font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(38,55,77,.09);padding:1px 5px;border-radius:4px}
+
+  .topbar{position:sticky;top:0;z-index:30;min-height:58px;padding:10px 22px;display:flex;align-items:center;gap:15px;color:#f4ead4;background:#22262a;border-bottom:3px solid var(--gold);flex-wrap:wrap}
+  .brand{font-weight:700;letter-spacing:.09em;white-space:nowrap}
+  .sub{font-size:13px;color:#c6c9be}
+  .topbar nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
+  .topbar a{color:#e8d6ac;text-decoration:none;font-size:13px}
+  .topbar a:hover{color:#fff}
+
+  .shell{max-width:1220px;margin:auto;padding:26px 22px 90px}
+
+  /* ---- hero ---- */
+  .hero{position:relative;min-height:430px;display:grid;grid-template-columns:1.02fr .98fr;overflow:hidden;border:1px solid #5d6f79;border-radius:17px;color:#f5edda;background:linear-gradient(140deg,#141d26,#26404d 52%,#3f5a4a);box-shadow:0 16px 42px rgba(24,28,31,.34)}
+  .hero-copy{position:relative;z-index:2;align-self:end;padding:38px;text-shadow:0 2px 12px #101820}
+  .eyebrow,.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:11.5px;color:#d8c79c}
+  .hero h1{margin:.34em 0 .5em;font-size:39px;line-height:1.1;letter-spacing:-.01em}
+  .hero p{margin:0;max-width:44ch;font-size:16px;color:#e6e2d4}
+  .hero-figures{display:flex;gap:26px;margin-top:26px;flex-wrap:wrap}
+  .hero-figures div b{display:block;font-size:27px;line-height:1;color:#f6e7c4}
+  .hero-figures div span{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#b9c4c2}
+
+  /* hero: the colour chain, measured */
+  .chain-stage{position:relative;display:flex;flex-direction:column;justify-content:center;gap:0;padding:34px 30px;background:#101a20}
+  .chain-row{display:grid;grid-template-columns:74px 1fr;align-items:center;gap:16px;padding:9px 0}
+  .chip{height:52px;border-radius:9px;border:1px solid rgba(255,255,255,.16)}
+  .chain-row b{display:block;font-size:14px;color:#f2e9d4;letter-spacing:.01em}
+  .chain-row small{display:block;font-size:12px;color:#a9b6b8;line-height:1.4}
+  .chain-arrow{margin-left:30px;color:#7d8c8e;font-size:15px;line-height:1}
+  .stage-label{position:absolute;left:16px;bottom:14px;z-index:3;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#d6dcd6;background:rgba(16,22,26,.62);padding:5px 10px;border-radius:20px}
+
+  /* ---- tabs ---- */
+  .tabs{position:sticky;top:58px;z-index:20;display:flex;gap:5px;flex-wrap:wrap;margin:20px 0 6px;padding:9px 10px;background:rgba(233,226,211,.94);backdrop-filter:blur(6px);border:1px solid var(--edge);border-radius:12px}
+  .tabs a{text-decoration:none;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:#5b5347;padding:5px 11px;border-radius:20px}
+  .tabs a:hover{background:#e0d5bb;color:var(--ink)}
+
+  section{margin:44px 0 0;scroll-margin-top:120px}
+  h2{font-size:27px;margin:0 0 .35em;letter-spacing:-.01em}
+  h3{font-size:17px;margin:0 0 .4em}
+  .lede{font-size:16.5px;color:#4c443a;max-width:74ch;margin:0 0 20px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .panel{background:var(--card);border:1px solid var(--edge);border-radius:13px;padding:17px 19px;box-shadow:0 3px 12px var(--shadow)}
+  .panel ul{margin:.4em 0 0;padding-left:1.1em}
+  .panel li{margin:.32em 0}
+
+  .callout{border-left:4px solid var(--gold);background:#f4ecd9;border-radius:0 10px 10px 0;padding:13px 17px;margin:16px 0}
+  .callout.bad{border-left-color:var(--bad);background:#f6e7df}
+  .callout.good{border-left-color:var(--good);background:#e9efe2}
+
+  /* stat strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+  .stat{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:15px 16px;box-shadow:0 3px 12px var(--shadow)}
+  .stat b{display:block;font-size:30px;line-height:1.05;color:var(--navy)}
+  .stat span{display:block;font-size:12px;color:var(--muted);margin-top:5px}
+  .stat.warn b{color:var(--bad)}
+  .stat.good b{color:var(--good)}
+
+  /* findings */
+  .find{position:relative;background:var(--card);border:1px solid var(--edge);border-left:5px solid var(--bad);border-radius:0 13px 13px 0;padding:18px 21px;box-shadow:0 3px 12px var(--shadow);margin:16px 0}
+  .find.settled{border-left-color:var(--good)}
+  .find .tag{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .find h3{margin:5px 0 9px;font-size:19px}
+  .find p{margin:.5em 0}
+  .find .because{margin-top:12px;padding-top:12px;border-top:1px dashed #ddceac;font-size:13.5px;color:#4c443a}
+  .find .because b{color:var(--navy)}
+
+  /* measured readouts */
+  .readout{display:grid;grid-template-columns:repeat(2,1fr);gap:0 22px;margin:12px 0 2px}
+  .readout-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #ddceac;font-size:13.5px}
+  .readout-row b{color:var(--navy);white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+  .readout-row.warn b{color:var(--bad)}
+  .readout-row span{color:#4c443a}
+
+  /* scale diagram */
+  .scale{background:#152028;border-radius:12px;padding:20px 22px;margin:14px 0 4px;overflow-x:auto}
+  .scale svg{display:block;min-width:520px;width:100%;height:auto}
+
+  /* evidence figures */
+  figure{margin:0;background:var(--card);border:1px solid var(--edge);border-radius:12px;overflow:hidden;box-shadow:0 3px 12px var(--shadow)}
+  figure img{display:block;width:100%;height:auto;image-rendering:pixelated;background:#1b2026}
+  figcaption{padding:11px 14px;font-size:13px;color:#4c443a}
+  figcaption b{display:block;color:var(--ink);margin-bottom:3px}
+  .shots{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .shots.three{grid-template-columns:repeat(3,1fr)}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--edge);border-radius:12px;overflow:hidden;box-shadow:0 3px 12px var(--shadow)}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid #e2d7bd;font-size:13.5px;vertical-align:top}
+  th{background:#f1e8d4;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#5b5347}
+  tr:last-child td{border-bottom:0}
+  td.num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;white-space:nowrap}
+  .sev{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+  .sev.bug{background:#f0dbd3;color:#7b3f2e}
+  .sev.gap{background:#e6e2d1;color:#5f5a45}
+  .sev.dead{background:#ded8e2;color:#5c4a68}
+  .sev.ok{background:#e3ecdd;color:#3f5c3a}
+  .wrap-scroll{overflow-x:auto}
+  .swatch{display:inline-block;width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.25);vertical-align:-2px;margin-right:6px}
+
+  /* proposals */
+  .props{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .prop{position:relative;background:var(--card);border:1px solid var(--edge);border-left:5px solid var(--navy);border-radius:0 13px 13px 0;padding:17px 19px;box-shadow:0 3px 12px var(--shadow)}
+  .prop.hero-prop{grid-column:1 / -1;border-left-color:var(--gold);background:linear-gradient(100deg,#f9f2e2,#f4ecd9)}
+  .prop .tag{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .prop h3{margin:5px 0 7px;font-size:18px}
+  .prop p{margin:.4em 0}
+  .prop .free{margin-top:11px;padding-top:11px;border-top:1px dashed #ddceac;font-size:13px;color:#4c443a}
+  .meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+  .pill{font-size:11.5px;padding:3px 10px;border-radius:20px;background:#ece1c9;color:#5b5347;border:1px solid var(--edge)}
+  .pill.cost-s{background:#e6efe2;color:#3f5c3a;border-color:#bcd0b4}
+  .pill.cost-m{background:#f3ecd6;color:#6a5824;border-color:#ddceac}
+  .pill.cost-l{background:#f2ded4;color:#7b3f2e;border-color:#e0bfae}
+
+  /* slate */
+  .slate{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .lane{background:var(--card);border:1px solid var(--edge);border-radius:13px;overflow:hidden;box-shadow:0 3px 12px var(--shadow)}
+  .lane header{padding:14px 17px;background:var(--navy);color:#f4ead4}
+  .lane header b{display:block;font-size:16px}
+  .lane header span{font-size:12px;color:#c3cdd6}
+  .lane ol{margin:0;padding:14px 17px 16px 33px}
+  .lane li{margin:.45em 0;font-size:13.5px}
+  .lane.two header{background:var(--storm)}
+  .lane.three header{background:var(--sage)}
+
+  /* code map */
+  .code-map{display:grid;gap:9px}
+  .code-row{display:grid;grid-template-columns:270px 1fr;gap:15px;align-items:start;background:var(--card);border:1px solid var(--edge);border-radius:11px;padding:12px 15px}
+  .code-row code{background:none;padding:0;color:var(--navy);font-size:12.5px;word-break:break-all}
+  .code-row b{display:block;font-size:13.5px}
+  .code-row span{display:block;font-size:12.5px;color:var(--muted);line-height:1.45}
+
+  .limits{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .limit{background:#f2ecdd;border:1px dashed var(--edge);border-radius:11px;padding:14px 16px}
+  .limit b{display:block;margin-bottom:5px;font-size:13.5px}
+  .limit p{margin:0;font-size:13px;color:#4c443a}
+
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--edge);font-size:13px;color:var(--muted)}
+
+  @media (max-width:980px){
+    .hero{grid-template-columns:1fr}.chain-stage{padding:26px 22px}
+    .grid2,.grid3,.props,.slate,.limits,.shots,.shots.three,.stats,.readout{grid-template-columns:1fr}
+    .code-row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="brand">KINDLY FORWARD · WATER</span>
+  <span class="sub">survey of the live build · 27 August 2026</span>
+  <nav>
+    <a href="/island">Island</a>
+    <a href="/weather">Weather</a>
+    <a href="/characters">Characters</a>
+    <a href="/verbs">Player verbs</a>
+    <a href="/sky">Sky</a><a href="/review">Review</a>
+    <a href="/">Play current build →</a>
+  </nav>
+</header>
+
+<main class="shell">
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Surveyed 2026-08-27 · live <code>kindly-forward</code> build · nothing here is built</div>
+      <h1>The shape of the water<br />is fixed. The colour<br />is not.</h1>
+      <p>Last month's audit found a sea that met the land at a 1.90-unit wall. That work landed: the coast now steps a median of 0.10 units and 94% of crossings are wadeable. What it did not fix is that the sea, at noon, in summer, renders <b>#3d3c27</b> — an olive grey with less blue in it than the sand beside it.</p>
+      <div class="hero-figures">
+        <div><b>0.35 u</b><span>ocean texture tile, world size</span></div>
+        <div><b>−64%</b><span>saturation, water swatches</span></div>
+        <div><b>4</b><span>fish in 21,710 wet cells</span></div>
+      </div>
+    </div>
+    <div class="chain-stage" aria-hidden="true">
+      <div class="chain-row">
+        <div class="chip" style="background:#8fb0c0"></div>
+        <div><b>#8fb0c0 — what <code>palette.ts</code> says</b><small>ocean day tint, HSL saturation 0.28, hue 200°</small></div>
+      </div>
+      <div class="chain-arrow">↓ <span style="font-size:12px">ERA1_GRADED, applied once to every swatch</span></div>
+      <div class="chain-row">
+        <div class="chip" style="background:#97aaaa"></div>
+        <div><b>#97aaaa — what the material holds</b><small>saturation 0.10, hue 180°; measured live from <code>oceanMat.color</code></small></div>
+      </div>
+      <div class="chain-arrow">↓ <span style="font-size:12px">× graded map base, × depth shade 0.70, × warm sky light</span></div>
+      <div class="chain-row">
+        <div class="chip" style="background:#3d3c27"></div>
+        <div><b>#3d3c27 — what the frame shows</b><small>open sea at noon, sampled over 9,000 px of <code>ocean-day.png</code></small></div>
+      </div>
+      <div class="stage-label">the colour chain, end to end</div>
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <a href="#status">Status</a>
+    <a href="#anatomy">Anatomy</a>
+    <a href="#measured">Measured today</a>
+    <a href="#findings">Six findings</a>
+    <a href="#outstanding">Still outstanding</a>
+    <a href="#newleaf">New Leaf</a>
+    <a href="#slate">The slate</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#claims">What this doesn't claim</a>
+  </nav>
+
+  <section id="status">
+    <h2>Status</h2>
+    <p class="lede">This page used to be the audit of 2026-08-25 and a slate of twelve proposals. All twelve were built under <code>WATER_ORDER.md</code>, and that page has been replaced by this one. The audit and its results are not lost — they are in <code>WATER_ORDER.md</code>, <code>WATER_REPORT.md</code> and this file's git history. What follows is a fresh survey of the build as it stands today.</p>
+    <div class="stats">
+      <div class="stat good"><b>0.10 u</b><span>median coast drop, 484 crossings — the geometry work holds</span></div>
+      <div class="stat good"><b>9 / 9</b><span>water materials on one registry, one tint pass</span></div>
+      <div class="stat warn"><b>6</b><span>new findings, all measured, none built</span></div>
+      <div class="stat warn"><b>0</b><span>water items approved by a human</span></div>
+    </div>
+    <div class="callout"><b>The honest summary.</b> Water is now a well-structured system with one owner per question: one registry for colour, one field for flow, one traced curve for the shoreline, one profile for the coast. Every structural complaint the last audit made has been answered. What remains is almost entirely in the last hundred metres — texture scale, palette, and life on the surface — and those are the parts a player actually sees.</div>
+    <div class="callout bad"><b>Five water items sit in <code>REVIEW_QUEUE.md</code> awaiting a human</b> (00W through 00W6). Nothing on this page changes that, and nothing on this page has been built. Under the jury rule, no frame reproduced here is approved, including the ones captured for this survey.</div>
+  </section>
+
+  <section id="anatomy">
+    <h2>Anatomy — what water is made of today</h2>
+    <p class="lede">Ten meshes, nine registered materials, three tint families, four modules. Measured from the live build at the beach spot, headless Chrome at 640×480.</p>
+
+    <div class="wrap-scroll">
+      <table>
+        <thead><tr><th>Surface</th><th>Mesh</th><th>Triangles</th><th>Material</th><th>Lit</th><th>Opacity</th></tr></thead>
+        <tbody>
+          <tr><td>Ocean sheet</td><td><code>island-ocean</code></td><td class="num">25,470</td><td>Lambert + vertex colour</td><td>yes</td><td class="num">0.94</td></tr>
+          <tr><td>River / pond sheet</td><td><em>(unnamed)</em></td><td class="num">5,628</td><td>Lambert + vertex colour</td><td>yes</td><td class="num">0.90</td></tr>
+          <tr><td>Shore lap (surf foam)</td><td><code>island-shore-lap</code></td><td class="num">1,878</td><td>Basic, double-sided</td><td>no</td><td class="num">0.30–0.70</td></tr>
+          <tr><td>Derived falls curtain</td><td><code>island-cascades</code></td><td class="num">384</td><td>Basic</td><td>no</td><td class="num">1.00</td></tr>
+          <tr><td>Plunge spray (28 droplets, one buffer)</td><td><code>island-cascade-spray</code></td><td class="num">224</td><td>Basic</td><td>no</td><td class="num">1.00</td></tr>
+          <tr><td>Plunge foam</td><td><code>island-cascade-foam</code></td><td class="num">64</td><td>Basic</td><td>no</td><td class="num">0.50</td></tr>
+          <tr><td>Moon path</td><td><code>island-moon-path</code></td><td class="num">48</td><td>Basic, additive</td><td>no</td><td class="num">0 → 0.30</td></tr>
+          <tr><td>Authored falls curtain</td><td><code>island-authored-cascades</code></td><td class="num">24</td><td>Basic</td><td>no</td><td class="num">1.00</td></tr>
+          <tr><td>Falls lip blend</td><td><code>island-waterfall-lip-blend</code></td><td class="num">4</td><td>Basic</td><td>no</td><td class="num">1.00</td></tr>
+          <tr><td>Falls lip cap</td><td><code>island-waterfall-lip-cap</code></td><td class="num">4</td><td>Lambert</td><td>yes</td><td class="num">0.90</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b>33,728</b><span>water triangles — 23% of the world's 144,577</span></div>
+      <div class="stat"><b>698</b><span>draw calls per frame, whole scene; water is 10</span></div>
+      <div class="stat"><b>480×360</b><span>internal framebuffer, upscaled nearest-neighbour</span></div>
+      <div class="stat"><b>35 px</b><span>one world unit, in internal pixels, at the player's feet</span></div>
+    </div>
+
+    <h3 style="margin-top:26px">Where the decisions live</h3>
+    <div class="code-map">
+      <div class="code-row"><code>src/world/water/WaterMaterials.ts</code><div><b>One registry, one tint pass</b><span>All nine surfaces register with a tint family (<code>fresh</code>, <code>ocean</code>, <code>foam</code>). <code>update(daylight, wetness, dt)</code> composes day/night, season and rain in a fixed order for every member at once. A surface that forgets to register is invisible to the pass, and a test walks the roster to catch that.</span></div></div>
+      <div class="code-row"><code>src/world/water/ChannelFlow.ts</code><div><b>Which way a river runs</b><span>Breadth-first from the river mouths over the acre graph; <code>channelUv</code> projects world position onto the downstream direction so <code>v</code> runs with the current. Ponds and basins pass <code>null</code> and keep planar UVs, because still water has no direction to claim.</span></div></div>
+      <div class="code-row"><code>src/world/water/ShoreLap.ts</code><div><b>The foam along the waterline</b><span>One ribbon, one draw, marched along <code>smoothedCoast</code> with cell-scale Chaikin smoothing, mitred point normals, a crowding index that skips doubled-back coast, and a drape onto the ground so the beach cannot clip it. 1,878 triangles for the whole island.</span></div></div>
+      <div class="code-row"><code>src/world/water/Buoyancy.ts</code><div><b>Things that float</b><span>A module-level registry; a sine on <code>y</code> plus a slower roll and a half-rate pitch. One client today: the ferry.</span></div></div>
+      <div class="code-row"><code>src/world/modules/WorldFoundation.ts</code><div><b>Where the water is built</b><span><code>buildIslandWater</code> emits the ocean as two-unit quads over ocean cells plus four coarse aprons to the horizon, and the fresh sheet as half-unit quads wherever ground is genuinely under its own surface. Both carry depth as a vertex colour.</span></div></div>
+      <div class="code-row"><code>src/world/island/IslandRuntime.ts</code><div><b>The shape under the water</b><span><code>coastProfile</code> is one continuous function of signed distance to the traced coast: apron inland over <code>APRON_RUN</code> 2.5, shelf seaward over <code>SHELF_RUN</code> 5, meeting at sea level by construction. <code>WADE_DEPTH</code> 0.35 decides where a walker may still stand.</span></div></div>
+      <div class="code-row"><code>src/world/terrain.ts</code><div><b>The ground's opinion about water</b><span>Submerged ground paints in the deep-water colour shaded by depth; a 0.35-unit <em>height</em> window above the surface paints the damp band, graded, as darker sand rather than as a third colour.</span></div></div>
+      <div class="code-row"><code>src/world/modules/WorldRuntime.ts</code><div><b>The per-frame motion</b><span>Four texture offsets and one opacity: river scroll, ocean scroll and cross-drift, falls scroll, lap slide along the shore, and the lap's two-sine breath. Plus <code>updateBuoyancy</code>.</span></div></div>
+      <div class="code-row"><code>src/core/RetroMaterial.ts</code><div><b>The swell</b><span><code>SWELL_CHUNK</code> — two long sines in world space, 39 and 57 units, opposed drift, amplitude <code>WATER_SWELL</code> = 0.045 u. Keyed into <code>customProgramCacheKey</code>, which is the trap: a variant that patches the shader without extending that key silently reuses another program.</span></div></div>
+    </div>
+  </section>
+
+  <section id="measured">
+    <h2>Measured today</h2>
+    <p class="lede">Live build, <code>?pack=kindly-forward</code>, shipped island, summer, clear. Harness: <code>scripts/water-review.mjs</code> and <code>scripts/water-gate.mjs</code>, plus three ad-hoc probes through <code>window.__postmark</code>.</p>
+
+    <div class="grid2">
+      <div class="panel">
+        <h3>The coast, and the shape work that landed</h3>
+        <div class="readout" style="grid-template-columns:1fr">
+          <div class="readout-row"><span>Land↔ocean crossings sampled</span><b>484</b></div>
+          <div class="readout-row"><span>Median vertical drop at the waterline</span><b>0.10 u</b></div>
+          <div class="readout-row"><span>p90 / max</span><b>0.14 / 1.40 u</b></div>
+          <div class="readout-row"><span>Crossings under 0.30 u — wadeable</span><b>455 (94%)</b></div>
+          <div class="readout-row"><span>Riverbank crossings, median / p90</span><b>0.14 / 0.48 u</b></div>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:#4c443a">The 1.90-unit sea wall is gone and stayed gone. This half of the water problem is solved and needs only a jury.</p>
+      </div>
+      <div class="panel">
+        <h3>The sea floor, and how little of it is shallow</h3>
+        <div class="readout" style="grid-template-columns:1fr">
+          <div class="readout-row"><span>Ocean samples</span><b>84,522</b></div>
+          <div class="readout-row"><span>Floor mean / min</span><b>−1.31 / −1.40 u</b></div>
+          <div class="readout-row warn"><span>Shallower than 0.40 u</span><b>2,300 (2.7%)</b></div>
+          <div class="readout-row warn"><span>Ocean vertices inside one 0.034-wide band of shade</span><b>94.4%</b></div>
+          <div class="readout-row"><span>River vertices, same band width</span><b>66.6%, rest over three more</b></div>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:#4c443a">The shelf exists but is five units wide against a sea 224 units across. Outside that ring, the floor is one number and the surface says so.</p>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:16px">
+      <div class="panel">
+        <h3>Census — 37,632 one-unit samples</h3>
+        <div class="readout" style="grid-template-columns:1fr">
+          <div class="readout-row"><span>Ocean</span><b>21,114 · 56.1%</b></div>
+          <div class="readout-row"><span>River</span><b>596 · 1.6%</b></div>
+          <div class="readout-row warn"><span>Pond</span><b>0 · 0%</b></div>
+          <div class="readout-row"><span>Land</span><b>15,922 · 42.3%</b></div>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:#4c443a">More than half the map is sea. Whatever the sea looks like is what the game looks like.</p>
+      </div>
+      <div class="panel">
+        <h3>Texture mapping, as shipped</h3>
+        <div class="readout" style="grid-template-columns:1fr">
+          <div class="readout-row warn"><span>Ocean tile, world size</span><b>0.35 × 0.175 u</b></div>
+          <div class="readout-row warn"><span>Ocean tile, internal pixels</span><b>12.3 × 4.2 px</b></div>
+          <div class="readout-row"><span>Ocean sheet</span><b>128 × 256 texels</b></div>
+          <div class="readout-row warn"><span>River tile, world size</span><b>14 × 3.5 u</b></div>
+          <div class="readout-row"><span>Filtering / anisotropy</span><b>mipmapped, aniso 1</b></div>
+        </div>
+        <p style="margin-top:12px;font-size:13.5px;color:#4c443a">A 128×256 sheet resolved into twelve pixels by four. This is finding 1.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="findings">
+    <h2>Six findings</h2>
+    <p class="lede">Each of these is a measurement first and a judgement second. None is built. They are ordered by how much of the frame they change per line of code.</p>
+
+    <div class="find">
+      <div class="tag">Finding 1 · <span class="sev bug">bug</span> · <code>WorldFoundation.buildIslandWater</code></div>
+      <h3>The ocean's texture is tiled forty times too fine to be seen</h3>
+      <p>The ocean sheet carries <b>world-space UVs</b>: <code>seaQuad</code> pushes <code>px / ACRE_SIZE</code>, and the mesh's <code>u</code> was measured spanning −28…28 across x −392…392, which is exactly x/14. On top of that, <code>oceanTex.repeat</code> is set to <b>(40, 80)</b> — measured live — because it was sized for the 560-unit <code>PlaneGeometry</code> that used to be the sea and carried normalised 0…1 UVs.</p>
+      <p>The plane was replaced during the shore work. The repeat was not. Multiplied together, one tile of a 128 × 256 stroke sheet now covers <b>0.35 world units across and 0.175 along</b> — a third of a footstep.</p>
+      <div class="scale">
+        <svg viewBox="0 0 700 196" role="img" aria-label="Five world-space lengths on one ruler: one ocean texture tile is 0.35 units across and 0.175 along, the Postmaster is about 1.6 units, one river tile is 3.5 units along the flow and 14 across">
+          <text x="20" y="16" fill="#9fb0b2" font-family="ui-monospace,Menlo,monospace" font-size="11">every bar below is the same world length it labels &#183; 1 unit = 45 px here</text>
+
+          <rect x="20" y="30" width="15.8" height="18" fill="#97aaaa"/>
+          <text x="46" y="44" fill="#9fd0cc" font-family="Georgia,serif" font-size="13">one ocean texture tile &#8212; 0.35 u across; a 128 &#215; 256 sheet lives in here</text>
+
+          <rect x="20" y="58" width="7.9" height="18" fill="#97aaaa" opacity=".75"/>
+          <text x="46" y="72" fill="#9fd0cc" font-family="Georgia,serif" font-size="13">&#8230;and 0.175 u along the swell &#8212; 4.2 internal pixels on screen</text>
+
+          <rect x="20" y="86" width="72" height="18" fill="#6b5f74"/>
+          <text x="102" y="100" fill="#e6dcc6" font-family="Georgia,serif" font-size="13">the Postmaster &#8212; about 1.6 u</text>
+
+          <rect x="20" y="114" width="157.5" height="18" fill="#a3b1ae" opacity=".55"/>
+          <text x="188" y="128" fill="#c8d6cc" font-family="Georgia,serif" font-size="13">one river tile, along the flow &#8212; 3.5 u</text>
+
+          <rect x="20" y="142" width="630" height="18" fill="#a3b1ae" opacity=".25"/>
+          <text x="28" y="156" fill="#c8d6cc" font-family="Georgia,serif" font-size="13">the same river tile, across the flow &#8212; 14 u, three times the channel&#8217;s own width</text>
+
+          <line x1="20" y1="174" x2="650" y2="174" stroke="#4a5c62" stroke-width="1.5"/>
+          <g stroke="#4a5c62" stroke-width="1.5"><line x1="20" y1="170" x2="20" y2="180"/><line x1="65" y1="170" x2="65" y2="180"/><line x1="110" y1="170" x2="110" y2="180"/><line x1="155" y1="170" x2="155" y2="180"/><line x1="200" y1="170" x2="200" y2="180"/><line x1="245" y1="170" x2="245" y2="180"/><line x1="290" y1="170" x2="290" y2="180"/><line x1="335" y1="170" x2="335" y2="180"/><line x1="380" y1="170" x2="380" y2="180"/><line x1="425" y1="170" x2="425" y2="180"/><line x1="470" y1="170" x2="470" y2="180"/><line x1="515" y1="170" x2="515" y2="180"/><line x1="560" y1="170" x2="560" y2="180"/><line x1="605" y1="170" x2="605" y2="180"/><line x1="650" y1="170" x2="650" y2="180"/></g>
+          <g fill="#7d8c8e" font-family="ui-monospace,Menlo,monospace" font-size="10"><text x="17" y="192">0</text><text x="61" y="192">1u</text><text x="106" y="192">2u</text><text x="151" y="192">3u</text><text x="196" y="192">4u</text><text x="241" y="192">5u</text><text x="286" y="192">6u</text><text x="331" y="192">7u</text><text x="376" y="192">8u</text><text x="421" y="192">9u</text><text x="462" y="192">10u</text><text x="507" y="192">11u</text><text x="552" y="192">12u</text><text x="597" y="192">13u</text><text x="642" y="192">14u</text></g>
+        </svg>
+      </div>
+      <p>With <code>LinearMipmapLinearFilter</code> and anisotropy 1, that samples a mip where the sheet is a handful of texels: the sea resolves to the <b>average colour of its own texture</b>. There is no stroke pattern on the open water in any frame this survey captured, and the vertical colour profile down <code>ocean-day.png</code> confirms it — #3a3925 at the top of the frame to #40402b at the waterline, a 2% drift across the entire sea.</p>
+      <div class="because"><b>And the motion goes with it.</b> <code>oceanTex.offset.y = (now / 45000) % 1</code> advances one tile per 45 seconds. One tile is 0.175 u, so the sea drifts at <b>3.9 millimetres per second</b> — 0.09 internal pixels per second. The cross-drift, <code>sin(now / 11000) * 0.012</code>, has an amplitude of <b>two millimetres</b>. Even if the strokes were visible, they would not appear to move. The swell in the vertex shader is real and does move; it is the only motion the open sea has.</div>
+    </div>
+
+    <div class="find">
+      <div class="tag">Finding 2 · <span class="sev bug">bug</span> · <code>scripts/grade-palette.mjs</code>, <code>src/art/swatches.generated.ts</code></div>
+      <h3>The palette grade takes the blue out of the water, and out of the light on it</h3>
+      <p><code>grade-palette.mjs</code> applies the Era 1 art direction to <b>every swatch in the generated table, once, destructively</b>. Each channel is pulled 22% toward the RGB average, then gained and lifted per channel — and blue gets the smallest of both, deliberately: the comment reads <em>"pull saturation toward warm paper, then age blue slightly more than red."</em></p>
+      <pre style="background:#f1e8d4;border:1px solid var(--edge);border-radius:9px;padding:12px 14px;overflow-x:auto;font-size:12.5px;margin:12px 0">muted   = average + (channel − average) × 0.78
+red     = muted[0] × 0.96 + 8
+green   = muted[1] × 0.93 + 7
+blue    = muted[2] × 0.88 + 5</pre>
+      <p>That is a defensible grade for brass, timber, grass and sand — materials whose read is texture and value. Water has no texture and no value of its own. <b>Hue and motion are all it has</b>, and the grade removes most of one of them:</p>
+      <div class="wrap-scroll">
+        <table>
+          <thead><tr><th>Swatch</th><th>What <code>palette.ts</code> names</th><th>What the build uses</th><th>Saturation</th><th>Hue</th></tr></thead>
+          <tbody>
+            <tr><td>Ocean, day</td><td class="num"><span class="swatch" style="background:#8fb0c0"></span>#8fb0c0</td><td class="num"><span class="swatch" style="background:#97aaaa"></span>#97aaaa</td><td class="num">0.28 → 0.10</td><td class="num">200° → 180°</td></tr>
+            <tr><td>Ocean, night</td><td class="num"><span class="swatch" style="background:#4a6478"></span>#4a6478</td><td class="num"><span class="swatch" style="background:#54646a"></span>#54646a</td><td class="num">0.24 → 0.12</td><td class="num">206° → 196°</td></tr>
+            <tr><td>Fresh water, day</td><td class="num"><span class="swatch" style="background:#9db8c4"></span>#9db8c4</td><td class="num"><span class="swatch" style="background:#a3b1ae"></span>#a3b1ae</td><td class="num">0.25 → 0.08</td><td class="num">199° → 167°</td></tr>
+            <tr><td>Ocean texture base fill</td><td class="num"><span class="swatch" style="background:#63879a"></span>#63879a</td><td class="num"><span class="swatch" style="background:#6d8388"></span>#6d8388</td><td class="num">0.22 → 0.11</td><td class="num">201° → 191°</td></tr>
+            <tr><td>Foam</td><td class="num"><span class="swatch" style="background:#fff8e0"></span>#fff8e0</td><td class="num"><span class="swatch" style="background:#faecce"></span>#faecce</td><td class="num">—</td><td class="num">warmer</td></tr>
+            <tr><td><b>Hemisphere sky (day)</b></td><td class="num"><span class="swatch" style="background:#e8f0f8"></span>#e8f0f8</td><td class="num"><span class="swatch" style="background:#e8e6de"></span>#e8e6de</td><td class="num">cool → warm</td><td class="num">210° → 48°</td></tr>
+            <tr><td>Sun (day)</td><td class="num"><span class="swatch" style="background:#fff8ec"></span>#fff8ec</td><td class="num"><span class="swatch" style="background:#fbedd7"></span>#fbedd7</td><td class="num">—</td><td class="num">warmer</td></tr>
+            <tr><td>Fog</td><td class="num"><span class="swatch" style="background:#93a8bc"></span>#93a8bc</td><td class="num"><span class="swatch" style="background:#99a3a7"></span>#99a3a7</td><td class="num">0.23 → 0.07</td><td class="num">209° → 197°</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The last three rows are the ones that matter most and are easiest to miss. The ocean is a <b>horizontal Lambert surface</b>, so the largest single term in its shading is the hemisphere light's <em>sky</em> colour — and that has been graded from a cool blue-white to a warm off-white. The sea is now a nearly-neutral tint, multiplied by a nearly-neutral map, lit by warm light, multiplied again by a 0.70 depth shade.</p>
+      <div class="because"><b>The measured result, and the giveaway.</b> Open sea at noon, summer, clear, sampled over a 300 × 30 px block: <b>#3d3c27</b> — red 61, green 60, blue 39. The same block at 23:00: <b>#0e2e4a</b>, a real navy. <b>The night sea is blue and the day sea is not</b>, because at night the sun and the sky bounce fall away and the tint's own residual blue survives. And <code>palette.ts</code> no longer describes the build: it says <code>ocean.day = h8fb0c0</code>, the running material holds <code>#97aaaa</code>, and anyone tuning the sea by editing that literal is editing a number that gets rewritten downstream.</div>
+    </div>
+
+    <div class="find">
+      <div class="tag">Finding 3 · <span class="sev gap">gap</span> · <code>IslandRuntime.shelfHeight</code>, the shipped <code>.island</code></div>
+      <h3>The sea has one depth, and the shallows are 2.7% of it</h3>
+      <p><code>OCEAN_FLOOR</code> is a constant −1.4 and <code>shelfHeight</code> eases from sea level down to it over <code>SHELF_RUN</code> = 5 units of distance from the traced coast. So the sea has exactly two regions: a five-unit ring, and everything else at one number.</p>
+      <p>The surface repeats the claim. <code>depthShade</code> writes a per-vertex multiplier saturating at <code>DEPTH_FULL</code> 1.6, and <b>94.4% of the ocean sheet's 76,410 vertices land inside a single 0.034-wide band of it</b> — 0.694 to 0.728, against a full range of 0.66 to 1.0 (measured spread 0.702–1.000, mean 0.711). The river, whose bed follows <code>riverCarveAt</code>, puts 66.6% in one such band and spreads the rest across three more. The tool to fix this shipped: W11 added a <code># depth:</code> block to <code>.acre</code>, a depth layer in the <code>/acre</code> editor, and a smoothed per-island depth field. <b>The shipped island does not use it.</b></p>
+      <div class="because"><b>Why it costs more than it sounds.</b> A player standing on the beach reads the sea in bands. New Leaf gives them at least three from a standing camera — wet sand, a light walkable shallow, the deep — and the boundaries between them are where the eye rests. We have two bands, the shallow one is one shade wide and 2.7% of the water by area, and the rest is a single flat field taking up more than half the frame.</div>
+    </div>
+
+    <div class="find">
+      <div class="tag">Finding 4 · <span class="sev bug">bug</span> · <code>TownMap.makeWaterTexture</code></div>
+      <h3>Both water sheets are drawn from unseeded noise, so no two runs photograph the same sea</h3>
+      <p><code>makeWaterTexture</code> calls <code>Math.random()</code> for stroke position, length, curvature, width and colour — 40 strokes for the ocean, 60 for fresh water — on every page load. Measured, two cold loads of the same build:</p>
+      <div class="readout">
+        <div class="readout-row warn"><span><code>waterTex</code> hash</span><b>4fcd1623 → 18501a81</b></div>
+        <div class="readout-row warn"><span><code>oceanTex</code> hash</span><b>3741a70e → e9cba2ce</b></div>
+        <div class="readout-row"><span><code>lapTex</code> hash (seeded)</span><b>c5f3bc20 → c5f3bc20</b></div>
+      </div>
+      <p style="margin-top:14px">The shore lap seeds its own generator and hashes identically. Its comment states the rule outright — <em>"a texture that resamples every load makes a visual regression impossible to compare against its own baseline"</em> — and cites <code>makeFallTexture</code> as the precedent. The two oldest water textures in the codebase are the two that break it.</p>
+      <div class="because"><b>This one gates the others.</b> Every proposal below is judged by eye, which means a before/after pair. As long as the sea repaints itself on every load, a pair of frames of the water surface is not a comparison and the jury is being asked to compare two different textures. Fixing this is a four-line change and it should land before anything else that touches the sheets.</div>
+    </div>
+
+    <div class="find">
+      <div class="tag">Finding 5 · <span class="sev bug">bug</span> · <code>TownMap.makeWaterTexture</code>, <code>ChannelFlow.channelUv</code></div>
+      <h3>The river's strokes still lie across the current — eight to one</h3>
+      <p><code>ChannelFlow</code> exists because the fresh sheet used to take planar world UVs and scroll due north on every island. Its header names two symptoms: the current ran the wrong way, <em>"with the texture's own strokes lying across the current as well."</em> The first was fixed. The second was not.</p>
+      <p><code>channelUv</code> returns <code>u</code> across the channel and <code>v</code> downstream, both divided by <code>ACRE_SIZE</code>. <code>waterTex.repeat</code> is <b>(1, 4)</b>. So one tile is <b>14 units across and 3.5 along</b>, carrying a 128 × 256 sheet: 9 texels per world unit across the current, 73 along it. A round stroke on the canvas becomes an ellipse eight times wider than it is long — stretched across the flow, crushed along it.</p>
+      <div class="because"><b>And the comment above it disagrees with the line below it.</b> <code>makeWaterTexture</code> reads: <em>"Fresh water only. One tile per 14x14 acre quad, which is the size every river and pond surface is built at."</em> The next line sets <code>repeat.set(1, 4)</code>. The channel is 4.4 units wide, so the sheet gives it about a third of a tile across — the pattern the player actually sees on the river is one third of one stroke, spread wide.</div>
+    </div>
+
+    <div class="find">
+      <div class="tag">Finding 6 · <span class="sev dead">absence</span> · <code>FishingSystem</code>, <code>DivingSystem</code></div>
+      <h3>Nothing lives in the water</h3>
+      <p><code>MAX_SHADOWS</code> is <b>4</b>, and <code>maintainShadows</code> places them by rejection-sampling anywhere in the map bounds that is wet. Four shadows over <b>21,710 wet cells</b>. <code>DivingSystem</code> keeps four more, but only while the player is swimming, and clears them on exit.</p>
+      <p>So on an ordinary walk along the coast, the expected number of visible fish shadows is approximately zero — and the fish are the main reason to look at water in this genre at all. Nothing else is on the surface either: no birds, no drifting debris, no jumping fish, no boat traffic. The ferry floats, and it is the only object the sea carries.</p>
+      <div class="because"><b>Cheapest large win on this page.</b> The shadows already know how to stay in water, steer back when they land dry, and sit at the right height for ocean versus fresh. What they do not do is exist near the player. A budget raised to a few dozen, spawned in a ring around the camera focus instead of over the map, on one instanced mesh, changes how alive the water feels more than any shader on this list.</div>
+    </div>
+  </section>
+
+  <section id="outstanding">
+    <h2>Still outstanding from the last pass</h2>
+    <p class="lede">Four things <code>WATER_REPORT.md</code> named as deliberately not done. All four are still true, confirmed against today's frames and code.</p>
+    <div class="wrap-scroll">
+      <table>
+        <thead><tr><th>Item</th><th>Status today</th><th>Blocked on</th></tr></thead>
+        <tbody>
+          <tr><td><b>The falls curtain is a flat pale rectangle</b></td><td>Confirmed in <code>survey-0827/cascade-day.png</code>: a light slab let into the cliff, no vertical banding, no visible lip, plunge foam not readable at this camera. 384 + 24 triangles of curtain, 64 of foam, 224 of spray.</td><td>Nobody has designed what a falls should look like at this resolution. Structural work only, so far.</td></tr>
+          <tr><td><b>Ocean swell is world-locked</b></td><td><code>oceanTex.offset.y</code> scrolls along world Z. On an east or west coast the swell runs parallel to the beach. <code>ChannelFlow</code> solved the equivalent for rivers; the sea has no channel to read.</td><td>A design call: per-island authored heading, or derived from the mean coast normal.</td></tr>
+          <tr><td><b>No pond exists on the shipped island</b></td><td>Census confirms 0 pond cells and 0 <code>pond</code>/<code>river-basin</code> acres. Walkable winter ice is unbuildable and unreviewable; seven pond fish stay unreachable.</td><td>Authoring a pond acre. A map gap, not a code gap — and W11's depth layer makes it worth doing now.</td></tr>
+          <tr><td><b><code>nearestWater</code> is a brute-force ring search</b></td><td>Memoised for one tick, cleared at the top of <code>fixedUpdate</code>. Three callers a frame get one search. The shape is still a scan.</td><td>Nothing. It is simply not costing enough yet to be worth the distance field it wants to be.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="newleaf">
+    <h2>New Leaf — eight things it does, and where we stand</h2>
+    <p class="lede">This column is what a player sees, not a claim about how Nintendo built it. It is here because "make it more like Animal Crossing" is only actionable once it is broken into things that can be measured against our own build.</p>
+
+    <div class="grid2">
+      <div class="panel">
+        <h3>1 · The sea is blue against warm sand</h3>
+        <p>Hue contrast between water and shore does most of the work of saying "coast" at a glance, before any wave or foam is drawn. The sand is warm, the water is cool, and the boundary between them is the picture.</p>
+        <p><b>Us:</b> measured #3d3c27 sea against #b08543 sand, in the same frame. HSL saturation <b>0.22 for the water, 0.45 for the sand</b>; hue <b>57° and 36°</b> — both warm, one family, forty degrees apart. The one contrast that reads for free, we have collapsed. <b>Finding 2.</b></p>
+      </div>
+      <div class="panel">
+        <h3>2 · The shallows are their own colour, wide enough to stand in</h3>
+        <p>There is a legible light band between the wet sand and the deep, and the player can walk into it. It is the reason a New Leaf beach reads as somewhere you can go rather than as a boundary.</p>
+        <p><b>Us:</b> the wadeable band exists — <code>WADE_DEPTH</code> 0.35, about 1.25 units of shelf — but it carries one shade and covers 2.7% of the sea. <b>Finding 3.</b></p>
+      </div>
+      <div class="panel">
+        <h3>3 · The surf advances and retreats</h3>
+        <p>The waterline itself moves: foam runs up the sand and drains back on a cycle you can time, and the wet strip it leaves behind is what makes the beach look damp.</p>
+        <p><b>Us:</b> the ribbon is fixed in place and <em>breathes opacity</em> between 0.30 and 0.70, twice a cycle, from two detuned sines. Sliding it inland was tried and tears, because the texture's <code>v</code> is clamped for good reason. A wave that fades in place reads as a light on the sand rather than as water. The damp band beneath it is correct and graded and does not move either.</p>
+      </div>
+      <div class="panel">
+        <h3>4 · Water is animated at a scale you can see</h3>
+        <p>Ripples are about a hand's width and travel at roughly walking pace. Both facts matter: too fine and it is noise, too slow and it is a still image.</p>
+        <p><b>Us:</b> 0.35-unit tiles drifting at 3.9 mm/s on the sea, and an 8:1 anisotropic pattern on the river. <b>Findings 1 and 5.</b> The vertex swell is the only motion that survives, and it is 4.5 cm.</p>
+      </div>
+      <div class="panel">
+        <h3>5 · The water is full of life</h3>
+        <p>Fish shadows are everywhere, all the time, in every body of water, at every hour — the surface is never empty, and that is what makes it worth walking along.</p>
+        <p><b>Us:</b> four shadows, placed anywhere on the map. <b>Finding 6.</b></p>
+      </div>
+      <div class="panel">
+        <h3>6 · Waterfalls are bright banded curtains with a mist base</h3>
+        <p>A falls is one of the few places the palette goes near white, and it reads as vertical energy: banding down the sheet, a bright lip where the river tips over, spray that hides the join at the bottom.</p>
+        <p><b>Us:</b> a flat pale rectangle with a scrolling map, a lip pair built to be invisible, and 28 spray droplets in one buffer. Structurally sound; visually unaddressed. <b>Outstanding.</b></p>
+      </div>
+      <div class="panel">
+        <h3>7 · The hue never leaves blue</h3>
+        <p>Hour and weather move the sea's value and temperature a long way — dusk, storm, night — but never so far that it stops being blue. The blue is the constant the rest is varied against.</p>
+        <p><b>Us:</b> the day/night lerp works, the winter tint works, rain darkens correctly across all nine surfaces. What leaves is the blue itself, at noon, in clear summer weather — the most common frame in the game.</p>
+      </div>
+      <div class="panel">
+        <h3>8 · The camera is fixed, and ours is not</h3>
+        <p>A fixed near-orthographic camera keeps the waterline in a narrow, predictable depth band and never shows it edge-on.</p>
+        <p><b>Us:</b> we orbit, and we snap vertices to a 480 × 360 grid. That is not a defect — it is a licence difference. We are <em>more</em> exposed to coplanar surfaces at the waterline than New Leaf is, which is why the last audit's z-fighting was so severe and why the current "sea built where the sea is" approach has to stay.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="slate">
+    <h2>The slate</h2>
+    <p class="lede">Ten proposals in three lanes. Lane 1 is a day's work and unblocks the rest; lane 2 decides whether the sea reads as water; lane 3 is what makes it feel inhabited. Every item marked <b>[EYES]</b> ends in <code>REVIEW_QUEUE.md</code> for a human, per the jury rule.</p>
+
+    <div class="props">
+      <div class="prop hero-prop">
+        <div class="tag">P1 · lane 1 · <code>WorldFoundation.buildIslandWater</code></div>
+        <h3>Delete the ocean's texture repeat, then re-derive the scroll in world units</h3>
+        <p>The sheet's UVs are already world-space at one tile per acre. Removing <code>oceanTex.repeat.set(...)</code> restores the scale the stroke sheet was drawn for and makes the sea's texture visible for the first time since the plane was replaced. Then the scroll has to be re-expressed: today it is "one tile per 45 seconds", which is meaningless once the tile changes size. State it as world units per second and pick a number a player can see — the swell is the reference, not the clock.</p>
+        <p><b>Expect a follow-up.</b> The stroke sheet has never been looked at near its intended scale, and it may well be wrong there. That is the point: this change makes the texture a thing that can be art-directed instead of a thing that averages to grey.</p>
+        <div class="free"><b>Gate:</b> measured world period of one tile, and measured world speed of the scroll. <b>[EYES]</b> — a beach frame at noon, against the same frame today.</div>
+        <div class="meta"><span class="pill cost-s">one line, plus a number</span><span class="pill">unblocks the whole sea</span><span class="pill">needs P2 first to be comparable</span></div>
+      </div>
+
+      <div class="prop">
+        <div class="tag">P2 · lane 1 · <code>TownMap.makeWaterTexture</code></div>
+        <h3>Seed both water textures</h3>
+        <p>Lift the same xorshift generator <code>makeLapTexture</code> already uses. Four lines. Every visual comparison after this becomes valid, and the water-review harness starts producing frames that can be diffed against their own baselines.</p>
+        <div class="free"><b>Gate:</b> two cold loads, identical texture hash — the probe already exists in this survey. No jury needed; this one is mechanical.</div>
+        <div class="meta"><span class="pill cost-s">trivial</span><span class="pill">do it first</span></div>
+      </div>
+
+      <div class="prop">
+        <div class="tag">P3 · lane 1 · <code>makeWaterTexture</code>, <code>channelUv</code></div>
+        <h3>Make the river's tile square in world units</h3>
+        <p>Either set <code>repeat</code> so a tile is as long as it is wide, or drop the repeat and redraw the strokes at the scale the acre gives them. The comment already says what the intent was; the code should match it. The river is the one water surface whose texture is currently visible, so this is the cheapest place to learn what stroke scale actually reads at 480 × 360.</p>
+        <div class="free"><b>Gate:</b> measured world tile aspect 1:1 ± 10%. <b>[EYES]</b> — a riverbank frame.</div>
+        <div class="meta"><span class="pill cost-s">one line</span><span class="pill">teaches P1 what scale to aim for</span></div>
+      </div>
+
+      <div class="prop hero-prop">
+        <div class="tag">P4 · lane 2 · <code>WaterMaterials</code>, <code>swatches.generated.ts</code>, <code>DayNight</code></div>
+        <h3>Give water its blue back — and decide whether water is lit at all</h3>
+        <p>Two halves, and they should be decided together.</p>
+        <p><b>The tints.</b> Three options: exempt the water family from ERA1_GRADED; re-author the literals in <code>palette.ts</code> as post-grade values with a comment saying so; or give <code>WaterMaterials</code> its own colour constants outside the generated table. <b>Recommend the third.</b> The registry exists precisely to be the one opinion about what water colour is, and a module that owns the decision should own the numbers. It also ends the situation where <code>palette.ts</code> states a colour the build does not use.</p>
+        <p><b>The light.</b> The hemisphere sky term is the largest contributor to a horizontal Lambert surface, and it has been graded warm. Either pre-compensate the tint for it, or make the two water sheets <code>MeshBasicMaterial</code> &#8212; which is what the two falls curtains, the plunge foam and the lap ribbon already are, and closer to how New Leaf&#8217;s water reads. Unlit water also removes a whole class of surprises where the sea changes hue because the sun moved. The cost is that the vertex swell stops catching light, which at 4.5 cm of amplitude it barely does.</p>
+        <div class="free"><b>Gate:</b> the measured sea pixel at noon and at 23:00, reported as hue and saturation, with an explicit target: the day sea must not be less saturated than the sand it meets. <b>[EYES]</b> — all six survey framings, before and after.</div>
+        <div class="meta"><span class="pill cost-m">medium — touches a global grade</span><span class="pill">the largest visual change on this page</span><span class="pill">a design call, not just a fix</span></div>
+      </div>
+
+      <div class="prop">
+        <div class="tag">P5 · lane 2 · <code>IslandRuntime</code>, the shipped <code>.island</code></div>
+        <h3>Give the sea a shallow zone with real width</h3>
+        <p>Two moves. Widen the default <code>SHELF_RUN</code> so the ring is legible from a standing camera — and note the ceiling: <code>coastGrid</code> clamps distance at <code>BEACH_WIDTH</code> 6, so past that the field saturates and a longer run flattens into a hard edge. Getting more than that means the clamp moves too.</p>
+        <p>Then <b>author it</b>. W11 shipped a <code># depth:</code> block and a depth layer in <code>/acre</code>, and the island does not use either. A painted lagoon, a drop-off off the headland and a shallow bar across the river mouth would do more for the sea than any of the shader work here.</p>
+        <div class="free"><b>Gate:</b> shelf width per coast crossing, median and p90; fraction of the sea shallower than 0.40 u, currently 2.7%. <b>[EYES]</b>.</div>
+        <div class="meta"><span class="pill cost-m">code small, content real</span><span class="pill">the tool already exists</span></div>
+      </div>
+
+      <div class="prop">
+        <div class="tag">P6 · lane 3 · <code>ShoreLap</code>, <code>RetroMaterial</code></div>
+        <h3>Make the waterline move instead of fade</h3>
+        <p>The ribbon already carries <code>v</code> across the band, seaward to inland. Displace it along its own band axis per-vertex in the shader, phase-offset by <code>u</code> so a wave travels along the shore instead of the whole island pulsing. The tear that blocked this was a <em>texture</em>-space problem — repeating <code>v</code> wraps the bright core back in at the inland edge — and moving geometry does not wrap.</p>
+        <p>Two warnings. The band is draped onto the ground, so the displacement has to preserve the drape or the foam will climb through the beach. And the swell already keys <code>customProgramCacheKey</code>; a new variant must extend that key or the patch will silently never compile.</p>
+        <div class="free"><b>Gate:</b> measured travel of the foam's inland edge, in world units, over one cycle. <b>[EYES]</b>.</div>
+        <div class="meta"><span class="pill cost-m">shader work on an existing mesh</span><span class="pill">no new draw calls</span></div>
+      </div>
+
+      <div class="prop">
+        <div class="tag">P7 · lane 3 · <code>FishingSystem</code></div>
+        <h3>Fish, everywhere, on one instanced mesh</h3>
+        <p>Raise the shadow budget from 4 to a few dozen and spawn them in a ring around the camera focus rather than over the map bounds, the way the rain field and the moon path already follow the view. One <code>InstancedMesh</code>, culled by <code>inWater</code>, recycled as the player walks. The steering, the height rule and the flee behaviour are all already written and all already correct.</p>
+        <p>Keep the caught-fish logic reading from the same list, so a bigger population does not become a second opinion about what is catchable.</p>
+        <div class="free"><b>Gate:</b> shadows visible within 20 units of the player at ten sampled coastal positions, currently ~0. One draw call for the whole population. <b>[EYES]</b>.</div>
+        <div class="meta"><span class="pill cost-s">small</span><span class="pill">largest felt change per line</span></div>
+      </div>
+
+      <div class="prop">
+        <div class="tag">P8 · lane 3 · <code>WorldFoundation.buildCascades</code></div>
+        <h3>Make the falls a curtain</h3>
+        <p>Vertical banding down the sheet at a world scale that survives the framebuffer, a bright lip where the river tips over, and a mist card at the base to hide the join. The structure is already right — one draw, unlit, correct rain response, spray along the whole impact line rather than from a point — so this is texture and one or two quads, not a rebuild.</p>
+        <div class="free"><b>Gate:</b> none mechanical. <b>[EYES]</b>, and it is the frame in this survey that most needs a designer before a programmer.</div>
+        <div class="meta"><span class="pill cost-m">art-led</span><span class="pill">needs a design pass first</span></div>
+      </div>
+
+      <div class="prop">
+        <div class="tag">P9 · lane 3 · <code>WorldFoundation</code>, <code>.island</code> format</div>
+        <h3>Point the swell at the beach</h3>
+        <p>Derive a per-island swell heading from the mean outward normal of the traced coast, or author one as a <code># swell:</code> heading beside the depth block. Then the sea runs onto the shore instead of along it. Note the limit honestly: one heading for a whole island is right for a small island and wrong for a bay, and the correct version is a field, not a constant — but a constant is a large improvement over world Z.</p>
+        <div class="free"><b>Gate:</b> angle between the swell direction and the local coast normal, sampled around the island. <b>[EYES]</b>.</div>
+        <div class="meta"><span class="pill cost-m">medium</span><span class="pill">design call embedded</span></div>
+      </div>
+
+      <div class="prop">
+        <div class="tag">P10 · lane 3 · <code>buildIslandWater</code></div>
+        <h3>Make the ocean's 25,470 triangles pay, or spend them elsewhere</h3>
+        <p>The near-field sea is tessellated at two units, which costs 25,470 triangles — 17.6% of the whole world — and currently buys a 4.5 cm swell and a vertex colour with 94% of its samples in one bucket. That is a fair price <em>if</em> the tessellation carries something: shoreline-parallel wave shading, a real depth gradient once P5 lands, foam accumulating in the troughs. If it is not going to carry any of that, coarsen the near field and put the budget into P6 and P7.</p>
+        <p>Decide this <b>after</b> P1, P4 and P5, not before. Two of those change what the surface has to say, and the answer to "how finely should we tessellate the sea" depends entirely on that.</p>
+        <div class="free"><b>Gate:</b> triangles and draw calls per frame, against the 698 / 312,408 measured today.</div>
+        <div class="meta"><span class="pill cost-m">deferred by design</span><span class="pill">sequencing matters</span></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:30px">Sequencing</h3>
+    <div class="slate">
+      <div class="lane">
+        <header><b>Lane 1 — make the work measurable</b><span>a day; nothing downstream is comparable without it</span></header>
+        <ol>
+          <li><b>P2</b> — seed both water textures. Do this first; it is what makes every later before/after honest.</li>
+          <li><b>P3</b> — square the river tile. Cheapest place to learn what stroke scale reads at 480 × 360.</li>
+          <li><b>P1</b> — delete the ocean repeat and re-derive the scroll in world units per second.</li>
+        </ol>
+      </div>
+      <div class="lane two">
+        <header><b>Lane 2 — make it read as water</b><span>the two that decide the look</span></header>
+        <ol>
+          <li><b>P4</b> — the water palette, and the lit/unlit decision. The single largest change here, and the one with a real design call inside it.</li>
+          <li><b>P5</b> — a shallow zone with width, half code and half authoring.</li>
+        </ol>
+      </div>
+      <div class="lane three">
+        <header><b>Lane 3 — make it inhabited</b><span>after the surface is right</span></header>
+        <ol>
+          <li><b>P7</b> — fish everywhere. Could be pulled forward; it depends on nothing above it.</li>
+          <li><b>P6</b> — a waterline that moves.</li>
+          <li><b>P8</b> — the falls curtain, once someone has designed it.</li>
+          <li><b>P9</b> — swell direction.</li>
+          <li><b>P10</b> — revisit the ocean's triangle budget last.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="callout"><b>One sequencing argument worth stating.</b> P4 is the largest change and the temptation is to do it first. It should not be: as long as the ocean's texture averages to grey (P1) and the sheets repaint on every load (P2), a palette change is being judged against a surface that has no pattern and no stable baseline. Fix what the eye can measure, then change what only the eye can judge.</div>
+  </section>
+
+  <section id="evidence">
+    <h2>Evidence</h2>
+    <p class="lede">Captured 2026-08-27 by <code>scripts/water-review.mjs</code> against the live build, 960 × 720, same harness and same framings as the last two passes. Written to <code>docs/review-queue/water/survey-0827/</code>. <b>None of these is approved</b>; they are here as the state of the build, not as a claim about it.</p>
+    <div class="shots">
+      <figure>
+        <img src="/docs/review-queue/water/survey-0827/ocean-day.png" alt="The coast at noon: a flat olive-grey sea meeting bright sand, with a soft pale foam band and a stepped waterline on the right" />
+        <figcaption><b>ocean-day — the sea at noon</b>The open water is uniform from the top of the frame to the waterline: sampled at #3a3925 far and #40402b near, a 2% drift across the whole sea. No stroke pattern anywhere on it. The sand beside it is the more saturated of the two surfaces. Findings 1 and 2.</figcaption>
+      </figure>
+      <figure>
+        <img src="/docs/review-queue/water/survey-0827/ocean-night.png" alt="The same coast at 11pm: a deep navy sea, pale lavender sand, a bright white foam band" />
+        <figcaption><b>ocean-night — the same block, #0e2e4a</b>At night the sea is unmistakably blue. This is the giveaway for finding 2: the blue is in the tint and survives when the warm daylight terms fall away.</figcaption>
+      </figure>
+      <figure>
+        <img src="/docs/review-queue/water/survey-0827/dock-day.png" alt="The dock at noon: a sand spit with foam running down both sides, hard-edged white polygons along the waterline" />
+        <figcaption><b>dock-day — the lap at an authored structure</b>The crowding index and the corner width taper both fire here, and the ribbon still reads as hard-edged polygons along a rectilinear waterline. This framing is the one the last two review rounds kept returning to.</figcaption>
+      </figure>
+      <figure>
+        <img src="/docs/review-queue/water/survey-0827/river-day.png" alt="A riverbank at noon: a broad blue-grey channel with sand banks and a faint mottled surface" />
+        <figcaption><b>river-day — the one surface whose texture is visible</b>Faint, smeared across the current rather than along it, and stretched about eight to one. Finding 5. The depth gradient in the channel is real and is doing more work here than the texture is.</figcaption>
+      </figure>
+      <figure>
+        <img src="/docs/review-queue/water/survey-0827/cascade-day.png" alt="A waterfall at noon: a flat pale blue rectangle set into a cliff face" />
+        <figcaption><b>cascade-day — the falls</b>A flat pale rectangle. Named as unaddressed in <code>WATER_REPORT.md</code> and unchanged. Proposal P8.</figcaption>
+      </figure>
+      <figure>
+        <img src="/docs/review-queue/water/survey-0827/ocean-rain.png" alt="The coast in rain at noon: the same view slightly darker" />
+        <figcaption><b>ocean-rain — captured six seconds into the storm</b>The same block reads #3c3b27 against #3d3c27 clear — one unit in 255, which demonstrates nothing either way. <code>weather.wetness</code> ramps over far longer than the capture waited, so this frame does <em>not</em> test the rain response. The mechanism is verified elsewhere: <code>water-gate.mjs</code> asserts the pass reaches all nine surfaces and that the falls lip matches the river in rain. A longer soak framing is worth adding to the harness.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="claims">
+    <h2>What this page doesn't claim</h2>
+    <div class="limits">
+      <div class="limit"><b>Nothing here is built.</b><p>This is a survey and a slate, not a report of work. No code changed for it. The only files it produced are the six frames and the JSON in <code>docs/review-queue/water/survey-0827/</code>.</p></div>
+      <div class="limit"><b>Nothing here is approved.</b><p>Including the frames above. Five water items — 00W through 00W6 — are still open in <code>REVIEW_QUEUE.md</code> awaiting a human, and this page adds nothing to that queue and settles nothing already in it.</p></div>
+      <div class="limit"><b>The New Leaf column is observational.</b><p>It describes what a player sees in that game. It makes no claim about how it was implemented, and nothing here should be read as a description of Nintendo's engine.</p></div>
+      <div class="limit"><b>One pixel is one measurement.</b><p>#3d3c27 is a 300 × 30 block of one frame, at one camera, on one island, in summer, clear weather, at noon. The mechanism behind it — graded tint × graded map × 0.70 depth shade × warm sky light — is read from the code and each factor was measured separately. The exact contribution of each to that pixel was <em>not</em> isolated, and a per-term ablation is the first thing P4 should do.</p></div>
+      <div class="limit"><b>Performance numbers are headless.</b><p>698 draw calls and 312,408 triangles per frame were measured in headless Chrome at 640 × 480 over 60 frames at the beach spot, with <code>renderer.info.autoReset</code> disabled. Triangle counts include every pass, not just the scene.</p></div>
+      <div class="limit"><b>Findings 1 and 5 are arithmetic, not opinion.</b><p>The UV spans, the repeat values, the texture dimensions and the filter modes were all read from the live meshes. The conclusion that the sea resolves to its own average colour follows from those numbers and from mipmapping with anisotropy 1; it is also visible in the frames, but it does not depend on them.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>KINDLY FORWARD · <code>/water</code> — surveyed 2026-08-27 against the live <code>kindly-forward</code> build. Supersedes the audit of 2026-08-25 published at this route, whose proposals were built under <code>WATER_ORDER.md</code> and reported in <code>WATER_REPORT.md</code>. Design calls belong in <code>DESIGN_LOG.md</code>; anything judged by eye belongs in <code>REVIEW_QUEUE.md</code>, unapproved, per the jury rule in <code>AGENTS.md</code>.</p>
+  </footer>
+
+</main>
+</body>
+</html>

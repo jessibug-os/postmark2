@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kindly Forward — Sky</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>" />
+<style>
+  :root{
+    --ink:#29231f;--paper:#e9e2d3;--card:#f8f1e2;--edge:#bbaa88;
+    --navy:#26374d;--dusk:#4a4368;--night:#141a33;--gold:#b6813e;
+    --sage:#697761;--muted:#756d61;--plum:#684b5d;--bad:#8d4b3a;--good:#4f6b4a;
+    --shadow:rgba(27,31,34,.18);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;color:var(--ink);
+    background:
+      radial-gradient(circle at 82% 0,rgba(74,67,104,.22),transparent 36rem),
+      linear-gradient(90deg,rgba(38,55,77,.035) 1px,transparent 1px),
+      var(--paper);
+    background-size:auto,34px 34px,auto;
+    font:15px/1.6 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  }
+  button,input,select{font:inherit}
+  a{color:#745128}
+  code{font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(38,55,77,.09);padding:1px 5px;border-radius:4px}
+
+  .topbar{position:sticky;top:0;z-index:30;min-height:58px;padding:10px 22px;display:flex;align-items:center;gap:15px;color:#f4ead4;background:#1b1f2b;border-bottom:3px solid var(--gold);flex-wrap:wrap}
+  .brand{font-weight:700;letter-spacing:.09em;white-space:nowrap}
+  .sub{font-size:13px;color:#bdc2cf}
+  .topbar nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
+  .topbar a{color:#e8d6ac;text-decoration:none;font-size:13px}
+  .topbar a:hover{color:#fff}
+
+  .shell{max-width:1220px;margin:auto;padding:26px 22px 90px}
+
+  /* ---- hero: the proposal, running ---- */
+  .hero{position:relative;overflow:hidden;min-height:430px;display:grid;grid-template-columns:1.02fr .98fr;border:1px solid #4c5570;border-radius:17px;color:#f5edda;background:var(--night);box-shadow:0 16px 42px rgba(20,22,34,.4)}
+  .hero-copy{position:relative;z-index:2;align-self:end;padding:38px;text-shadow:0 2px 14px #0d1020}
+  .eyebrow,.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:11.5px;color:#d9c69b}
+  .hero h1{margin:.32em 0 .5em;font-size:41px;line-height:1.08;letter-spacing:-.01em}
+  .hero p{margin:0;max-width:45ch;font-size:16px;color:#e3e0d6}
+  .hero-figures{display:flex;gap:26px;margin-top:24px;flex-wrap:wrap}
+  .hero-figures div b{display:block;font-size:26px;line-height:1;color:#f6e7c4}
+  .hero-figures div span{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#aeb6c6}
+  .hero-stage{position:relative;background:#0b0e18;display:flex;align-items:center;overflow:hidden}
+  .stage-label{position:absolute;left:14px;bottom:12px;z-index:3;font:11px/1.2 ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;color:#dfe4ee;background:rgba(11,14,24,.66);padding:5px 10px;border-radius:20px}
+
+  /* 4:3 always — the buffer is 480x360 and a stretched canvas would lie about
+     the shape of everything in it. */
+  canvas.render{display:block;width:100%;height:auto;aspect-ratio:4/3;image-rendering:pixelated;background:#0b0e18}
+
+  /* ---- structure ---- */
+  .status{margin:18px 0 24px;padding:18px 22px;border:1px solid var(--edge);border-left:5px solid var(--dusk);border-radius:12px;background:var(--card);box-shadow:0 7px 20px var(--shadow)}
+  .status b{color:var(--plum)}
+  .status span{color:var(--muted)}
+  .tabs{position:sticky;top:58px;z-index:20;display:flex;gap:5px;flex-wrap:wrap;margin:0 0 22px;padding:9px 10px;background:rgba(233,226,211,.94);backdrop-filter:blur(6px);border:1px solid var(--edge);border-radius:12px}
+  .tabs a{padding:6px 11px;border-radius:999px;text-decoration:none;background:var(--card);border:1px solid var(--edge);font-size:12px}
+  .tabs a:hover{border-color:var(--gold)}
+  section{scroll-margin-top:118px;margin:34px 0}
+  section>h2{margin:0 0 4px;font-size:30px}
+  .lede{max-width:88ch;margin:0 0 18px;color:var(--muted)}
+  .panel,.card,.step,.limit,.rig{border:1px solid var(--edge);border-radius:13px;background:rgba(248,241,226,.96);box-shadow:0 6px 18px var(--shadow),inset 0 1px #fff}
+  .panel{padding:19px 21px}
+  .panel h3,.card h3{margin:0 0 7px;color:var(--plum)}
+  .panel p{margin:7px 0}
+  .panel ul{margin:8px 0;padding-left:20px}
+  .panel li{margin:6px 0}
+  .panel small{color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+
+  /* ---- before frames ---- */
+  .frames{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  figure{margin:0;border:1px solid var(--edge);border-radius:12px;overflow:hidden;background:#20242e}
+  figure img{display:block;width:100%;image-rendering:pixelated}
+  figcaption{padding:8px 11px;font-size:12px;color:#dfe0d8;background:#20242e;display:flex;justify-content:space-between;gap:8px}
+  figcaption code{background:rgba(255,255,255,.12);color:#f0e6cf}
+
+  /* ---- ramp strips ---- */
+  .strip-row{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;margin:10px 0}
+  .strip-row b{font-size:13px}
+  .strip-row small{display:block;color:var(--muted);font-size:11.5px}
+  .strip-row canvas{display:block;width:100%;height:74px;border-radius:8px;border:1px solid #a99b7d}
+  .hours{display:flex;justify-content:space-between;margin-left:164px;color:var(--muted);font-size:11px}
+
+  /* ---- lab ---- */
+  .rig{overflow:hidden}
+  .rig-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 18px;background:#e7ddc6;border-bottom:1px solid var(--edge)}
+  .rig-head h3{margin:0 auto 0 0;color:var(--plum)}
+  .rig-body{display:grid;grid-template-columns:1.35fr .65fr}
+  .rig-stage{position:relative;background:#0b0e18;display:flex;align-items:center}
+  .rig-controls{padding:16px 18px;border-left:1px solid var(--edge)}
+  .ctl{margin:0 0 12px}
+  .ctl label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);letter-spacing:.02em}
+  .ctl input[type=range]{width:100%;accent-color:var(--dusk)}
+  .toggles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0}
+  .toggles label{display:flex;align-items:center;gap:7px;font-size:12.5px}
+  .choice{cursor:pointer;padding:6px 11px;border:1px solid var(--edge);border-radius:999px;background:var(--card)}
+  .choice:hover{border-color:var(--gold)}
+  .choice[aria-pressed=true]{background:var(--navy);color:#fff6df;border-color:var(--navy)}
+  .presets{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+  .readout{margin-top:10px;padding:9px 11px;border-radius:9px;background:#e9dfca;font-size:12px;color:var(--muted)}
+  .readout b{color:var(--plum)}
+
+  /* ---- layer stack ---- */
+  .stack{display:grid;gap:9px}
+  .layer{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:center;padding:13px 16px;border:1px solid var(--edge);border-radius:11px;background:var(--card)}
+  .layer .n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#f7e9ca;font-weight:700;font-size:13px}
+  .layer b{display:block;color:var(--plum)}
+  .layer small{color:var(--muted)}
+  .layer .cost{font:11.5px/1.3 ui-monospace,monospace;color:var(--sage);text-align:right;white-space:nowrap}
+
+  /* ---- plan ---- */
+  .steps{display:grid;gap:11px}
+  .step{display:grid;grid-template-columns:52px 1fr;gap:15px;padding:15px 17px}
+  .step .tag{display:grid;place-items:center;height:30px;border-radius:999px;background:var(--dusk);color:#f3ecdd;font-size:12px;font-weight:700}
+  .step h3{margin:0 0 3px;color:var(--plum);font-size:16px}
+  .step p{margin:0 0 6px}
+  .step .gate{font-size:12.5px;color:var(--sage)}
+  .limits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .limit{padding:16px}
+  .limit b{display:block;color:var(--bad);margin-bottom:4px}
+  .limit p{margin:0;color:var(--muted);font-size:13.5px}
+  table.map{width:100%;border-collapse:collapse;min-width:640px}
+  table.map th,table.map td{text-align:left;vertical-align:top;padding:10px;border-bottom:1px solid #ded0b1;font-size:13.5px}
+  table.map th{background:#eee1c3;color:#735028;text-transform:uppercase;letter-spacing:.06em;font-size:11px}
+  .scroll{overflow-x:auto}
+  .callout{padding:18px 21px;border:1px solid #9e967f;border-left:5px solid var(--gold);border-radius:12px;background:#e4ddd1}
+  .callout b{color:var(--plum)}
+  footer{margin-top:46px;text-align:center;color:var(--muted);font-size:12px}
+
+  @media(max-width:960px){
+    .hero{grid-template-columns:1fr}.hero-stage{order:-1;min-height:280px}
+    .rig-body{grid-template-columns:1fr}.rig-controls{border-left:0;border-top:1px solid var(--edge)}
+    .grid2,.grid3,.grid4,.frames,.limits{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:640px){
+    .topbar .sub{display:none}.topbar nav a:not(:last-child){display:none}
+    .shell{padding:14px 11px 60px}.hero h1{font-size:32px}
+    .grid2,.grid3,.grid4,.frames,.limits{grid-template-columns:1fr}
+    .strip-row{grid-template-columns:1fr}.hours{margin-left:0}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">KINDLY FORWARD · SKY</span>
+  <span class="sub">proposal · the sky is one flat colour today</span>
+  <nav><a href="/island">Island</a><a href="/weather">Weather</a><a href="/water">Water</a><a href="/characters">Characters</a><a href="/review">Review</a><a href="/">Play current build →</a></nav>
+</header>
+
+<main class="shell">
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Proposal · not in the runtime yet</div>
+      <h1>The largest surface on screen is the one nothing draws.</h1>
+      <p>Two lines of <code>DayNight</code> paint the sky: one flat colour, and the fog set to match it. No horizon, no sun, no moon, no stars, no cloud — and at the camera's play pitch, no sky on screen at all. This page is the rework, running: every frame on it comes from <code>src/world/sky/</code> at 480×360, upscaled the way the game upscales.</p>
+      <div class="hero-figures">
+        <div><b>0%</b><span>sky on screen at 45°</span></div>
+        <div><b>1</b><span>colours today</span></div>
+        <div><b>11</b><span>authored ramp stops</span></div>
+        <div><b>4</b><span>named constellations</span></div>
+        <div><b>36°</b><span>sun's peak, authored</span></div>
+        <div><b>1</b><span>extra draw call</span></div>
+      </div>
+    </div>
+    <div class="hero-stage">
+      <canvas id="heroSky" class="render" width="480" height="360"></canvas>
+      <div class="stage-label">live · 19:05 · dome + bodies + cloud + stars</div>
+    </div>
+  </section>
+
+  <div class="status"><b>Nothing here is wired into the game.</b> <span>The modules exist (<code>SkyDome</code>, <code>Stars</code>, <code>skyRamp</code>, <code>constellations</code>) and this page drives them, but <code>DayNight</code> is untouched and the runtime still ships the flat colour. Landing it is Phase 1 below, and the look is a jury call — see <code>REVIEW_QUEUE.md</code>.</span></div>
+
+  <nav class="tabs">
+    <a href="#today">What ships today</a><a href="#geometry">Where the sky is</a><a href="#model">The model</a><a href="#ramp">The ramp</a>
+    <a href="#lab">Sky lab</a><a href="#baked">Prebaked</a><a href="#stars">Stars</a>
+    <a href="#plan">The plan</a><a href="#map">Code map</a><a href="#risks">Risks &amp; questions</a>
+  </nav>
+
+  <section id="today">
+    <h2>What ships today</h2>
+    <p class="lede">Captured from the running game at six hours with the camera tipped up (<code>scripts/sky-evidence.mjs</code>). The measured <code>scene.background</code> is printed on each frame. There is no second colour anywhere in any of them.</p>
+    <div class="frames">
+      <figure><img src="/docs/review-queue/sky/before/05-predawn.png" alt="Predawn, flat sky" /><figcaption><span>05:00 predawn</span><code>#292f41</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/before/07-dawn.png" alt="Dawn, flat sky" /><figcaption><span>07:00 dawn</span><code>#b78e70</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/before/12-noon.png" alt="Noon, flat sky" /><figcaption><span>12:00 noon</span><code>#a4b2bd</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/before/18-golden.png" alt="Golden hour, flat sky" /><figcaption><span>18:00 golden</span><code>#b19c91</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/before/20-dusk.png" alt="Dusk, flat sky" /><figcaption><span>20:00 dusk</span><code>#453e46</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/before/23-night.png" alt="Night, flat sky" /><figcaption><span>23:00 night</span><code>#292f41</code></figcaption></figure>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="panel">
+        <h3>The whole implementation</h3>
+        <p><code>DayNight.update()</code> lerps between three colours on <code>daylight</code> and assigns the result twice:</p>
+        <p><code>scene.background = sky</code> · <code>fog.color.copy(sky)</code></p>
+        <p>That is it. The sky is a clear colour, which is the same thing as not drawing a sky.</p>
+      </div>
+      <div class="panel">
+        <h3>Why every dusk is brown</h3>
+        <p><code>daylight</code> is one number that peaks at noon, so <b>05:30 and 19:30 are the same value and therefore the same colour</b>. A morning that comes up blue-violet and an evening that goes down orange-rose cannot both be described by it, so neither is: they average into the tan you see at 07:00 and 18:00 above.</p>
+        <p><small>The ramp below is keyed on the clock instead, which is why it can tell them apart.</small></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="geometry">
+    <h2>Where the sky actually is</h2>
+    <p class="lede">The flat colour is only half the problem, and the smaller half. <b>At the camera's play pitch there is no sky on screen at all</b> — the band that reads as sky is fogged sea and island. It is indistinguishable today because the fog is set to the same colour as the background.</p>
+    <div class="grid2">
+      <div class="panel">
+        <h3>The arithmetic</h3>
+        <p>The rig looks down at the player from <code>pitch</code> degrees above them; the camera's vertical field of view is 35°. So the top of the frame points <code>pitch − 17.5</code> degrees below horizontal, and a flat sea's horizon sits at exactly 0°.</p>
+        <table class="map" style="min-width:0"><thead><tr><th>Rig pitch</th><th>Top of frame</th><th>Sky in frame</th></tr></thead><tbody>
+          <tr><td>45° (walking)</td><td>27.5° below</td><td><b>0%</b></td></tr>
+          <tr><td>20° (idle drift)</td><td>2.5° below</td><td><b>0%</b></td></tr>
+          <tr><td>17.5°</td><td>horizontal</td><td>0% — the threshold</td></tr>
+          <tr><td>14°</td><td>3.5° above</td><td>10%</td></tr>
+          <tr><td>10°</td><td>7.5° above</td><td>21%</td></tr>
+        </tbody></table>
+      </div>
+      <div class="panel">
+        <h3>Proof, from the running game</h3>
+        <p>Both frames are noon at pitch 20. The second one has the fog pushed out past the ocean plane and changes nothing else.</p>
+        <div class="frames" style="grid-template-columns:1fr 1fr">
+          <figure><img src="/docs/review-queue/sky/before/fog-on-pitch20.png" alt="Noon, fog on" /><figcaption><span>fog 40–150</span><code>ships</code></figcaption></figure>
+          <figure><img src="/docs/review-queue/sky/before/fog-off-pitch20.png" alt="Noon, fog pushed out" /><figcaption><span>fog 3000–6000</span><code>probe</code></figcaption></figure>
+        </div>
+        <p style="margin-top:10px"><small>Everything that was "sky" turns back into island and sea. What is left of the real sky is the strip along the very top.</small></p>
+      </div>
+    </div>
+    <div class="frames" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:14px">
+      <figure><img src="/docs/review-queue/sky/bake/pitch-45.png" alt="Pitch 45" /><figcaption><span>rig 45° · walking</span><code>0% sky</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/pitch-20.png" alt="Pitch 20" /><figcaption><span>rig 20° · idle drift</span><code>0% sky</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/pitch-14.png" alt="Pitch 14" /><figcaption><span>rig 14°</span><code>10% sky</code></figcaption></figure>
+    </div>
+    <p style="margin:10px 0 0"><small>The full sky is drawn in all three. You cannot see it in the first two because it is not in the frame — and in the third it is a strip along the top. This is with the rework <em>working</em>.</small></p>
+    <div class="callout" style="margin-top:14px">
+      <b>Three consequences, and they set the whole plan.</b>
+      <p style="margin:8px 0 0">1 · <b>The fog colour is the sky</b> for almost every frame the player sees. The ramp has to drive the fog, or the rework is invisible in play. That is Phase 1, it is cheap, and it changes every frame in the game.</p>
+      <p style="margin:6px 0 0">2 · <b>A moon, a cloud and a star can only appear above the horizon</b>, and the play camera never points there. Without a camera change, recipes B and C are cutscene features.</p>
+      <p style="margin:6px 0 0">3 · So the sky needs <b>somewhere to be looked at</b>. The cheapest is the camera the game already has: the bodies now ride low on purpose (36° and 26°), and a view tilted up ~25–35° frames them. Tie that to something the player already does — <b>sitting on a bench, standing at the dock's end, or the idle drift going one step further</b> — and the sky becomes a place rather than a backdrop. The vista frames below are that camera.</p>
+    </div>
+  </section>
+
+  <section id="model">
+    <h2>The model</h2>
+    <p class="lede">Back to front. Everything except the stars is one dome, one shader, no textures — a cloud is a threshold on a noise field and the sun is an angular disc, so every edge lands on the same 480×360 grid as the rest of the frame and quantises with it.</p>
+    <div class="stack">
+      <div class="layer"><span class="n">1</span><div><b>Gradient dome</b><small>Back-side sphere, radius 180, centred on the camera and unfogged. Horizon → zenith on a <code>pow(y, 0.55)</code> curve, so most of the range lives in the low band an Animal Crossing camera actually frames.</small></div><span class="cost">1 draw · 512 tris</span></div>
+      <div class="layer"><span class="n">2</span><div><b>Ordered dither, 26 steps</b><small>4×4 Bayer, applied after everything else so bodies and cloud edges band with the gradient behind them. A smooth ramp posterises anyway at this buffer size; this decides where.</small></div><span class="cost">in-shader</span></div>
+      <div class="layer"><span class="n">3</span><div><b>Sun and moon</b><small>One arc, twelve hours apart, so they are never both up and the lit side of every cloud agrees with the only body that could be lighting it. The moon's phase is a disc minus a shifted disc, carved along the sun's side.</small></div><span class="cost">in-shader</span></div>
+      <div class="layer"><span class="n">4</span><div><b>Cloud band</b><small>Three octaves of value noise on a projected ceiling, so shapes crowd toward the horizon instead of ringing the sky. Cover raises the water line rather than the density; the lit rim comes from sampling one step toward the light.</small></div><span class="cost">in-shader</span></div>
+      <div class="layer"><span class="n">5</span><div><b>Stars</b><small>One <code>Points</code>: four authored constellations plus 320 seeded filler, one texel each (two for the named ones), twinkling, the whole field turning on a tilted pole. Cloud takes them before the dawn does.</small></div><span class="cost">1 draw · 344 pts</span></div>
+      <div class="layer"><span class="n">6</span><div><b>Fog handshake</b><small>The dome's base <em>is</em> the fog colour, fed from the same ramp. <code>DayNight</code>'s existing invariant — "the fog IS the horizon" — is preserved, so the ocean plane still ends in sky and not in a seam.</small></div><span class="cost">1 uniform</span></div>
+    </div>
+  </section>
+
+  <section id="ramp">
+    <h2>The ramp</h2>
+    <p class="lede">Eleven authored stops (<code>palette.sky.stops</code>), keyed on the hour and interpolated in sRGB — the space they were judged in. Each strip below is a full day: top edge is the zenith, bottom edge the horizon.</p>
+    <div class="panel">
+      <div class="strip-row">
+        <div><b>Proposed</b><small>zenith → horizon, 11 stops</small></div>
+        <canvas id="rampStrip" width="720" height="74"></canvas>
+      </div>
+      <div class="strip-row">
+        <div><b>Today</b><small>one colour, 3 stops on <code>daylight</code></small></div>
+        <canvas id="flatStrip" width="720" height="74"></canvas>
+      </div>
+      <div class="hours"><span>00</span><span>04</span><span>08</span><span>12</span><span>16</span><span>20</span><span>24</span></div>
+      <div class="strip-row" style="margin-top:16px">
+        <div><b>Daylight curve</b><small><code>daylightAt()</code>, with the stop hours marked</small></div>
+        <canvas id="curvePlot" width="720" height="74" style="background:#efe7d5"></canvas>
+      </div>
+      <p style="margin:14px 0 0"><small>The symmetry in the bottom plot is the bug in the top-but-one strip: the curve cannot distinguish morning from evening, and the flat sky inherits that. The proposed strip is asymmetric because the stops are.</small></p>
+    </div>
+  </section>
+
+  <section id="lab">
+    <h2>Sky lab</h2>
+    <p class="lede">The real modules, live. Drag the hour; the foreground is a deliberately featureless silhouette stand-in, because a sky can only be judged with a horizon in the frame.</p>
+    <div class="rig">
+      <div class="rig-head">
+        <h3>480×360, nearest-neighbour</h3>
+        <button class="choice" data-recipe="today">Today (flat)</button>
+        <button class="choice" data-recipe="a">A · ramp only</button>
+        <button class="choice" data-recipe="b" aria-pressed="false">B · + bodies &amp; stars</button>
+        <button class="choice" data-recipe="c" aria-pressed="true">C · + cloud</button>
+        <button class="choice" id="shootBtn">Shooting star</button>
+      </div>
+      <div class="rig-body">
+        <div class="rig-stage"><canvas id="labSky" class="render" width="480" height="360"></canvas></div>
+        <div class="rig-controls">
+          <div class="presets">
+            <button class="choice" data-camera="walking">Rig 45° walking</button>
+            <button class="choice" data-camera="idle">Rig 20° idle</button>
+            <button class="choice" data-camera="vista">Vista (look up)</button>
+          </div>
+          <div class="presets">
+            <button class="choice" data-hour="5">05:00</button>
+            <button class="choice" data-hour="6.6">06:36</button>
+            <button class="choice" data-hour="12">noon</button>
+            <button class="choice" data-hour="18.6">18:36</button>
+            <button class="choice" data-hour="20.2">20:12</button>
+            <button class="choice" data-hour="23">23:00</button>
+          </div>
+          <div class="ctl"><label>Hour <span></span></label><input type="range" min="0" max="24" step="0.1" value="18.6" data-opt="hour" /></div>
+          <div class="ctl"><label>Cloud cover</label><input type="range" min="0" max="1" step="0.01" value="0.22" data-opt="cover" /></div>
+          <div class="ctl"><label>Storm</label><input type="range" min="0" max="1" step="0.01" value="0" data-opt="storm" /></div>
+          <div class="ctl"><label>Wind</label><input type="range" min="0" max="3" step="0.05" value="0.8" data-opt="wind" /></div>
+          <div class="ctl"><label>Day of month (moon phase)</label><input type="range" min="1" max="30" step="1" value="8" data-opt="monthDay" /></div>
+          <div class="ctl"><label>Camera pitch <span>rig: 45 walking · 20 idle</span></label><input type="range" min="4" max="45" step="1" value="20" data-opt="pitch" /></div>
+          <div class="ctl"><label>Gaze <span>tilt the view up</span></label><input type="range" min="0" max="60" step="1" value="26" data-opt="gaze" /></div>
+          <div class="toggles">
+            <label><input type="checkbox" data-opt="gradient" checked /> Gradient</label>
+            <label><input type="checkbox" data-opt="bodies" checked /> Sun &amp; moon</label>
+            <label><input type="checkbox" data-opt="clouds" checked /> Cloud</label>
+            <label><input type="checkbox" data-opt="stars" checked /> Stars</label>
+            <label><input type="checkbox" data-opt="chart" /> Chart lines</label>
+            <label><input type="checkbox" data-opt="fog" checked /> Game fog</label>
+            <label><input type="checkbox" data-opt="flat" /> Today's flat sky</label>
+          </div>
+          <div class="readout" id="labReadout"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="baked">
+    <h2>Prebaked</h2>
+    <p class="lede">Baked from this page by <code>scripts/sky-bake.mjs</code> — it drives the same view object the sliders drive, so a baked frame and the live lab cannot disagree. Four sets: one day, the vista camera, the three recipes against today, and the three rig pitches up in the section above.</p>
+    <h3 style="margin:0 0 8px;color:var(--plum)">One day, recipe C — at 12° pitch</h3>
+    <p style="margin:-4px 0 10px"><small>Below the game's play pitch, deliberately: at 45° and 20° a strip of six frames would be six pictures of grass. What these show is the ramp — morning comes up cool and blue, evening goes down warm and red, and today's sky cannot tell those apart.</small></p>
+    <div class="frames">
+      <figure><img src="/docs/review-queue/sky/bake/day-05.png" alt="05:00 proposed" /><figcaption><span>05:00</span><code>C</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/day-07.png" alt="07:00 proposed" /><figcaption><span>07:00</span><code>C</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/day-12.png" alt="12:00 proposed" /><figcaption><span>12:00</span><code>C</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/day-18.png" alt="18:00 proposed" /><figcaption><span>18:00</span><code>C</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/day-20.png" alt="20:00 proposed" /><figcaption><span>20:00</span><code>C</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/day-23.png" alt="23:00 proposed" /><figcaption><span>23:00</span><code>C</code></figcaption></figure>
+    </div>
+    <h3 style="margin:20px 0 8px;color:var(--plum)">The vista — the rig's framing, tilted up</h3>
+    <div class="frames grid4" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <figure><img src="/docs/review-queue/sky/bake/vista-noon.png" alt="Noon vista" /><figcaption><span>12:45</span><code>gaze 38°</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/vista-golden.png" alt="Golden vista" /><figcaption><span>18:12</span><code>gaze 30°</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/vista-dusk.png" alt="Dusk vista" /><figcaption><span>20:06</span><code>gaze 26°</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/vista-night.png" alt="Night vista" /><figcaption><span>00:45</span><code>gaze 24°</code></figcaption></figure>
+    </div>
+    <p style="margin:10px 0 18px"><small>The gaze differs per frame because the bodies do: the sun peaks at 36° and the moon at 26°, and each is only near the middle of the frame at the hour it crosses the north. The sun sets in the west, off the side of a 45°-wide frame — which is its own argument for letting the player turn the camera as well as tilt it.</small></p>
+    <h3 style="margin:20px 0 8px;color:var(--plum)">The three recipes, and today, at 18:36</h3>
+    <div class="frames grid4" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <figure><img src="/docs/review-queue/sky/bake/recipe-today.png" alt="Today, flat" /><figcaption><span>Today</span><code>flat</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/recipe-a.png" alt="Recipe A" /><figcaption><span>A · ramp</span><code>+1 draw</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/recipe-b.png" alt="Recipe B" /><figcaption><span>B · bodies</span><code>+2 draws</code></figcaption></figure>
+      <figure><img src="/docs/review-queue/sky/bake/recipe-c.png" alt="Recipe C" /><figcaption><span>C · cloud</span><code>+2 draws</code></figcaption></figure>
+    </div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="panel"><h3>A · Painted ramp</h3><p>The dome and the dither, nothing else. Fixes the flatness and the morning/evening collapse; adds no objects to look at.</p><p><small><b>Take it if</b> the jury wants the sky to stop being a bug without the sky becoming a feature.</small></p></div>
+      <div class="panel"><h3>B · Bodies and stars</h3><p>A · plus a sun that is where the light comes from, a moon with a phase, and four constellations. This is the smallest version that gives the night a reason to be looked at.</p><p><small><b>Recommended landing</b> — the first thing to wire into <code>DayNight</code>.</small></p></div>
+      <div class="panel"><h3>C · Cloud</h3><p>B · plus the drifting band, tied to <code>Weather</code>'s cover, wind and storm. The one layer with a real chance of reading as noise at this resolution, which is why it is last.</p><p><small><b>Target</b>, gated on B landing well.</small></p></div>
+    </div>
+  </section>
+
+  <section id="stars">
+    <h2>Stars worth naming</h2>
+    <p class="lede">Rule 4 — generate for coverage, author for intent — bites hardest here: a random point field is what every prototype sky already has, and nobody has ever pointed at one. Four shapes a player can find twice, with names that belong to a ferry island rather than to Greek myth. The filler between them is seeded, so tonight's sky is tomorrow's sky.</p>
+    <div class="grid4" id="constellations"></div>
+    <div class="callout" style="margin-top:14px"><b>What it unlocks later:</b> a star chart is data, not decoration — <code>CONSTELLATIONS</code> is addressable, so "look at the Ferry tonight" is a quest step, a museum drawing is a collectible, and a shooting star is an event with an id. None of that is in scope here; the point is that this shape does not close the door on it.</div>
+  </section>
+
+  <section id="plan">
+    <h2>The plan</h2>
+    <p class="lede">Four phases. Each lands something playable, each has a gate that is not "it looks nicer".</p>
+    <div class="steps">
+      <article class="step"><span class="tag">P0</span><div>
+        <h3>Decide the camera question first</h3>
+        <p>Nothing above the horizon is visible at 45° or at 20°. Either the idle drift's angle goes to ~14° — a tenth of the frame becomes real sky the moment the player stands still — or the sky is accepted as a cutscene and horizon-band feature and B/C are scoped accordingly. One line either way; it changes what the rest of this plan is worth.</p>
+        <p class="gate">Gate: a human picks. The lab's pitch slider and its "sky above the horizon" readout are the tool for picking.</p>
+      </div></article>
+      <article class="step"><span class="tag">P1</span><div>
+        <h3>Land the ramp — into the fog first, then the dome</h3>
+        <p><code>DayNight</code> takes its colours from <code>skyAt(hour)</code> instead of the three-stop lerp, and feeds the <b>horizon</b> colour to the fog. That alone changes every frame in the game, because the fog is what the player has been reading as sky. Then the dome goes in behind it, following the camera in <code>GameLoop</code>, and <code>scene.background</code> stops being assigned.</p>
+        <p class="gate">Gate: the sea still has no visible seam at the fog's far edge on every supported island; <code>npm run test</code> and the water gate stay green; the same six hours are back in the queue for comparison.</p>
+      </div></article>
+      <article class="step"><span class="tag">P2</span><div>
+        <h3>Bodies agree with the light</h3>
+        <p><code>DayNight</code>'s sun position and the dome's sun direction come from <code>bodyDirections()</code> — one source, so the shadow direction and the visible disc can never disagree. The moon's phase comes from the calendar's day.</p>
+        <p class="gate">Gate: a measured check that the shadow the ground receives points away from the disc in frame, at four hours, on two islands.</p>
+      </div></article>
+      <article class="step"><span class="tag">P3</span><div>
+        <h3>Stars, and the night's reason to look up</h3>
+        <p><code>Stars</code> into the scene, opacity from <code>daylight</code> and <code>Weather</code>'s cover. Shooting stars fire on the existing event bus so a later verb can listen. Chart lines stay off in play.</p>
+        <p class="gate">Gate: the four constellations are findable from a normal play camera at 23:00 without moving; the field is identical across two boots (seeded).</p>
+      </div></article>
+      <article class="step"><span class="tag">P4</span><div>
+        <h3>Cloud, tied to weather</h3>
+        <p>Cover and storm from <code>Weather</code>, drift from its wind vector, so an overcast sky and rain on the ground are the same weather. Interiors skip the dome entirely.</p>
+        <p class="gate">Gate: rain never falls from a clear sky and never fails to fall from a black one, checked at three intensities; no measurable frame-time change on the perf script.</p>
+      </div></article>
+    </div>
+  </section>
+
+  <section id="map">
+    <h2>Code map</h2>
+    <div class="scroll">
+      <table class="map">
+        <thead><tr><th>File</th><th>State</th><th>What it holds</th></tr></thead>
+        <tbody>
+          <tr><td><code>src/world/sky/skyRamp.ts</code></td><td>new · written</td><td>The 11 stops read from the palette, hour-keyed interpolation, body directions, moon phase. No WebGL — testable and plottable on its own.</td></tr>
+          <tr><td><code>src/world/sky/SkyDome.ts</code></td><td>new · written</td><td>The dome mesh and the one shader: gradient, dither, sun, moon, cloud. Exposes <code>horizonColor</code> for the fog and <code>follow(camera)</code>.</td></tr>
+          <tr><td><code>src/world/sky/Stars.ts</code></td><td>new · written</td><td>Points field, twinkle, the turning pole, chart lines, shooting stars.</td></tr>
+          <tr><td><code>src/world/sky/constellations.ts</code></td><td>new · written</td><td>The four authored shapes, their lore lines, and az/alt → direction.</td></tr>
+          <tr><td><code>src/art/palette.ts</code></td><td>changed</td><td><code>palette.sky</code>: stops, sun, moon, star, cloud. Authored literals, ungraded — for the reason water's tints are.</td></tr>
+          <tr><td><code>src/systems/TimeSystem.ts</code></td><td>changed</td><td><code>daylightAt(hour)</code> exported as a pure function so this page plots the real curve instead of a copy.</td></tr>
+          <tr><td><code>src/world/DayNight.ts</code></td><td><b>untouched</b></td><td>Phase 1's target: owns the dome, feeds the fog, stops setting <code>scene.background</code>.</td></tr>
+          <tr><td><code>scripts/sky-evidence.mjs</code></td><td>new</td><td>The "today" frames, from the running game.</td></tr>
+          <tr><td><code>scripts/sky-bake.mjs</code></td><td>new</td><td>The prebaked strip, from this page.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="risks">
+    <h2>Risks, and what the jury has to answer</h2>
+    <div class="limits">
+      <div class="limit"><b>Cloud noise reads as dirt</b><p>Value noise at 480×360 through a nearest upscale is the layer most likely to look like static rather than weather. It is Phase 4 and cuttable without touching the rest.</p></div>
+      <div class="limit"><b>A gradient competes with the town</b><p>The current flat sky is inoffensive precisely because it is empty. A strong dusk ramp can pull the eye off the character; the pitch slider in the lab is there to check that at 45° as well as at 20°.</p></div>
+      <div class="limit"><b>The horizon must stay the fog</b><p>If the dome's base and the fog colour ever drift apart, the ocean ends in a visible line. It is one uniform today and it must stay one number in one place.</p></div>
+      <div class="limit"><b>Interiors and cutscenes</b><p>Interiors must skip the dome; scripted shots that swing the camera high will frame more sky than the game normally does, and the ramp was authored for the low band.</p></div>
+      <div class="limit"><b>The stops are one person's eye</b><p>Eleven authored colours are a taste claim. They are cheap to change — one table — but they are the part most likely to be wrong, and no metric will say so.</p></div>
+      <div class="limit"><b>Nothing here is approved</b><p>Per the jury rule this is built, framed and queued, not done. The runtime is unchanged until a human says the frames are right.</p></div>
+    </div>
+    <div class="callout" style="margin-top:16px">
+      <b>Four questions, the first one blocking:</b> (1) Does the idle camera drop to ~14° so there is real sky on screen when the player stops — or does the sky stay a horizon-band and cutscene feature? (2) Recipe A, B or C as the landing target? (3) Is the dusk ramp too saturated at 20:12 — the frame where the proposal is furthest from what ships? (4) Should the moon have a phase at all, given the calendar's months are not synodic and it will not match the real sky outside the window?
+    </div>
+  </section>
+
+  <footer>Kindly Forward · sky proposal. Modules exist, runtime unchanged. Frames in <code>docs/review-queue/sky/</code>. Updated 2026-08-29.</footer>
+</main>
+<script type="module" src="/sky/sky-lab.ts"></script>
+</body>
+</html>

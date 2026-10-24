@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KINDLY FORWARD — Island Editor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏝️</text></svg>" />
+<style>
+  :root {
+    --ink: #2c2620; --paper: #f4ecd8; --card: #fbf6e9; --edge: #d8cba8;
+    --accent: #8a5a2b; --muted: #7a6f5a; --good: #4a7a4c; --bad: #a33a2c;
+    --stage: #20242c; --stage-edge: #3a4150; --stage-ink: #c9d2de;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 15px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    display: flex; flex-direction: column;
+  }
+  .topbar { background: #2c2620; color: #f4ecd8; padding: 12px 20px; display: flex; align-items: baseline; gap: 14px; flex: none; }
+  .topbar b { letter-spacing: .06em; }
+  .topbar .sub { color: #c9b98f; font-size: 13px; }
+  .topbar nav { margin-left: auto; display: flex; gap: 16px; }
+  .topbar a { color: #e8d9a8; text-decoration: none; font-size: 13px; }
+
+  .lab { flex: 1; min-height: 0; display: grid; grid-template-columns: 210px minmax(0, 1fr) 390px; }
+
+  aside { background: var(--card); display: flex; flex-direction: column; min-height: 0; }
+  .maps { border-right: 1px solid var(--edge); }
+  .palette { border-left: 1px solid var(--edge); }
+  .palette .aside-head { padding: 12px; }
+  .palette-title { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px; }
+  .palette-title strong { font: 700 12px/1.4 ui-monospace, monospace; letter-spacing:.08em; text-transform:uppercase; }
+  .palette-count { color:var(--muted); font:11px/1.4 ui-monospace, monospace; }
+  .palette-selection { margin-top:8px; color:var(--accent); font:11.5px/1.4 ui-monospace, monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .aside-head { padding: 10px 12px; border-bottom: 1px solid var(--edge); }
+  .aside-head input {
+    width: 100%; padding: 6px 9px; border: 1px solid var(--edge); border-radius: 7px;
+    background: #fffdf6; color: var(--ink); font: 12.5px/1.4 ui-monospace, monospace;
+  }
+  .aside-list { overflow-y: auto; padding: 8px; flex: 1; }
+  .aside-list h2 {
+    margin: 8px 0 4px; padding: 0 6px; font: 11px/1.6 ui-monospace, monospace;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  }
+  .aside-list button {
+    appearance: none; display: flex; align-items: center; gap: 8px; width: 100%;
+    text-align: left; border: 1px solid transparent; border-radius: 7px;
+    background: none; color: var(--ink); padding: 4px 7px; cursor: pointer;
+    font: 12px/1.5 ui-monospace, monospace;
+  }
+  .aside-list button:hover { background: #efe4c6; }
+  .aside-list button[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: #fff8e8; }
+  .aside-list canvas { border-radius: 3px; flex: none; image-rendering: pixelated; }
+  .aside-list .dirty { margin-left: auto; color: var(--bad); font-size: 10px; }
+  .palette-list { padding:10px 10px 28px; }
+  .palette-group { margin:0 0 10px; }
+  .palette-group > summary {
+    cursor:pointer; list-style:none; padding:5px 6px; border-bottom:1px solid var(--edge);
+    color:var(--muted); font:700 10.5px/1.4 ui-monospace, monospace; letter-spacing:.08em; text-transform:uppercase;
+  }
+  .palette-group > summary::-webkit-details-marker { display:none; }
+  .palette-group > summary::before { content:'▸'; display:inline-block; width:14px; }
+  .palette-group[open] > summary::before { content:'▾'; }
+  .palette-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; padding-top:7px; }
+  .palette-list .palette-card {
+    min-width:0; min-height:68px; display:grid; grid-template-columns:52px minmax(0,1fr); gap:8px;
+    padding:7px; border-color:var(--edge); background:#fffdf6; align-items:center;
+  }
+  .palette-list .palette-card:hover { border-color:#bca97d; }
+  .palette-list .palette-card[aria-current="true"] { box-shadow:inset 0 0 0 2px #fff8e8; }
+  .palette-list .palette-card canvas { width:52px; height:52px; border-radius:6px; }
+  .palette-card span { min-width:0; overflow:hidden; text-overflow:ellipsis; font-size:10.5px; line-height:1.35; }
+
+  main { min-width: 0; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--edge); }
+  .chip {
+    appearance: none; border: 1px solid var(--edge); background: var(--card); color: var(--ink);
+    border-radius: 999px; padding: 4px 11px; cursor: pointer; font: 12px/1.5 ui-monospace, monospace;
+  }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff8e8; }
+  .chip:disabled { opacity: .45; cursor: default; }
+  .chip.danger { color: var(--bad); }
+  .sep { width: 1px; align-self: stretch; background: var(--edge); margin: 0 3px; }
+  .label { font: 11px/1.6 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+  .panes { display: grid; gap: 16px; padding: 14px; }
+  .pane h2 { margin: 0 0 8px; font: 12px/1.6 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  canvas.map {
+    image-rendering: pixelated; background: #10141a; border-radius: 8px;
+    border: 1px solid var(--edge); width: 100%; max-width: 1024px; touch-action: none; cursor: crosshair;
+  }
+  .stage3d { background: var(--stage); border: 1px solid var(--stage-edge); border-radius: 8px; height: 340px; max-width: 1024px; position: relative; overflow: hidden; }
+  .stage3d canvas { width: 100% !important; height: 100% !important; display: block; }
+  .stage-note { position: absolute; left: 10px; bottom: 8px; margin: 0; color: var(--stage-ink); font: 11px/1.5 ui-monospace, monospace; }
+
+  .readouts { flex:none; max-height:42%; padding:0; overflow:auto; border-top:1px solid var(--edge); }
+  .readouts > summary { cursor:pointer; padding:9px 12px; color:var(--muted); font:700 11px/1.4 ui-monospace, monospace; letter-spacing:.07em; text-transform:uppercase; }
+  .readout-body { padding:0 14px 24px; }
+  .banner { margin: 0 0 10px; padding: 8px 10px; border-radius: 7px; font: 11.5px/1.5 ui-monospace, monospace; background: #f7ecd2; border: 1px solid var(--edge); color: var(--muted); }
+  .banner.bad { background: #f7ddd6; border-color: #d8b0a4; color: var(--bad); }
+  .banner.good { background: #e2eed9; border-color: #b9d1ab; color: var(--good); }
+  .problems { margin: 0; padding: 0; list-style: none; font: 11.5px/1.5 ui-monospace, monospace; }
+  .problems li { color: var(--bad); padding: 3px 0; cursor: pointer; }
+  .problems li.ok { color: var(--good); cursor: default; }
+  dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font: 11.5px/1.6 ui-monospace, monospace; }
+  dt { color: var(--muted); }
+  dd { margin: 0; overflow-wrap: anywhere; }
+  .field { display: flex; gap: 6px; align-items: center; font: 11.5px/1.6 ui-monospace, monospace; margin: 4px 0; }
+  .field input { flex: 1; min-width: 0; padding: 3px 6px; border: 1px solid var(--edge); border-radius: 6px; background: #fffdf6; font: 11.5px/1.4 ui-monospace, monospace; color: var(--ink); }
+  .brush { display: flex; align-items: center; gap: 8px; font: 11.5px/1.4 ui-monospace, monospace; }
+  .brush canvas { border-radius: 4px; image-rendering: pixelated; }
+  @media (max-width: 1200px) {
+    .lab { grid-template-columns:170px minmax(0,1fr) 330px; }
+    .palette-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <b>KINDLY FORWARD</b>
+  <span class="sub">Island editor — authored maps, made of authored acres</span>
+  <nav>
+    <a href="/acre">/acre</a>
+    <a href="/island-contract">/island-contract</a>
+    <a href="/models">/models</a>
+    <a href="/review">/review</a>
+  </nav>
+</div>
+
+<div class="lab">
+  <aside class="maps">
+    <div class="aside-head">
+      <button class="chip" id="new-map" type="button">+ new map</button>
+    </div>
+    <div class="aside-list" id="map-list"></div>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <span class="label">Tool</span>
+      <button class="chip" id="tool-stamp" type="button" aria-pressed="true">stamp</button>
+      <button class="chip" id="tool-erase" type="button" aria-pressed="false">erase</button>
+      <button class="chip" id="tool-pick" type="button" aria-pressed="false">pick</button>
+      <span class="sep"></span>
+      <span class="label">Rotation</span>
+      <button class="chip" id="rot" type="button">0°</button>
+      <span class="sep"></span>
+      <span class="brush"><span class="label">Brush</span><canvas id="brush" width="32" height="32"></canvas><span id="brush-id">—</span></span>
+      <span class="sep"></span>
+      <button class="chip" id="undo" type="button" disabled>↶ undo</button>
+      <button class="chip" id="redo" type="button" disabled>↷ redo</button>
+      <span class="sep"></span>
+      <button class="chip" id="grid-toggle" type="button" aria-pressed="true">grid</button>
+      <button class="chip" id="save" type="button" disabled>save</button>
+      <button class="chip danger" id="delete" type="button">delete</button>
+    </div>
+
+    <div class="panes">
+      <section class="pane">
+        <h2>Map · 16×12 acres</h2>
+        <canvas class="map" id="map" width="1024" height="768"></canvas>
+        <p class="label" id="cursor-read">—</p>
+      </section>
+      <section class="pane">
+        <h2>The island</h2>
+        <div class="stage3d" id="stage"><p class="stage-note" id="stage-note">drag to turn · scroll to zoom</p></div>
+      </section>
+    </div>
+  </main>
+
+  <aside class="palette">
+    <div class="aside-head">
+      <div class="palette-title"><strong>Choose an acre</strong><span class="palette-count" id="palette-count">—</span></div>
+      <input id="filter" type="search" placeholder="filter acres" aria-label="Filter acres" />
+      <div class="palette-selection" id="palette-selection">No brush selected</div>
+    </div>
+    <div class="aside-list palette-list" id="palette-list"></div>
+    <details class="readouts">
+      <summary id="details-summary">Map details &amp; problems</summary>
+      <div class="readout-body">
+        <p class="banner" id="status">loading…</p>
+        <div class="field"><span class="label">id</span><input id="h-id" /></div>
+        <div class="field"><span class="label">name</span><input id="h-name" /></div>
+        <dl id="derived"></dl>
+        <h2 class="label" style="margin-top:14px">Problems</h2>
+        <ul class="problems" id="problems"></ul>
+      </div>
+    </details>
+  </aside>
+</div>
+
+<!-- Absolute, not relative: served at a bare `/island` with no trailing slash. -->
+<script type="module" src="/island/island-editor.ts"></script>
+</body>
+</html>

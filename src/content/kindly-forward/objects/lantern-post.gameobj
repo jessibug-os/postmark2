@@ -1,0 +1,6 @@
+# object: lantern-post
+# name: Lantern post
+# model: lantern-post.glb
+# note: The lit route inland. Narrow enough to walk past, not through.
+
+collide circle 0.35

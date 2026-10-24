@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KINDLY FORWARD — Acre Editor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧩</text></svg>" />
+<style>
+  :root {
+    --ink: #2c2620; --paper: #f4ecd8; --card: #fbf6e9; --edge: #d8cba8;
+    --accent: #8a5a2b; --muted: #7a6f5a; --good: #4a7a4c; --bad: #a33a2c;
+    --stage: #20242c; --stage-edge: #3a4150; --stage-ink: #c9d2de;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 15px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    display: flex; flex-direction: column;
+  }
+  .topbar { background: #2c2620; color: #f4ecd8; padding: 12px 20px; display: flex; align-items: baseline; gap: 14px; flex: none; }
+  .topbar b { letter-spacing: .06em; }
+  .topbar .sub { color: #c9b98f; font-size: 13px; }
+  .topbar nav { margin-left: auto; display: flex; gap: 16px; }
+  .topbar a { color: #e8d9a8; text-decoration: none; font-size: 13px; }
+
+  .lab { flex: 1; min-height: 0; display: grid; grid-template-columns: 236px minmax(0, 1fr) 320px; }
+
+  /* ---- catalog ------------------------------------------------------- */
+  .catalog { border-right: 1px solid var(--edge); background: var(--card); display: flex; flex-direction: column; min-height: 0; }
+  .catalog-head { padding: 10px 12px; border-bottom: 1px solid var(--edge); }
+  .catalog-head input {
+    width: 100%; padding: 6px 9px; border: 1px solid var(--edge); border-radius: 7px;
+    background: #fffdf6; color: var(--ink); font: 12.5px/1.4 ui-monospace, monospace;
+  }
+  .catalog-count { color: var(--muted); font: 11.5px/1.5 ui-monospace, monospace; margin-top: 6px; display: flex; gap: 8px; align-items: center; }
+  .catalog-list { overflow-y: auto; padding: 8px 8px 40px; flex: 1; }
+  .catalog-group > h2 {
+    margin: 8px 0 4px; padding: 0 6px; font: 11px/1.6 ui-monospace, monospace;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  }
+  .catalog-list button {
+    appearance: none; display: flex; align-items: baseline; gap: 8px; width: 100%;
+    text-align: left; border: 1px solid transparent; border-radius: 7px;
+    background: none; color: var(--ink); padding: 4px 8px; cursor: pointer;
+    font: 12px/1.5 ui-monospace, monospace;
+  }
+  .catalog-list button:hover { background: #efe4c6; }
+  .catalog-list button[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: #fff8e8; }
+  .catalog-list .dirty { margin-left: auto; color: var(--bad); }
+  .catalog-group > h2.drop { background: var(--accent); color: #fff8e8; border-radius: 5px; }
+  .catalog-list button[draggable="true"]:active { opacity: .5; }
+  .catalog-list button[aria-current="true"] .dirty { color: #ffd9a8; }
+
+  /* ---- editor -------------------------------------------------------- */
+  .editor { min-width: 0; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--edge); }
+  .chip {
+    appearance: none; border: 1px solid var(--edge); background: var(--card); color: var(--ink);
+    border-radius: 999px; padding: 4px 11px; cursor: pointer; font: 12px/1.5 ui-monospace, monospace;
+  }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff8e8; }
+  .chip:disabled { opacity: .45; cursor: default; }
+  .chip.danger { color: var(--bad); }
+  .sep { width: 1px; align-self: stretch; background: var(--edge); margin: 0 3px; }
+  .label { font: 11px/1.6 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+  .swatches { display: flex; gap: 4px; }
+  .swatch {
+    appearance: none; width: 30px; height: 26px; border-radius: 6px; border: 2px solid transparent;
+    cursor: pointer; font: 12px/1 ui-monospace, monospace; color: #1c1a16; position: relative;
+  }
+  .swatch[aria-pressed="true"] { border-color: var(--ink); }
+  .swatch span { position: absolute; inset: 0; display: grid; place-items: center; text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+
+  .panes { display: grid; grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr); gap: 18px; padding: 14px; align-items: start; }
+  .pane h2 { margin: 0 0 8px; font: 12px/1.6 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .pane { min-width: 0; }
+  canvas.grid { image-rendering: pixelated; background: #10141a; border-radius: 8px; border: 1px solid var(--edge); width: 100%; touch-action: none; cursor: crosshair; }
+  canvas.tiles { image-rendering: pixelated; background: #10141a; border-radius: 8px; border: 1px solid var(--edge); width: 100%; }
+  /* Square, so it stands the same height as the bitmap beside it: the two are
+     the same acre seen two ways, and one of them ending halfway down read as a
+     layout that had lost a pane rather than one that never had it. */
+  .stage3d { background: var(--stage); border: 1px solid var(--stage-edge); border-radius: 8px; aspect-ratio: 1; position: relative; overflow: hidden; }
+  .stage3d canvas { width: 100% !important; height: 100% !important; display: block; }
+  .stage-note { position: absolute; left: 10px; bottom: 8px; margin: 0; color: var(--stage-ink); font: 11px/1.5 ui-monospace, monospace; }
+
+  /* ---- readouts ------------------------------------------------------ */
+  .readouts { border-left: 1px solid var(--edge); background: var(--card); overflow-y: auto; padding: 12px 14px 40px; min-height: 0; }
+  .readouts h2 { margin: 14px 0 6px; font: 11px/1.6 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .readouts h2:first-child { margin-top: 0; }
+  .readouts dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font: 11.5px/1.6 ui-monospace, monospace; }
+  .readouts dt { color: var(--muted); }
+  .readouts dd { margin: 0; overflow-wrap: anywhere; }
+  .hint { color: var(--muted); font-size: 11.5px; line-height: 1.5; margin: 0 0 8px; }
+  .fixture-tools { display: flex; gap: 6px; margin-bottom: 8px; }
+  .fixture-tools button { flex: 1; font: inherit; font-size: 11.5px; padding: 4px 2px; cursor: pointer; }
+  .fixture-tree { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+  .fixture-tree button {
+    text-align: left; font: inherit; font-size: 12px; padding: 4px 7px; cursor: pointer;
+    border: 1px solid transparent; background: none; display: flex; gap: 8px; align-items: baseline;
+  }
+  .fixture-tree button .kind { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; opacity: .6; }
+  .fixture-tree button[aria-current="true"] { background: var(--accent, #b5843f); color: #fff8e8; }
+  .fixture-tree button[aria-current="true"] .kind { opacity: .85; }
+  .fixture-form { display: flex; flex-direction: column; gap: 4px; }
+  .problems { margin: 0; padding: 0; list-style: none; font: 11.5px/1.5 ui-monospace, monospace; }
+  .problems li { color: var(--bad); padding: 3px 0; }
+  .problems li.ok { color: var(--good); }
+  .sides { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font: 11px/1.4 ui-monospace, monospace; text-align: center; }
+  .sides div { border: 1px solid var(--edge); border-radius: 6px; padding: 5px 2px; background: #fffdf6; }
+  .sides div.zero { border-color: var(--bad); background: #f7ddd6; color: var(--bad); }
+  .field { display: flex; gap: 6px; align-items: center; font: 11.5px/1.6 ui-monospace, monospace; margin: 4px 0; }
+  .field input, .field select { flex: 1; min-width: 0; padding: 3px 6px; border: 1px solid var(--edge); border-radius: 6px; background: #fffdf6; font: 11.5px/1.4 ui-monospace, monospace; color: var(--ink); }
+  .banner { margin: 0 0 10px; padding: 8px 10px; border-radius: 7px; font: 11.5px/1.5 ui-monospace, monospace; background: #f7ecd2; border: 1px solid var(--edge); color: var(--muted); }
+  .banner.bad { background: #f7ddd6; border-color: #d8b0a4; color: var(--bad); }
+  .rules-group { margin: 6px 0 10px; }
+  .rules-group > h3 { margin: 0 0 4px; font: 11px/1.6 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .rules-dial { display: grid; grid-template-columns: 150px 1fr 62px; gap: 6px; align-items: center; font: 11.5px/1.6 ui-monospace, monospace; }
+  .rules-dial input[type="number"] { width: 100%; padding: 2px 5px; border: 1px solid var(--edge); border-radius: 5px; background: #fffdf6; font: 11.5px/1.4 ui-monospace, monospace; color: var(--ink); }
+  .rules-dial.changed span { color: var(--bad); font-weight: bold; }
+  .rules-out { margin: 8px 0 0; padding: 8px 10px; background: #1d2129; color: #c9d2de; border-radius: 7px; font: 11px/1.5 ui-monospace, monospace; overflow-x: auto; white-space: pre; }
+  .banner.good { background: #e2eed9; border-color: #b9d1ab; color: var(--good); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <b>KINDLY FORWARD</b>
+  <span class="sub">Acre editor — pieces, edges and what they tile with</span>
+  <nav>
+    <a href="/island">/island</a>
+    <a href="/models">/models</a>
+    <a href="/review">/review</a>
+  </nav>
+</div>
+
+<div class="lab">
+  <aside class="catalog">
+    <div class="catalog-head">
+      <input id="filter" type="search" placeholder="filter pieces" aria-label="Filter pieces" />
+      <div class="catalog-count"><span id="catalog-count">loading…</span></div>
+      <div class="catalog-count"><button class="chip" id="new-piece" type="button">+ new acre</button><button class="chip" id="new-group" type="button">+ folder</button></div>
+    </div>
+    <div class="catalog-list" id="catalog-list"></div>
+  </aside>
+
+  <main class="editor">
+    <div class="toolbar">
+      <span class="label">Layer</span>
+      <button class="chip" id="layer-terrain" type="button" aria-pressed="true">terrain</button>
+      <button class="chip" id="layer-tier" type="button" aria-pressed="false">tier</button>
+      <button class="chip" id="layer-depth" type="button" aria-pressed="false">depth</button>
+      <span class="sep"></span>
+      <span class="label">Tool</span>
+      <button class="chip" id="tool-brush" type="button" aria-pressed="true">brush</button>
+      <button class="chip" id="tool-fill" type="button" aria-pressed="false">fill</button>
+      <button class="chip" id="tool-rect" type="button" aria-pressed="false">rect</button>
+      <span class="sep"></span>
+      <span class="swatches" id="swatches"></span>
+      <span class="sep"></span>
+      <button class="chip" id="undo" type="button" disabled>↶ undo</button>
+      <button class="chip" id="redo" type="button" disabled>↷ redo</button>
+      <span class="sep"></span>
+      <button class="chip" id="rotate" type="button">⟳ rotate</button>
+      <button class="chip" id="save" type="button" disabled>save</button>
+      <button class="chip" id="revert" type="button" disabled>revert</button>
+      <button class="chip danger" id="delete" type="button">delete</button>
+    </div>
+
+    <div class="panes">
+      <section class="pane">
+        <h2>Bitmap · 16×16</h2>
+        <canvas class="grid" id="grid" width="512" height="512"></canvas>
+        <p class="label" id="cursor-read">—</p>
+      </section>
+
+      <section class="pane">
+        <h2>Live 3D · the real sampler, mesh and fixtures</h2>
+        <div class="stage3d" id="stage"><p class="stage-note" id="stage-note">drag to turn · scroll to zoom</p></div>
+      </section>
+
+    </div>
+  </main>
+
+  <aside class="readouts">
+    <p class="banner" id="status">loading the library…</p>
+
+    <h2>Header</h2>
+    <div class="field"><span class="label">id</span><input id="h-id" /></div>
+    <div class="field"><span class="label">group</span><select id="h-group"></select></div>
+    <div class="field"><span class="label">weight</span><input id="h-weight" type="number" min="0" step="0.5" /></div>
+    <div class="field"><span class="label">tags</span><input id="h-tags" placeholder="cove wide-beach" /></div>
+    <div class="field"><span class="label">offset</span><select id="h-offset"></select></div>
+    <div class="field"><span class="label">rotates</span><input id="h-rotatable" type="checkbox" /></div>
+    <div class="field"><span class="label">unique</span><input id="h-unique" type="checkbox" /></div>
+
+    <h2>Fixtures</h2>
+    <p class="hint" id="fixture-hint"></p>
+    <div class="fixture-tools">
+      <button type="button" id="fixture-add-prop">+ prop</button>
+      <button type="button" id="fixture-add-mark">+ mark</button>
+      <button type="button" id="fixture-delete">delete</button>
+    </div>
+    <div class="fixture-tree" id="fixture-tree"></div>
+    <div class="fixture-form" id="fixture-form"></div>
+
+    <h2>Derived</h2>
+    <dl id="derived"></dl>
+
+    <h2>Edge codes</h2>
+    <dl id="edges"></dl>
+
+    <h2>Continuations</h2>
+    <div class="sides" id="sides"></div>
+
+    <h2>Problems</h2>
+    <ul class="problems" id="problems"></ul>
+  </aside>
+</div>
+
+<!-- Absolute, not relative: this page is served at a bare `/acre` with no
+     trailing slash, where `./acre-editor.ts` would resolve to the site root. -->
+<script type="module" src="/acre/acre-editor.ts"></script>
+</body>
+</html>

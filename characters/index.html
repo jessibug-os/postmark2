@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kindly Forward — Character &amp; Story Workshop</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✉️</text></svg>" />
+<style>
+  :root {
+    --ink:#29231f; --paper:#eee5d2; --paper2:#faf4e6; --paper3:#e5d9be;
+    --edge:#c8b68e; --gold:#a8793c; --plum:#604654; --blue:#26374d;
+    --river:#40566b; --amber:#d28a35; --sage:#697761; --muted:#776d5e;
+    --good:#506e55; --warn:#9a5b35; --shadow:rgba(39,31,22,.15);
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    margin:0; color:var(--ink); background:
+      radial-gradient(circle at 12% -8%, rgba(168,121,60,.15), transparent 34rem),
+      linear-gradient(90deg, rgba(96,70,84,.035) 1px, transparent 1px),
+      var(--paper);
+    background-size:auto, 34px 34px, auto;
+    font:15px/1.58 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  }
+  a { color:#755025; }
+  .topbar {
+    position:sticky; top:0; z-index:30; min-height:58px; padding:10px 22px;
+    display:flex; align-items:center; gap:15px; color:#f4ead4; background:#24211f;
+    border-bottom:3px solid var(--gold);
+  }
+  .brand { font-weight:700; letter-spacing:.09em; white-space:nowrap; }
+  .era { color:#d6c49a; font-size:13px; }
+  .topbar nav { margin-left:auto; display:flex; gap:16px; }
+  .topbar a { color:#ead5a5; text-decoration:none; font-size:13px; }
+  .shell { max-width:1240px; margin:0 auto; padding:26px 22px 90px; }
+  .hero {
+    min-height:510px; display:flex; align-items:flex-end; padding:34px;
+    border:1px solid #84765e; border-radius:17px; overflow:hidden;
+    background:
+      linear-gradient(90deg, rgba(19,25,36,.91), rgba(19,25,36,.2) 65%),
+      url("/characters/key-art.png") center/cover;
+    box-shadow:0 14px 36px rgba(30,26,20,.28);
+  }
+  .hero-copy { max-width:590px; color:#f7efd9; text-shadow:0 2px 12px #111827; }
+  .eyebrow { color:#e5b56e; text-transform:uppercase; letter-spacing:.17em; font-size:11px; font-weight:700; }
+  h1 { margin:4px 0 10px; font-size:52px; line-height:1; }
+  .hero p { font-size:17px; color:#eadfc8; margin:0; max-width:54ch; }
+  .premise {
+    display:grid; grid-template-columns:1.3fr .7fr; gap:16px; margin:18px 0 24px;
+  }
+  .quote,.statusbox,.panel,.card,.story-card {
+    background:rgba(250,244,230,.95); border:1px solid var(--edge); border-radius:13px;
+    box-shadow:0 7px 20px var(--shadow), inset 0 1px #fff;
+  }
+  .quote { padding:22px 25px; border-left:5px solid var(--gold); font-size:19px; }
+  .quote b { color:var(--plum); }
+  .statusbox { padding:20px; }
+  .statusbox b { display:block; color:var(--warn); font-size:18px; }
+  .statusbox span { color:var(--muted); font-size:13px; }
+  .tabs {
+    position:sticky; top:61px; z-index:20; display:flex; flex-wrap:wrap; gap:7px;
+    margin:0 0 25px; padding:9px; border:1px solid var(--edge); border-radius:12px;
+    background:rgba(238,229,210,.94); backdrop-filter:blur(8px);
+  }
+  .tabs a {
+    padding:6px 11px; border-radius:999px; text-decoration:none; background:var(--paper2);
+    border:1px solid var(--edge); font-size:12px;
+  }
+  .character-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; padding:10px; background:rgba(238,229,210,.78); border:1px solid var(--edge); border-radius:12px; }
+  .character-tab { appearance:none; cursor:pointer; padding:8px 13px; border:1px solid var(--edge); border-radius:999px; background:var(--paper2); color:var(--ink); font:inherit; font-size:13px; transition:background .15s,color .15s,border-color .15s,transform .15s; }
+  .character-tab:hover { transform:translateY(-1px); border-color:var(--gold); }
+  .character-tab[aria-selected="true"] { background:var(--blue); color:#f8edd5; border-color:var(--blue); box-shadow:0 3px 9px var(--shadow); }
+  section { scroll-margin-top:116px; margin:32px 0; }
+  section > h2 { margin:0 0 4px; font-size:29px; }
+  .lede { color:var(--muted); margin:0 0 17px; max-width:83ch; }
+  .direction-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:16px; }
+  .art { margin:0; padding:10px; background:var(--paper2); border:1px solid var(--edge); border-radius:13px; }
+  .art img { display:block; width:100%; border-radius:8px; }
+  figcaption { margin-top:7px; color:var(--muted); font-size:12px; }
+  .panel { padding:20px 22px; }
+  .principles { margin:0; padding-left:20px; }
+  .principles li { margin:7px 0; }
+  .cast { display:grid; gap:17px; }
+  .cast .card { display:none; }
+  .cast .card.active { display:grid; }
+  .card {
+    display:grid; grid-template-columns:210px 1fr; overflow:hidden;
+    border-left:5px solid var(--accent,var(--gold));
+  }
+  .identity { padding:20px; background:linear-gradient(160deg,#f6ecd6,#e8dcc1); border-right:1px solid var(--edge); }
+  .number { color:var(--accent,var(--gold)); font-size:11px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; }
+  .identity h3 { margin:3px 0 0; font-size:27px; line-height:1; }
+  .role { color:var(--muted); font-style:italic; margin:5px 0 13px; }
+  .silhouette { display:inline-block; padding:3px 8px; border-radius:999px; background:#dfd1b2; font-size:11px; }
+  .details { padding:19px 22px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 22px; }
+  .beat b { display:block; margin-bottom:2px; color:var(--accent,var(--plum)); font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
+  .beat p { margin:0; }
+  .quest { grid-column:1 / -1; padding:12px 14px; border:1px solid var(--edge); border-radius:9px; background:linear-gradient(110deg,#f3e5c9,#fbf5e7); }
+  .quest b { color:var(--accent,var(--plum)); }
+  .quest p { max-width:92ch; }
+  .albert { --accent:#9b6d3e; } .mira { --accent:#9b5960; } .rowan { --accent:#3d5364; }
+  .liliane { --accent:#735269; } .amina { --accent:#6e5140; } .niko { --accent:#61714f; }
+  .maeve { --accent:#65606d; } .vittorio { --accent:#8b503f; }
+  .relations { width:100%; border-collapse:collapse; min-width:760px; }
+  .relations th,.relations td { padding:10px 11px; border-bottom:1px solid #dfd1b3; text-align:left; vertical-align:top; }
+  .relations th { color:#72502a; background:#eee2c5; text-transform:uppercase; letter-spacing:.06em; font-size:11px; }
+  .relations tr:last-child td { border-bottom:0; }
+  .story-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+  .story-card { padding:19px; }
+  .story-card .act { color:var(--gold); letter-spacing:.12em; text-transform:uppercase; font-size:11px; font-weight:700; }
+  .story-card h3 { margin:3px 0 8px; }
+  .story-card ul { padding-left:18px; margin:7px 0 0; }
+  .rules-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+  .rule { padding:15px; border:1px solid var(--edge); background:#f6ecd7; border-radius:10px; }
+  .rule b { display:block; color:#744f28; margin-bottom:3px; }
+  .production { width:100%; border-collapse:collapse; min-width:780px; }
+  .production th,.production td { padding:10px; border-bottom:1px solid #dfd1b3; text-align:left; vertical-align:top; }
+  .production th { background:#eee2c5; color:#72502a; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+  .tag { display:inline-block; border-radius:999px; padding:2px 8px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; background:#eadbb9; color:#765128; }
+  .tag.first { background:#ead5d0; color:#854b43; }
+  .checklist { columns:2; padding-left:20px; }
+  .checklist li { break-inside:avoid; margin:6px 0; }
+  footer { margin-top:44px; text-align:center; color:var(--muted); font-size:12px; }
+  @media (max-width:900px) {
+    .premise,.direction-grid { grid-template-columns:1fr; }
+    .card { grid-template-columns:1fr; }
+    .identity { border-right:0; border-bottom:1px solid var(--edge); }
+    .story-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width:650px) {
+    .topbar .era { display:none; }
+    .topbar nav a:not(:last-child) { display:none; }
+    .shell { padding:14px 11px 60px; }
+    .hero { min-height:440px; padding:22px; background-position:42% center; }
+    h1 { font-size:39px; }
+    .details,.rules-grid { grid-template-columns:1fr; }
+    .checklist { columns:1; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">KINDLY FORWARD · CHARACTER WORKSHOP</span>
+  <span class="era">afterlife-pivot preproduction</span>
+  <nav><a href="/island">Island</a><a href="/story">Story</a><a href="/verbs">Player verbs</a><a href="/review">Review</a><a href="/">Play current build →</a></nav>
+</header>
+
+<main class="shell">
+  <section class="hero" aria-labelledby="title">
+    <div class="hero-copy">
+      <div class="eyebrow">Proposed new direction</div>
+      <h1 id="title">Kindly Forward</h1>
+      <p>Build a village on St. Mystere and help stranded souls finish their business before the island forgets how to send them onward.</p>
+    </div>
+  </section>
+
+  <div class="premise">
+    <div class="quote"><b>The dramatic engine:</b> everyone here is waiting for a letter. Receiving it may help them live more fully in the village—or make them ready to leave it.</div>
+    <aside class="statusbox"><b>Preproduction, not live canon</b><span>The current POSTMARK build still contains the robot cast and original story. The Kindly Forward cast is summoned into prepared homes; this route develops that pivot without pretending implementation has happened.</span></aside>
+  </div>
+
+  <nav class="tabs">
+    <a href="/island">St. Mystere</a><a href="/story">Intro &amp; story</a><a href="#direction">Direction</a><a href="#postmaster">Postmaster</a><a href="#cast">Eight residents</a>
+    <a href="#relationships">Relationships</a><a href="#story">Story spine</a><a href="#rules">Spirit rules</a>
+    <a href="#production">Production order</a>
+  </nav>
+
+  <section id="direction">
+    <h2>Visual and emotional direction</h2>
+    <p class="lede">Cozy first, but death is not merely wallpaper. The village is a real community where people cook, garden, argue and celebrate while deciding whether they are ready to cross the river.</p>
+    <div class="direction-grid">
+      <figure class="art"><img src="/characters/village-overview.png" alt="Elevated concept view of the village at the edge of the afterlife" /><figcaption>The post office is the civic and visual center. The river is a destination, boundary and clock—not background decoration.</figcaption></figure>
+      <div class="panel">
+        <ul class="principles">
+          <li><b>Domestic warmth against cosmic distance.</b> Tea, muddy boots, garden work and badly folded laundry happen beneath an unknowable sky.</li>
+          <li><b>Human spirits, not generic translucent NPCs.</b> Clothing, posture, age, gesture and possessions carry identity before glow effects do.</li>
+          <li><b>Leaving is not failure.</b> A resident’s departure can be a completed relationship rather than lost content.</li>
+          <li><b>Staying is also valid.</b> Nobody is pressured to “move on” for the player’s satisfaction.</li>
+          <li><b>The postmaster accompanies rather than saves.</b> She delivers truth and offers community; each resident chooses what follows.</li>
+          <li><b>At gameplay scale, silhouette wins.</b> Period detail belongs in textures and close-ups, never as compensation for same-shaped bodies.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="postmaster">
+    <h2>The Postmaster</h2>
+    <p class="lede">The one person on the route who may still be alive. Her uncertainty is the long mystery, but her daily purpose is concrete: sort the impossible mail, maintain the village, and stand beside people when an envelope changes everything.</p>
+    <div class="direction-grid">
+      <figure class="art"><img src="/characters/postmaster-sheet.png" alt="Character design sheet for the Postmaster" /><figcaption>Production anchor: long ink-black hair, plum coat, red headband and an accessory-heavy postal satchel.</figcaption></figure>
+      <div class="panel">
+        <h3>Playable identity</h3>
+        <p><b>Surface:</b> composed, practical and unusually calm around the dead. She notices procedures before emotions and uses work to postpone questions about herself.</p>
+        <p><b>Contradiction:</b> she helps everyone open their letter while refusing to investigate why no letter has ever arrived for her.</p>
+        <p><b>Arc:</b> caretaker → indispensable postmaster → frightened possible resident → someone who chooses her relationship to the village without treating mortality as a twist prize.</p>
+        <p><b>Daily animation:</b> ferry travel, dock wake, fog stagger, sorting, stamping, bundling, carrying, bell-ringing, handwriting and quiet fatigue. Gathering, fishing and gardening remain, but postal labor becomes equally visible.</p>
+        <p><b>Silhouette:</b> oversized head, long tapering hair, flared knee-length coat and prominent crossbody bag. Front and back reads must both work.</p>
+        <p><b>Unresolved design question:</b> whether she entered after a near-death event, is already dead without knowing, or belongs to a rare class of living postmasters. Do not answer this during character modelling.</p>
+        <div class="beat quest"><b>Quest line · The first route</b><p><b>Recruit:</b> name the island, survive the ferry fog, meet Albert and repair the ruined office. <b>Reveal:</b> the summons ledger has no entry for the Postmaster, only a blank space where her destination should be. <b>Pressure:</b> every resident’s letter makes her more necessary to the village and less able to avoid her own absence. <b>Choice:</b> investigate the missing postmaster record, keep serving without an answer, or let the residents help search. <b>Resolution:</b> she chooses whether she is a visitor, a resident or something between those categories; the answer is relational, not a twist reward.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cast">
+    <h2>Eight residents</h2>
+    <p class="lede">Each resident has an everyday role, a private contradiction and one withheld letter. The player first prepares a home, then summons that soul from St. Mystere’s backlog; the letter reveals truth, and friendship determines how they live with it.</p>
+    <figure class="art" style="margin-bottom:18px"><img src="/characters/cast-lineup.png" alt="Concept lineup of the eight spirit residents with silhouette studies" /><figcaption>Current concept lineup. Costume cohesion is strong; production silhouettes must push posture and mass further for Albert/Vittorio and Liliane/Amina/Maeve.</figcaption></figure>
+
+    <div class="character-tabs" role="tablist" aria-label="Resident dossiers">
+      <button class="character-tab" id="tab-albert" role="tab" aria-controls="albert" aria-selected="true" data-character="albert">Albert</button>
+      <button class="character-tab" id="tab-mira" role="tab" aria-controls="mira" aria-selected="false" data-character="mira">Mira</button>
+      <button class="character-tab" id="tab-rowan" role="tab" aria-controls="rowan" aria-selected="false" data-character="rowan">Old Rowan</button>
+      <button class="character-tab" id="tab-liliane" role="tab" aria-controls="liliane" aria-selected="false" data-character="liliane">Liliane</button>
+      <button class="character-tab" id="tab-amina" role="tab" aria-controls="amina" aria-selected="false" data-character="amina">Dr. Amina</button>
+      <button class="character-tab" id="tab-niko" role="tab" aria-controls="niko" aria-selected="false" data-character="niko">Niko</button>
+      <button class="character-tab" id="tab-maeve" role="tab" aria-controls="maeve" aria-selected="false" data-character="maeve">Maeve</button>
+      <button class="character-tab" id="tab-vittorio" role="tab" aria-controls="vittorio" aria-selected="false" data-character="vittorio">Vittorio</button>
+    </div>
+
+    <div class="cast">
+      <article id="albert" class="card albert active" role="tabpanel" aria-labelledby="tab-albert">
+        <div class="identity"><span class="number">01 · Civic anchor</span><h3>Albert</h3><div class="role">Administrative clerk</div><span class="silhouette">Forward lean · huge satchel · fluttering tags</span></div>
+        <div class="details">
+          <div class="beat"><b>Public self</b><p>Cheerful, precise and unfailingly useful. He greets arrivals before they realize they have arrived, then apologizes for the state of the office.</p></div>
+          <div class="beat"><b>Private contradiction</b><p>He knows everyone’s destination except his own and suspects his usefulness is the only reason he exists.</p></div>
+          <div class="beat"><b>Daily life</b><p>Sorts the backlog, updates the arrival board, patrols addresses, repairs labels and jumps at every sound from the dock.</p></div>
+          <div class="beat"><b>Relationship need</b><p>Someone who will spend time with him after the work is finished and ask a question he cannot answer from a ledger.</p></div>
+          <div class="beat"><b>The letter</b><p>Addressed in his own handwriting, sealed before his memory begins. He has hidden it in the undeliverable drawer.</p></div>
+          <div class="beat"><b>Arc / choice</b><p>He must decide whether not knowing his destination makes him incomplete—or free to choose a home.</p></div>
+          <div class="beat"><b>Animation identity</b><p>Short quick steps, papers caught midair, compulsive straightening, smile recovery after tiny freezes.</p></div>
+          <div class="beat"><b>Intro function</b><p>Albert explains the backlog. He is more frightened by the Postmaster than she is of him, and that warmth breaks the opening’s eerie spell.</p></div>
+          <div class="beat quest"><b>Quest line · The undeliverable clerk</b><p><b>Recruit:</b> repair the arrival board and recover Albert’s missing drawer key. <b>Reveal:</b> his sealed letter is written in his own hand, but he cannot remember sending it. <b>Pressure:</b> Maeve’s archive says Albert is already listed as “pending departure.” <b>Choice:</b> deliver the letter, keep it sealed, or ask Albert to open it himself. <b>Resolution:</b> he stops treating usefulness as proof of belonging and chooses whether to remain the island’s first resident.</p></div>
+        </div>
+      </article>
+
+      <article id="mira" class="card mira" role="tabpanel" aria-labelledby="tab-mira" hidden>
+        <div class="identity"><span class="number">02 · First mystery</span><h3>Mira</h3><div class="role">The lost child</div><span class="silhouette">Raincoat triangle · toy · stubborn reach</span></div>
+        <div class="details">
+          <div class="beat"><b>Public self</b><p>Bright, bossy and convinced everyone is overreacting. She is lost, not dead, and her mother is coming.</p></div>
+          <div class="beat"><b>Private contradiction</b><p>She remembers waiting but not the journey, and refuses to open the suitcase that may contain the answer.</p></div>
+          <div class="beat"><b>Daily life</b><p>Maps shortcuts, adopts insects, reorganizes adult plans, leaves snacks for newcomers and plays near the boarding house.</p></div>
+          <div class="beat"><b>Relationship need</b><p>Adults who tell her the truth without using truth as permission to abandon her.</p></div>
+          <div class="beat"><b>The letter</b><p>A lifetime of short notes written by her mother after Mira vanished, ending only when her mother finally died.</p></div>
+          <div class="beat"><b>Arc / choice</b><p>She learns that being remembered is not the same as being retrievable, then chooses a new form of family.</p></div>
+          <div class="beat"><b>Animation identity</b><p>Fast starts, abrupt stops, toy consultations, coat-sleeve hands and brave poses that collapse when unwatched.</p></div>
+          <div class="beat"><b>Production warning</b><p>Never aestheticize her death. Her humor, agency and ordinary childhood must dominate.</p></div>
+          <div class="beat quest"><b>Quest line · The suitcase with no address</b><p><b>Recruit:</b> build a small home with a play corner and map the safe paths Mira keeps claiming to know. <b>Reveal:</b> her mother’s letters prove she was searched for and remembered, but cannot restore the missing journey. <b>Pressure:</b> Mira insists the final letter be delivered to a place that no longer exists. <b>Choice:</b> open the suitcase with her, wait until she asks, or leave it closed. <b>Resolution:</b> she names the village as a family she is allowed to choose, without pretending it replaces her mother.</p></div>
+        </div>
+      </article>
+
+      <article id="rowan" class="card rowan" role="tabpanel" aria-labelledby="tab-rowan" hidden>
+        <div class="identity"><span class="number">03 · Threshold keeper</span><h3>Old Rowan</h3><div class="role">Ferryman</div><span class="silhouette">Wide hat · bowed coat · diagonal pole</span></div>
+        <div class="details">
+          <div class="beat"><b>Public self</b><p>Patient, dryly funny and trusted by everyone. He has guided countless spirits across the river.</p></div>
+          <div class="beat"><b>Private contradiction</b><p>He is terrified to cross himself and disguises fear as responsibility toward the next passenger.</p></div>
+          <div class="beat"><b>Daily life</b><p>Maintains the ferry, reads currents, teaches knots, fishes before dawn and escorts residents to difficult appointments.</p></div>
+          <div class="beat"><b>Relationship need</b><p>Peers who permit him to be frightened instead of treating him as the village’s unshakable elder.</p></div>
+          <div class="beat"><b>The letter</b><p>From the apprentice who took over his living-world ferry and spent a lifetime honoring what Rowan taught him.</p></div>
+          <div class="beat"><b>Arc / choice</b><p>He accepts that the river will continue without him. Whether he crosses immediately remains his decision.</p></div>
+          <div class="beat"><b>Animation identity</b><p>Heavy planted steps, practiced rope work, lantern shielding, understated laughter and a frozen foot at the gangplank.</p></div>
+          <div class="beat"><b>Production warning</b><p>The oar must not be his only identifier; hat, shoulders and bowed center of mass carry the silhouette.</p></div>
+          <div class="beat quest"><b>Quest line · The ferryman’s last crossing</b><p><b>Recruit:</b> restore a ferry berth and gather rope, pitch and a lantern for the dead landing. <b>Reveal:</b> Rowan’s apprentice completed the living-world route and wrote to thank him. <b>Pressure:</b> every repaired bridge makes Rowan’s own crossing harder to postpone. <b>Choice:</b> ask him to carry the next soul, accompany him to the gangplank, or let him set the schedule. <b>Resolution:</b> Rowan accepts that guiding others does not require being fearless and chooses his own departure date.</p></div>
+        </div>
+      </article>
+
+      <article id="liliane" class="card liliane" role="tabpanel" aria-labelledby="tab-liliane" hidden>
+        <div class="identity"><span class="number">04 · Self-authorship</span><h3>Liliane</h3><div class="role">Heiress and reluctant patron</div><span class="silhouette">Bell gown · heirloom weight · guarded hands</span></div>
+        <div class="details">
+          <div class="beat"><b>Public self</b><p>Elegant, educated and perfectly mannered. She was trained to be the face of every room her father owned.</p></div>
+          <div class="beat"><b>Private contradiction</b><p>Her whole life was shaped by what men wanted for her, and death has not made it easier to accept that this may be all the life she got.</p></div>
+          <div class="beat"><b>Daily life</b><p>Catalogues heirlooms, organizes the music hall, corrects etiquette, avoids unstructured choices and quietly watches Vittorio play.</p></div>
+          <div class="beat"><b>Relationship need</b><p>Someone who will not turn her into a patron, symbol or project. Vittorio offers music without asking her to perform correctly.</p></div>
+          <div class="beat"><b>The letter</b><p>A final instruction from her father, still expecting her to accept a marriage, donation or public role she never chose.</p></div>
+          <div class="beat"><b>Arc / choice</b><p>She discovers music with Vittorio as a form of expression rather than obedience, then makes one choice no one can call dutiful.</p></div>
+          <div class="beat"><b>Animation identity</b><p>Controlled posture, gloved hands, practiced smiles and increasingly loose, surprised musical gestures.</p></div>
+          <div class="beat"><b>Production warning</b><p>She is not a second musician at the start. Her silhouette is inherited clothing and withheld movement; the music arrives through the arc.</p></div>
+          <div class="beat quest"><b>Quest line · A room of her own</b><p><b>Recruit:</b> let Liliane choose and furnish her home plot instead of assigning her an estate. <b>Reveal:</b> her father’s final letter demands one last dutiful marriage, donation or public role. <b>Pressure:</b> every villager has an opinion about what a woman with her resources should build. <b>Choice:</b> help her host a formal recital, hide an improvised rehearsal, or refuse the role of patron entirely. <b>Resolution:</b> Vittorio gives her a medium without an approved result; she makes one song and one life choice that belong to her.</p></div>
+        </div>
+      </article>
+
+      <article id="amina" class="card amina" role="tabpanel" aria-labelledby="tab-amina" hidden>
+        <div class="identity"><span class="number">05 · Care</span><h3>Dr. Amina</h3><div class="role">Field doctor</div><span class="silhouette">Compact square stance · rolled sleeves · medical bag</span></div>
+        <div class="details">
+          <div class="beat"><b>Public self</b><p>Direct, capable and still on call. She checks people who no longer possess pulses and prescribes rest anyway.</p></div>
+          <div class="beat"><b>Private contradiction</b><p>She cannot stop triaging because stillness would force her to remember the people she could not save.</p></div>
+          <div class="beat"><b>Daily life</b><p>Runs the clinic, gathers herbs with Niko, conducts wellness rounds and quietly monitors Mira’s sleep.</p></div>
+          <div class="beat"><b>Relationship need</b><p>Care that is offered without requiring her to first become injured, useful or exhausted.</p></div>
+          <div class="beat"><b>The letter</b><p>From a patient she assumed had died, describing children, grandchildren and an ordinary long life made possible by her work.</p></div>
+          <div class="beat"><b>Arc / choice</b><p>She learns that a healer’s life cannot be measured only by losses and allows the clinic to become a home.</p></div>
+          <div class="beat"><b>Animation identity</b><p>Efficient clipped turns, sleeve-pinning, pulse habit, bag inventory, exhausted shoulder release.</p></div>
+          <div class="beat"><b>Production warning</b><p>Shorten and square her mass. A long elegant coat would collapse her into Liliane and Maeve.</p></div>
+          <div class="beat quest"><b>Quest line · The clinic that can close</b><p><b>Recruit:</b> build the clinic and gather herbs, clean cloth and a bell for its first rest ward. <b>Reveal:</b> a former patient writes that Amina’s care gave them decades she never witnessed. <b>Pressure:</b> new residents keep presenting ordinary needs as emergencies. <b>Choice:</b> ask Amina to take a day off, help her train a caretaker, or keep the clinic open around the clock. <b>Resolution:</b> she changes the clinic from emergency station into a place for rest, companionship and care that does not require crisis.</p></div>
+        </div>
+      </article>
+
+      <article id="niko" class="card niko" role="tabpanel" aria-labelledby="tab-niko" hidden>
+        <div class="identity"><span class="number">06 · Seasons</span><h3>Niko</h3><div class="role">Gardener</div><span class="silhouette">Low sunhat · layered apron · garden cart</span></div>
+        <div class="details">
+          <div class="beat"><b>Public self</b><p>Gentle, observant and cheerfully unconcerned with schedules. His greenhouse remembers seasons out of order.</p></div>
+          <div class="beat"><b>Private contradiction</b><p>He cultivates change while secretly arranging the garden to reproduce one final afternoon exactly.</p></div>
+          <div class="beat"><b>Daily life</b><p>Tends seasonal beds, delivers flowers, preserves seeds, maintains graves nobody visits and trades remedies with Amina.</p></div>
+          <div class="beat"><b>Relationship need</b><p>People willing to make new memories in the garden rather than admiring only the preserved old one.</p></div>
+          <div class="beat"><b>The letter</b><p>A packet of seeds and a note from the grandchild who transformed his neglected plot into a community garden.</p></div>
+          <div class="beat"><b>Arc / choice</b><p>He plants something that has never grown before in the village and accepts an unfamiliar spring.</p></div>
+          <div class="beat"><b>Animation identity</b><p>Slow kneeling labor, hat adjustment, soil testing, plant-responsive gestures and quiet delight.</p></div>
+          <div class="beat"><b>Production warning</b><p>Keep foliage secondary. Niko must remain readable when seasonal plants or the cart are absent.</p></div>
+          <div class="beat quest"><b>Quest line · The garden that refuses to repeat</b><p><b>Recruit:</b> clear a greenhouse site and help Niko establish beds that are not copies of his remembered afternoon. <b>Reveal:</b> his grandchild turned the old plot into a community garden and sent seeds from it. <b>Pressure:</b> the perfect recreated afternoon keeps crowding out new growth. <b>Choice:</b> preserve the old beds, plant the unknown seeds, or invite villagers to design a shared plot. <b>Resolution:</b> Niko grows something he has never seen and accepts that loving the past does not require living inside it.</p></div>
+        </div>
+      </article>
+
+      <article id="maeve" class="card maeve" role="tabpanel" aria-labelledby="tab-maeve" hidden>
+        <div class="identity"><span class="number">07 · Memory</span><h3>Maeve</h3><div class="role">Archivist</div><span class="silhouette">Tall shawl column · label trails · reading hunch</span></div>
+        <div class="details">
+          <div class="beat"><b>Public self</b><p>Exacting, curious and capable of locating any record except the one she was originally searching for.</p></div>
+          <div class="beat"><b>Private contradiction</b><p>She carries labels for memories she cannot place and fears cataloguing them incorrectly will erase someone twice.</p></div>
+          <div class="beat"><b>Daily life</b><p>Runs the archive, interviews arrivals, repairs letters, organizes exhibitions and argues classification with Albert.</p></div>
+          <div class="beat"><b>Relationship need</b><p>Permission to say “I don’t know” without surrendering her authority or the value of incomplete records.</p></div>
+          <div class="beat"><b>The letter</b><p>A damaged institutional notice proving the archive she devoted her life to deliberately removed her authorship.</p></div>
+          <div class="beat"><b>Arc / choice</b><p>She stops treating official records as neutral truth and begins an oral archive authored by the village itself.</p></div>
+          <div class="beat"><b>Animation identity</b><p>Label tying, paper repair, glasses search, investigative lean and precise indignation.</p></div>
+          <div class="beat"><b>Production warning</b><p>Her stacked vertical silhouette needs dangling labels and a strong hunch, not just another long dress.</p></div>
+          <div class="beat quest"><b>Quest line · The archive without an owner</b><p><b>Recruit:</b> restore the archive and collect labels, shelves and testimony from the first residents. <b>Reveal:</b> an institutional notice proves the archive removed Maeve’s authorship while keeping her work. <b>Pressure:</b> Albert wants one official index; the villagers keep producing memories that cannot fit it. <b>Choice:</b> preserve the institution’s categories, rewrite them, or begin an oral archive beside them. <b>Resolution:</b> Maeve accepts that incomplete records can still be honest and gives the village authorship of its own history.</p></div>
+        </div>
+      </article>
+
+      <article id="vittorio" class="card vittorio" role="tabpanel" aria-labelledby="tab-vittorio" hidden>
+        <div class="identity"><span class="number">08 · Connection</span><h3>Vittorio</h3><div class="role">Wandering musician</div><span class="silhouette">Instrument diagonal · split tails · airborne letters</span></div>
+        <div class="details">
+          <div class="beat"><b>Public self</b><p>Flirtatious, generous and impossible to embarrass. He performs letters addressed to strangers as songs.</p></div>
+          <div class="beat"><b>Private contradiction</b><p>He makes intimacy from other people’s words because he never learned to speak plainly in his own.</p></div>
+          <div class="beat"><b>Daily life</b><p>Busks in the square, teaches Mira songs, accompanies departures and turns overheard rhythms into festival music.</p></div>
+          <div class="beat"><b>Relationship need</b><p>Someone who will reject the performance and wait for the unadorned sentence beneath it.</p></div>
+          <div class="beat"><b>The letter</b><p>Addressed to another man with Vittorio’s name: a misdelivery he has kept because its declaration of love feels dangerously personal.</p></div>
+          <div class="beat"><b>Arc / choice</b><p>He delivers the letter to its rightful recipient, then writes the first honest message under his own name.</p></div>
+          <div class="beat"><b>Animation identity</b><p>Large rhythmic stride, instrument-leading turns, coat-tail arcs, finger flourishes and sudden sincere stillness.</p></div>
+          <div class="beat"><b>Production warning</b><p>Break similarity with Albert through broad theatrical movement, coat tails and a dominant instrument diagonal.</p></div>
+          <div class="beat quest"><b>Quest line · A song under his own name</b><p><b>Recruit:</b> build the music hall or a small performance corner and recover the instrument he left at the ferry landing. <b>Reveal:</b> his treasured letter was addressed to another man with his name, and he kept it because its honesty felt borrowed but safe. <b>Pressure:</b> Liliane asks him for a song that cannot hide behind someone else’s words. <b>Choice:</b> deliver the letter, perform it, or write a new answer before anyone hears it. <b>Resolution:</b> Vittorio gives the letter to its rightful recipient, then plays one plain message under his own name and helps Liliane make a song that belongs to neither of them at first.</p></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="relationships">
+    <h2>Relationships before the player arrives</h2>
+    <p class="lede">The village should not feel like eight isolated friendship tracks waiting to activate. These tensions and affections continue whether the Postmaster witnesses them or not.</p>
+    <div class="panel" style="overflow:auto">
+      <table class="relations">
+        <thead><tr><th>Pair</th><th>Visible relationship</th><th>Underlying pressure</th><th>Scene fuel</th></tr></thead>
+        <tbody>
+          <tr><td>Albert ↔ Maeve</td><td>Administrative rivals who secretly enjoy correcting each other.</td><td>Albert trusts procedure; Maeve knows records can lie.</td><td>A misfiled letter neither system can classify.</td></tr>
+          <tr><td>Mira ↔ Amina</td><td>Amina performs unnecessary checkups; Mira complains and always attends.</td><td>Amina fears another lost child. Mira recognizes pity instantly.</td><td>Mira asks whether Amina checked her own name among the dead.</td></tr>
+          <tr><td>Rowan ↔ Vittorio</td><td>Old friends who accompany every crossing together.</td><td>Vittorio knows Rowan’s fear and protects it with jokes.</td><td>One departure occurs when Vittorio cannot play.</td></tr>
+          <tr><td>Liliane ↔ Vittorio</td><td>She calls his playing undisciplined; he asks her to make one sound nobody approved.</td><td>She performs what men wanted; he hides behind other people’s words.</td><td>They build a private piece together, then decide whether anyone else should hear it.</td></tr>
+          <tr><td>Niko ↔ Amina</td><td>Herbs, remedies and gentle disputes over evidence.</td><td>Niko preserves a memory; Amina wants him to inhabit the present.</td><td>A plant grows that neither of them recognizes.</td></tr>
+          <tr><td>Maeve ↔ Mira</td><td>Mira “helps” archive labels; Maeve pretends to object.</td><td>Mira’s records are incomplete, and Maeve will not invent certainty.</td><td>They create a page of things Mira knows about herself now.</td></tr>
+          <tr><td>Albert ↔ Rowan</td><td>Arrival clerk and departure ferryman bookend every residency.</td><td>Albert envies Rowan’s clear role; Rowan knows clarity does not remove fear.</td><td>An arrival and departure are scheduled for the same hour.</td></tr>
+          <tr><td>Liliane ↔ Niko</td><td>She treats his greenhouse as a controlled estate; he lets plants ignore her instructions.</td><td>Both are learning that care is not the same as control.</td><td>She chooses an unfamiliar flower for the first thing she creates herself.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="story">
+    <h2>Ensemble story spine</h2>
+    <p class="lede">The eight letters remain the fixed content spine. Depth comes from how the same residents change around those deliveries, not from continually adding newcomers.</p>
+    <div class="story-grid">
+      <article class="story-card"><span class="act">Act I · Arrival</span><h3>A village that waits</h3><ul><li>The Postmaster reaches an office that already knows her title.</li><li>Albert teaches the rules while concealing his own letter.</li><li>Mira supplies the first obvious moral problem: truth without care is cruelty.</li><li>The ferry establishes that residents can leave, but nobody is forced.</li></ul></article>
+      <article class="story-card"><span class="act">Act II · Delivery</span><h3>Truth enters daily life</h3><ul><li>Restored buildings let residents practice identities beyond waiting.</li><li>Letters arrive through memory landscapes tied to existing activities.</li><li>Deliveries change schedules, relationships, expressions and environments.</li><li>The Postmaster notices the absence of any mail addressed to herself.</li></ul></article>
+      <article class="story-card"><span class="act">Act III · Forwarding</span><h3>A town, not a waiting room</h3><ul><li>Albert’s hidden letter exposes the institution behind the village.</li><li>Residents make different choices: cross, stay, postpone or return for visits.</li><li>The village writes its own charter rather than obeying an unseen destination system.</li><li>The Postmaster chooses a relationship to the town; her metaphysical status does not substitute for that choice.</li></ul></article>
+    </div>
+  </section>
+
+  <section id="rules">
+    <h2>Supernatural rules</h2>
+    <p class="lede">Consistent rules keep the afterlife from becoming convenient dream logic.</p>
+    <div class="rules-grid">
+      <div class="rule"><b>Spirits are mostly solid.</b> Faces, hands and silhouettes remain readable. Translucency appears only at edges, during memory loss or near the river.</div>
+      <div class="rule"><b>Letters are materially real.</b> They cannot be forged by wishing. A letter's contents belong to its addressee, and the Postmaster does not open what she carries — a matter of custody she keeps, not a rule the world enforces.</div>
+      <div class="rule"><b>Memory is incomplete, not false on demand.</b> Contradictions indicate perspective, trauma or missing context—not arbitrary twists.</div>
+      <div class="rule"><b>The river is consent.</b> Nobody can push, trick or accidentally lose someone across it. A crossing requires a clear personal choice.</div>
+      <div class="rule"><b>Residents can stay.</b> Readiness is not a progression meter. Community in the village is a legitimate continuing life.</div>
+      <div class="rule"><b>Warmth follows connection.</b> Spirits gain color and environmental influence through relationships, but do not become “more alive” as a moral reward.</div>
+      <div class="rule"><b>Food and sleep are meaningful rituals.</b> Spirits may not biologically require them, but shared meals and domestic routines remain emotionally real.</div>
+      <div class="rule"><b>The Postmaster does not adjudicate worth.</b> Her authority concerns custody and delivery, never deciding who deserves passage or forgiveness.</div>
+    </div>
+  </section>
+
+  <section id="production">
+    <h2>Character production order</h2>
+    <p class="lede">The concept lineup is a narrative and costume authority, not yet a gameplay silhouette authority. The first production pass must prove variation at 64px before detailed modelling. A finished character packet also defines the home, summon arrival and resident work loop.</p>
+    <div class="panel" style="overflow:auto">
+      <table class="production">
+        <thead><tr><th>Order</th><th>Character</th><th>Why now</th><th>First proof</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><b>Postmaster</b> <span class="tag first">Vertical slice</span></td><td>Always on screen; exercises locomotion, tools, bag, hair, faces and close-ups.</td><td>Gameplay-scale model plus walk, sort, carry and bell clips.</td></tr>
+          <tr><td>2</td><td><b>Mira</b></td><td>Tests extreme scale difference and whether a child reads as an agent rather than decoration.</td><td>Raincoat silhouette, fast locomotion and expressive toy interaction.</td></tr>
+          <tr><td>3</td><td><b>Old Rowan</b></td><td>Tests age, broad silhouette, prop locomotion and river interaction.</td><td>Oar-independent silhouette and ferry work loop.</td></tr>
+          <tr><td>4</td><td><b>Liliane</b></td><td>Tests inherited wealth, constrained posture and a character who discovers music during her arc.</td><td>Rigid heiress silhouette, guarded hands, then chosen musical expression.</td></tr>
+          <tr><td>5</td><td><b>Dr. Amina</b></td><td>Must deliberately separate from Liliane’s vertical feminine silhouette.</td><td>Compact square stance and clinical gesture language.</td></tr>
+          <tr><td>6</td><td><b>Niko</b></td><td>Tests environmental interaction without hiding identity under foliage.</td><td>Hat/body silhouette with and without cart or plants.</td></tr>
+          <tr><td>7</td><td><b>Maeve</b></td><td>Tests elderly movement, label secondary motion and archive work.</td><td>Hunched vertical read distinct from Liliane and Amina.</td></tr>
+          <tr><td>8</td><td><b>Albert</b></td><td>His apparent similarity to Vittorio must be solved before either final model.</td><td>Burdened forward asymmetry without loose papers.</td></tr>
+          <tr><td>9</td><td><b>Vittorio</b></td><td>Completes the closest same-age masculine comparison.</td><td>Performance silhouette distinct without relying on instrument particles.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <b>Every character packet must contain:</b>
+      <ul class="checklist">
+        <li>Front, side, back and three-quarter design</li><li>64px silhouette without props</li>
+        <li>64px silhouette with signature prop</li><li>Gameplay-scale day and night frame</li>
+        <li>Three idle variants and personal quirk</li><li>Walk, run, turn, sit and rest</li>
+        <li>Four talk registers and listening</li><li>Happy, surprised, sad and thinking reactions</li>
+        <li>Letter-receive performance</li><li>Resident-specific daily work loop</li>
+        <li>Relationship scene with another resident</li><li>Human visual approval before “Done”</li>
+      </ul>
+    </div>
+
+    <div class="panel" style="margin-top:15px">
+      <h3>Cutscene roles — reduced packets</h3>
+      <p>A speaking part is not a cast member. Characters who appear only in an authored sequence get a <b>reduced packet</b> sized to what they actually do on screen. They do not count against the frozen eight, and they do not enter the production order above.</p>
+      <p><b>The ferry recruit</b> (<a href="/story">/story</a>) is the first and currently only one. He carries the opening’s load-bearing line — “I didn’t know they opened that office back up” — and he is the last ordinary goodbye before the fog, so he must read as a real person. He is also seated on a bench for nearly all of it.</p>
+      <p>His packet: one silhouette, a seated idle with one fidget, two talk registers (friendly, then unsettled), the route-card double-check, and a single stand-and-walk-off. <b>No</b> locomotion set, no reaction matrix, no daily work loop, no relationship scene.</p>
+      <p>Production order: after the Postmaster, before Mira — he is required by the opening slice, and the opening slice gates everything else.</p>
+    </div>
+  </section>
+
+  <footer>Eight residents plus the Postmaster, plus reduced cutscene packets. Counts remain frozen; depth replaces breadth. Quest dossiers added 2026-07-28; open questions settled 2026-07-28.</footer>
+</main>
+<script>
+  const characterTabs = [...document.querySelectorAll('.character-tab')];
+  const characterPanels = [...document.querySelectorAll('.cast .card')];
+  function selectCharacter(id, moveFocus = false) {
+    characterTabs.forEach((tab) => {
+      const selected = tab.dataset.character === id;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected && moveFocus) tab.focus();
+    });
+    characterPanels.forEach((panel) => {
+      const selected = panel.id === id;
+      panel.classList.toggle('active', selected);
+      panel.hidden = !selected;
+    });
+  }
+  characterTabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => selectCharacter(tab.dataset.character));
+    tab.addEventListener('keydown', (event) => {
+      if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? characterTabs.length - 1 : (index + (event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1) + characterTabs.length) % characterTabs.length;
+      selectCharacter(characterTabs[next].dataset.character, true);
+    });
+  });
+  selectCharacter('albert');
+</script>
+</body>
+</html>

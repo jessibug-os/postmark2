@@ -1,0 +1,20 @@
+# object: post-office
+# name: The ruined post office
+# model: post-office.glb
+# note: Front is +Z and faces the dock. The doorway is deliberately uncollided.
+
+# Wall segments traced by hand, recovered from `OpeningSet.buildPostOffice`.
+# The front doorway — |x| < 1.1 on the front face — carries no circle on
+# purpose: the player has to be able to walk in, and a single footprint circle
+# would both seal the entrance and push them off the threshold mid-reveal.
+collide circle 1.15 at -2.9 3.4
+collide circle 1.15 at 2.9 3.4
+collide circle 1.15 at -3.9 1.6
+collide circle 1.15 at -3.9 -1
+collide circle 1.15 at 3.9 1.6
+collide circle 1.15 at 3.9 -1
+collide circle 1.15 at -2.4 -3.4
+collide circle 1.15 at 0 -3.4
+collide circle 1.15 at 2.4 -3.4
+clear 9
+aperture 0 0 -1

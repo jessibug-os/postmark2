@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kindly Forward — Grass</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+<style>
+  :root{
+    --ink:#29231f;--paper:#e9e2d3;--card:#f8f1e2;--edge:#bbaa88;
+    --moss:#4c5a34;--deep:#33421f;--olive:#6f7a44;--khaki:#8b9058;
+    --earth:#775b3f;--sand:#bd9858;--gold:#b6813e;--navy:#26374d;
+    --muted:#756d61;--bad:#8d4b3a;--good:#4f6b4a;
+    --shadow:rgba(27,31,34,.18);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;color:var(--ink);
+    background:
+      radial-gradient(circle at 90% 0,rgba(76,90,52,.20),transparent 36rem),
+      linear-gradient(90deg,rgba(51,66,31,.035) 1px,transparent 1px),
+      var(--paper);
+    background-size:auto,34px 34px,auto;
+    font:15px/1.6 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  }
+  button,input,select,label{font:inherit}
+  a{color:#5f6b32}
+  code{font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(51,66,31,.09);padding:1px 5px;border-radius:4px}
+
+  .topbar{position:sticky;top:0;z-index:30;min-height:58px;padding:10px 22px;display:flex;align-items:center;gap:15px;color:#f4ead4;background:#242721;border-bottom:3px solid var(--gold);flex-wrap:wrap}
+  .brand{font-weight:700;letter-spacing:.09em;white-space:nowrap}
+  .sub{font-size:13px;color:#c4c9bb}
+  .topbar nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
+  .topbar a{color:#e8d6ac;text-decoration:none;font-size:13px}
+  .topbar a:hover{color:#fff}
+
+  .shell{max-width:1220px;margin:auto;padding:26px 22px 90px}
+
+  /* ---- hero ---- */
+  .hero{position:relative;min-height:430px;display:grid;grid-template-columns:1.02fr .98fr;overflow:hidden;border:1px solid #5d6b4f;border-radius:17px;color:#f5edda;background:linear-gradient(140deg,#1a2016,#2f3a24 54%,#46482c);box-shadow:0 16px 42px rgba(24,28,31,.34)}
+  .hero-copy{position:relative;z-index:2;align-self:end;padding:38px;text-shadow:0 2px 12px #141a10}
+  .eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:11.5px;color:#d5cb9c}
+  .hero h1{margin:.34em 0 .5em;font-size:39px;line-height:1.1;letter-spacing:-.01em}
+  .hero p{margin:0;max-width:44ch;font-size:16px;color:#e6e4d4}
+  .hero-figures{display:grid;grid-template-columns:1fr 1fr;gap:20px 26px;margin-top:26px}
+  .hero-figures div b{display:block;font-size:27px;line-height:1;color:#f6ecc4}
+  .hero-figures div span{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#bcc2ad}
+  .hero-stage{position:relative;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:30px;background:#141a12}
+  .hero-stage canvas{width:100%;height:auto;display:block;border-radius:10px;image-rendering:pixelated;border:1px solid rgba(255,255,255,.14)}
+  .stage-label{position:absolute;left:16px;bottom:14px;z-index:3;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#d6dcd0;background:rgba(18,22,16,.66);padding:5px 10px;border-radius:20px}
+
+  .tabs{position:sticky;top:58px;z-index:20;display:flex;gap:5px;flex-wrap:wrap;margin:20px 0 6px;padding:9px 10px;background:rgba(233,226,211,.94);backdrop-filter:blur(6px);border:1px solid var(--edge);border-radius:12px}
+  .tabs a{text-decoration:none;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:#5b5347;padding:5px 11px;border-radius:20px}
+  .tabs a:hover{background:#e0d5bb;color:var(--ink)}
+
+  section{margin:44px 0 0;scroll-margin-top:120px}
+  h2{font-size:27px;margin:0 0 .35em;letter-spacing:-.01em}
+  h3{font-size:17px;margin:0 0 .4em}
+  .lede{font-size:16.5px;color:#4c443a;max-width:74ch;margin:0 0 20px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .panel{background:var(--card);border:1px solid var(--edge);border-radius:13px;padding:17px 19px;box-shadow:0 3px 12px var(--shadow)}
+  .panel ul{margin:.4em 0 0;padding-left:1.1em}
+  .panel li{margin:.32em 0}
+
+  .callout{border-left:4px solid var(--gold);background:#f4ecd9;border-radius:0 10px 10px 0;padding:13px 17px;margin:16px 0}
+  .callout.bad{border-left-color:var(--bad);background:#f6e7df}
+  .callout.good{border-left-color:var(--good);background:#e9efe2}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+  .stat{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:15px 16px;box-shadow:0 3px 12px var(--shadow)}
+  .stat b{display:block;font-size:30px;line-height:1.05;color:var(--deep)}
+  .stat span{display:block;font-size:12px;color:var(--muted);margin-top:5px}
+  .stat.warn b{color:var(--bad)}
+  .stat.good b{color:var(--good)}
+
+  .find{position:relative;background:var(--card);border:1px solid var(--edge);border-left:5px solid var(--bad);border-radius:0 13px 13px 0;padding:18px 21px;box-shadow:0 3px 12px var(--shadow);margin:16px 0}
+  .find.minor{border-left-color:var(--gold)}
+  .find .tag{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .find h3{margin:5px 0 9px;font-size:19px}
+  .find p{margin:.5em 0}
+  .find .because{margin-top:12px;padding-top:12px;border-top:1px dashed #ddceac;font-size:13.5px;color:#4c443a}
+  .find .because b{color:var(--deep)}
+
+  .readout{display:grid;grid-template-columns:repeat(2,1fr);gap:0 22px;margin:12px 0 2px}
+  .readout.one{grid-template-columns:1fr}
+  .readout-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #ddceac;font-size:13.5px}
+  .readout-row b{color:var(--deep);white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+  .readout-row.warn b{color:var(--bad)}
+  .readout-row.good b{color:var(--good)}
+  .readout-row span{color:#4c443a}
+
+  figure{margin:0;background:var(--card);border:1px solid var(--edge);border-radius:12px;overflow:hidden;box-shadow:0 3px 12px var(--shadow)}
+  figure img{display:block;width:100%;height:auto;image-rendering:pixelated;background:#1b2026}
+  figcaption{padding:11px 14px;font-size:13px;color:#4c443a}
+  figcaption b{display:block;color:var(--ink);margin-bottom:3px}
+  .shots{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .shots.three{grid-template-columns:repeat(3,1fr)}
+
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--edge);border-radius:12px;overflow:hidden;box-shadow:0 3px 12px var(--shadow)}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid #e2d7bd;font-size:13.5px;vertical-align:top}
+  th{background:#f1e8d4;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#5b5347}
+  tr:last-child td{border-bottom:0}
+  td.num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;white-space:nowrap}
+  .wrap-scroll{overflow-x:auto}
+  .swatch{display:inline-block;width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.25);vertical-align:-2px;margin-right:6px}
+  .sev{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+  .sev.bug{background:#f0dbd3;color:#7b3f2e}
+  .sev.gap{background:#e6e2d1;color:#5f5a45}
+  .sev.dead{background:#ded8e2;color:#5c4a68}
+  .sev.ok{background:#e3ecdd;color:#3f5c3a}
+
+  /* ---- labs ---- */
+  .lab{background:#171d13;border:1px solid #3d4733;border-radius:14px;padding:20px 22px;margin:16px 0;color:#e7e6d6;box-shadow:0 6px 20px rgba(20,25,16,.3)}
+  .lab h3{color:#f3ecd2;margin:0 0 4px}
+  .lab .hint{font-size:13px;color:#a9b39a;margin:0 0 16px;max-width:78ch}
+  .lab canvas{display:block;width:100%;height:auto;border-radius:9px;background:#0e1209;border:1px solid #3d4733}
+  .lab canvas.pix{image-rendering:pixelated}
+  .lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .lab-grid figcaption,.capt{padding:8px 2px 0;font-size:12.5px;color:#aab49b}
+  .capt b{color:#eee7cd;display:block;font-size:13px}
+  .controls{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:16px;padding-top:15px;border-top:1px solid #3d4733}
+  .controls label{font-size:13px;color:#cfd4c1;display:flex;align-items:center;gap:7px;white-space:nowrap}
+  .controls input[type=range]{width:130px;accent-color:#8b9058}
+  .controls input[type=checkbox]{accent-color:#8b9058;width:15px;height:15px}
+  .controls select{background:#232a1c;color:#e7e6d6;border:1px solid #4a553c;border-radius:6px;padding:3px 7px;font-size:13px}
+  .layers{display:grid;gap:7px;margin-top:14px}
+  .layer{display:grid;grid-template-columns:22px 150px 1fr;align-items:center;gap:11px;padding:8px 11px;background:#1e2518;border:1px solid #38412d;border-radius:9px;font-size:13px}
+  .layer.off{opacity:.42}
+  .layer b{color:#f0e9cf;font-size:13.5px}
+  .layer span{color:#a2ab93;font-size:12.5px;line-height:1.4}
+  .lab .num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#d9c78e}
+  .verdict{margin-top:14px;padding:11px 14px;background:#212818;border:1px solid #3d4733;border-radius:9px;font-size:13.5px;color:#d6dcc6}
+  .verdict b{color:#f2e9c9}
+
+  /* proposals + lanes */
+  .props{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .prop{position:relative;background:var(--card);border:1px solid var(--edge);border-left:5px solid var(--moss);border-radius:0 13px 13px 0;padding:17px 19px;box-shadow:0 3px 12px var(--shadow)}
+  .prop.hero-prop{grid-column:1 / -1;border-left-color:var(--gold);background:linear-gradient(100deg,#f9f2e2,#f4ecd9)}
+  .prop .tag{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+  .prop h3{margin:5px 0 7px;font-size:18px}
+  .prop p{margin:.4em 0}
+  .prop .free{margin-top:11px;padding-top:11px;border-top:1px dashed #ddceac;font-size:13px;color:#4c443a}
+  .meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+  .pill{font-size:11.5px;padding:3px 10px;border-radius:20px;background:#ece1c9;color:#5b5347;border:1px solid var(--edge);white-space:nowrap;display:inline-block}
+  .pill.cost-s{background:#e6efe2;color:#3f5c3a;border-color:#bcd0b4}
+  .pill.cost-m{background:#f3ecd6;color:#6a5824;border-color:#ddceac}
+  .pill.cost-l{background:#f2ded4;color:#7b3f2e;border-color:#e0bfae}
+
+  .slate{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .lane{background:var(--card);border:1px solid var(--edge);border-radius:13px;overflow:hidden;box-shadow:0 3px 12px var(--shadow)}
+  .lane header{padding:14px 17px;background:var(--deep);color:#f4ead4}
+  .lane header b{display:block;font-size:16px}
+  .lane header span{font-size:12px;color:#c6cfb6}
+  .lane ol{margin:0;padding:14px 17px 16px 33px}
+  .lane li{margin:.5em 0;font-size:13.5px}
+  .lane.two header{background:var(--moss)}
+  .lane.three header{background:var(--earth)}
+
+  .code-map{display:grid;gap:9px}
+  .code-row{display:grid;grid-template-columns:290px 1fr;gap:15px;align-items:start;background:var(--card);border:1px solid var(--edge);border-radius:11px;padding:12px 15px}
+  .code-row code{background:none;padding:0;color:var(--deep);font-size:12.5px;word-break:break-all}
+  .code-row b{display:block;font-size:13.5px}
+  .code-row span{display:block;font-size:12.5px;color:var(--muted);line-height:1.45}
+
+  .limits{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .limit{background:#f2ecdd;border:1px dashed var(--edge);border-radius:11px;padding:14px 16px}
+  .limit b{display:block;margin-bottom:5px;font-size:13.5px}
+  .limit p{margin:0;font-size:13px;color:#4c443a}
+
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--edge);font-size:13px;color:var(--muted)}
+
+  @media (max-width:980px){
+    .hero{grid-template-columns:1fr}
+    .grid2,.grid3,.props,.slate,.limits,.shots,.shots.three,.stats,.readout,.lab-grid{grid-template-columns:1fr}
+    .code-row,.layer{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="brand">KINDLY FORWARD · GRASS</span>
+  <span class="sub">survey and slate · 29 August 2026 · nothing here is built</span>
+  <nav>
+    <a href="/island">Island</a>
+    <a href="/water">Water</a>
+    <a href="/weather">Weather</a>
+    <a href="/verbs">Player verbs</a>
+    <a href="/review">Review</a>
+    <a href="/">Play current build →</a>
+  </nav>
+</header>
+
+<main class="shell">
+
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Measured 2026-08-29 · <code>scripts/grass-survey.mjs</code> · shipped island <code>seed-80085</code></div>
+      <h1>The lawn is two<br />colours, and the<br />seam is the acre.</h1>
+      <p>Over 749,863 painted grass texels, <b>98.1% are one of two hexes</b> — <code>#424932</code> and the same colour 12% brighter. The step between them lands on acre borders, because the painter reads elevation as an <em>acre integer</em> rather than as the height field sitting in the next variable. And the blade-detail sheet that would break the flat up is switched off by a colour test the palette grade invalidated.</p>
+      <div class="hero-figures">
+        <div><b>2</b><span>colours = 98% of the lawn</span></div>
+        <div><b>56.5 u</b><span>seam where paint steps and ground doesn't</span></div>
+        <div><b>0.05</b><span>grass detail mask, of 1.0</span></div>
+        <div><b>78°</b><span>grass hue — olive, not green</span></div>
+      </div>
+    </div>
+    <div class="hero-stage">
+      <canvas id="heroCanvas" width="480" height="270" aria-label="A patch of the game's lawn as painted today: two flat plates of olive meeting on a straight vertical acre border, with no texture on either side"></canvas>
+      <div class="capt"><b>The lawn as painted today, at game scale</b>Rendered from the shipped values: <code>#424932</code> left, <code>#4a5238</code> right, the acre border between them, the detail sheet at its measured 5% strength. 480 × 270 of the 480 × 360 buffer, one world unit = 35.7 px.</div>
+      <div class="stage-label">not an illustration — the real numbers</div>
+    </div>
+  </section>
+
+  <nav class="tabs">
+    <a href="#anatomy">Anatomy</a>
+    <a href="#findings">Five findings</a>
+    <a href="#mask">Lab · the mask</a>
+    <a href="#lattice">Lab · the lattice</a>
+    <a href="#studio">Lab · the grass studio</a>
+    <a href="#reference">Reference</a>
+    <a href="#model">The model</a>
+    <a href="#slate">The slate</a>
+    <a href="#gate">The gate</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#claims">What this doesn't claim</a>
+  </nav>
+
+  <section id="anatomy">
+    <h2>Anatomy — what grass is made of today</h2>
+    <p class="lede">One baked sheet, one tiled detail sheet, one whole-material season multiply. Three numbers decide everything you see: 8 texels per world unit on the base, 80 on the detail, 35.7 screen pixels per world unit in the buffer they land in.</p>
+
+    <div class="stats">
+      <div class="stat"><b>1792 × 1344</b><span>baked ground sheet, 8 texels per world unit</span></div>
+      <div class="stat"><b>256²</b><span>detail sheet, tiled every 3.2 u — 80 texels per unit</span></div>
+      <div class="stat"><b>35.7 px</b><span>one world unit across, in the 480 × 360 buffer</span></div>
+      <div class="stat warn"><b>0</b><span>ground-cover meshes; no tufts, no clover, nothing standing in it</span></div>
+    </div>
+
+    <div class="callout"><b>The scale split nobody wrote down.</b> The base sheet magnifies 4.5× on its way to the screen, so nothing it paints below about 2 world units survives as anything but a blur. The detail sheet <em>minifies</em> 2.2×, so anything it paints above ~10 cycles per tile lands at or under the buffer's Nyquist limit and mips away to grey. The band a player can actually see is roughly <b>0.3 u to 2 u</b> — and neither sheet is currently aimed at it.</p></div>
+
+    <h3 style="margin-top:26px">Where the decisions live</h3>
+    <div class="code-map">
+      <div class="code-row"><code>src/world/terrain.ts</code> · <code>paintIslandGround</code><div><b>The base colour, per texel</b><span>Walks 2.4M texels. Every branch is a consequence of the surface — depth, slope, wet band, bank feather — except the last one, which is the lawn: <code>put(i, tier[i] &gt;= 2 ? h6f7a44 : h3c4a30, 1 + tier[i] * 0.12)</code>. Two hexes and a multiplier, and <code>tier</code> is where the trouble is.</span></div></div>
+      <div class="code-row"><code>src/world/island/IslandField.ts</code> · <code>tierAt</code><div><b>The elevation the painter reads</b><span><code>locate(x, z)</code> floors the point into the acre grid and returns <code>acre.tier</code>. It is a per-acre integer with no interpolation, which is correct for what it is for — deciding which piece you are standing on — and wrong for shading a continuous surface.</span></div></div>
+      <div class="code-row"><code>src/world/terrain.ts</code> · <code>makeGroundDetailTexture</code><div><b>The blade sheet, which does exist</b><span>Three channels: R clumps + cross-hatch for grass, G wind ripple for sand, B neutral breakup for everything. It is well made. Its grass channel is authored to swing ±0.29, and on grass it delivers ±0.014.</span></div></div>
+      <div class="code-row"><code>src/world/terrain.ts</code> · <code>applyGroundDetail</code><div><b>The classifier that turns it off</b><span><code>grassMask = smoothstep(0.0, 0.09, diffuseColor.g - diffuseColor.r)</code>, in linear space. It asks the pixel what material it is instead of being told, and the answer for the shipped grass swatch is 0.012 — so the mask is 0.05.</span></div></div>
+      <div class="code-row"><code>src/game/Game.ts</code> · <code>SEASON_GRADE</code><div><b>The whole year, as one multiply</b><span><code>map.setSeasonTint(g.ground)</code> sets <code>groundMat.color</code>. A multiply can only take light away, so summer is the brightest grass the game can render and every other season is a dimmer version of it. <code>palette.seasons.*.ground</code> — the swatches that look like they are for this — are read by nothing.</span></div></div>
+      <div class="code-row"><code>src/world/weather/WetnessField.ts</code><div><b>The machine a wear field would reuse</b><span>A per-cell accumulator, uploaded as a data texture, read at cell centres and quantised to fixed levels in the ground shader. Exactly the plumbing path wear needs, already built, already debugged, already in <code>groundUniforms</code>.</span></div></div>
+    </div>
+  </section>
+
+  <section id="findings">
+    <h2>Five findings</h2>
+    <p class="lede">All measured against the live build on the shipped map. F1 and F2 are defects with a specific line of code behind them; F3 is a consequence of a decision that was probably right in the small; F4 and F5 are absences.</p>
+
+    <div class="find">
+      <div class="tag"><span class="sev bug">bug</span> · F1 · this is the one in the screenshot</div>
+      <h3>The lawn is shaded from an acre lookup, so the acre lattice is visible on flat ground</h3>
+      <p>Grass brightness is <code>1 + tier × 0.12</code> and <code>tier</code> comes from <code>tierAt</code>, which floors the world point into the acre grid and returns that acre's integer. So the 12% step falls on the acre border — a straight line 14 units long — regardless of where the ground actually changes height. On the shipped island the two never coincide.</p>
+      <div class="readout one">
+        <div class="readout-row warn"><span>Grass border where the paint steps and the ground does <b>not</b> (&lt; 0.4 u)</span><b>56.5 u</b></div>
+        <div class="readout-row good"><span>Grass border where the paint steps and the ground does too</span><b>0.0 u</b></div>
+        <div class="readout-row"><span>Distinct borders affected</span><b>6</b></div>
+        <div class="readout-row"><span>Worst single border — <code>river-straight</code> t1 against <code>cliff-transition</code> t0</span><b>13.5 u</b></div>
+      </div>
+      <div class="because"><b>Why it happens.</b> A <code>cliff-transition</code> or <code>cliff-ramp</code> acre carries <em>one</em> tier but contains <em>two</em> heights — the climb happens inside it. The flat ground at the top of that climb belongs to a tier-0 acre and is painted tier-0, while the identical flat ground one texel across the border belongs to a tier-1 acre and is painted 12% brighter. Nothing is wrong with the geometry. The paint is answering a different question than the one it looks like it is answering.<br><br><b>The fix is one line, and it is already in scope.</b> <code>height[i]</code> is filled in the same loop, three lines above <code>tier[i]</code>, and it is the continuous field. The tier read can go.</div>
+    </div>
+
+    <div class="find">
+      <div class="tag"><span class="sev bug">bug</span> · F2</div>
+      <h3>The blade-detail sheet is switched off on grass by a colour test the Era 1 palette grade invalidated</h3>
+      <p><code>applyGroundDetail</code> works out what material a pixel is by looking at its colour: <code>smoothstep(0, 0.09, g − r)</code> in linear space. That threshold was chosen for a saturated green. The Era 1 grade then pulled every generated swatch 22% toward its own RGB average — the grade <code>palette.ts</code> describes as "the right grade for brass, timber, grass and sand" — and grass came out at <code>g − r = 0.012</code>.</p>
+      <div class="wrap-scroll">
+        <table>
+          <thead><tr><th>Surface</th><th>Shipped swatch</th><th class="num">g − r (linear)</th><th class="num">grass mask</th><th class="num">sand mask</th><th class="num">detail swing</th></tr></thead>
+          <tbody>
+            <tr><td>Grass, tier 0–1</td><td><span class="swatch" style="background:#424932"></span><code>#424932</code></td><td class="num">0.0121</td><td class="num" style="color:#8d4b3a"><b>0.050</b></td><td class="num">0.000</td><td class="num" style="color:#8d4b3a">0.189</td></tr>
+            <tr><td>Grass, tier 2</td><td><span class="swatch" style="background:#707447"></span><code>#707447</code></td><td class="num">0.0126</td><td class="num" style="color:#8d4b3a"><b>0.053</b></td><td class="num" style="color:#8d4b3a"><b>0.517</b></td><td class="num" style="color:#8d4b3a">0.191</td></tr>
+            <tr><td>Sand</td><td><span class="swatch" style="background:#bea37e"></span><code>#bea37e</code></td><td class="num">−0.1487</td><td class="num">0.000</td><td class="num" style="color:#4f6b4a"><b>1.000</b></td><td class="num" style="color:#4f6b4a">0.560</td></tr>
+            <tr><td>Dirt</td><td><span class="swatch" style="background:#5d4c3a"></span><code>#5d4c3a</code></td><td class="num">−0.0372</td><td class="num">0.000</td><td class="num">0.198</td><td class="num">0.239</td></tr>
+            <tr><td>Rock</td><td><span class="swatch" style="background:#7f786b"></span><code>#7f786b</code></td><td class="num">−0.0244</td><td class="num">0.000</td><td class="num">0.180</td><td class="num">0.232</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="because"><b>Read the second row.</b> Tier-2 grass scores <b>0.053 grass</b> and <b>0.517 sand</b>. The high lawn is being given wind ripples ten times more strongly than blades. <br><br><b>And there is a frame that proves it.</b> In <code>lawn-noon.png</code> below, the sand band and the grass are the same sheet at the same tile size in the same shot. The sand shows ripples you can count. The grass shows nothing.<br><br><b>What the lawn is left with.</b> With the blade channel at 0.05, the sheet may move a grass texel by ±0.0145 from the blades and ±0.08 from the B channel — the neutral breakup that <em>every</em> surface gets, rock and riverbed included. <b>85% of the only variation on the lawn is the channel authored specifically not to be about grass.</b><br><br><b>Why patching the threshold is the wrong fix.</b> The classifier is re-deriving a fact the painter already had in hand and threw away. <code>paintIslandGround</code> knows exactly which branch it took for every texel, and the sheet's alpha channel is written <code>255</code> everywhere and read by nothing.</div>
+    </div>
+
+    <div class="find">
+      <div class="tag"><span class="sev gap">gap</span> · F3</div>
+      <h3>Every grass colour the game can produce, in any season, is olive</h3>
+      <p>Twelve reachable grass colours — three tiers × four season multiplies. Their hue spans <b>52° to 78°</b>. Green is 120°. Their saturation spans 0.19 to 0.34 and their luma spans 0.196 to 0.301: the whole year of grass fits inside a tenth of the value range.</p>
+      <div class="readout">
+        <div class="readout-row"><span>Spring, tier 0</span><b><span class="swatch" style="background:#3c4027"></span>#3c4027 · h70 s.24 l.24</b></div>
+        <div class="readout-row"><span>Summer, tier 0 <em>(brightest possible)</em></span><b><span class="swatch" style="background:#41462d"></span>#41462d · h72 s.22 l.26</b></div>
+        <div class="readout-row"><span>Autumn, tier 0</span><b><span class="swatch" style="background:#37341b"></span>#37341b · h54 s.34 l.20</b></div>
+        <div class="readout-row"><span>Winter, tier 0</span><b><span class="swatch" style="background:#3a3f2a"></span>#3a3f2a · h74 s.20 l.23</b></div>
+      </div>
+      <div class="because"><b>This is not an argument for Nintendo green.</b> <code>CLAUDE.md</code> asks for a muted earthy palette and it is right to. But <em>muted</em> and <em>monochrome</em> are different decisions, and only one of them was made deliberately. The centre of mass is fine; the spread is zero.<br><br><b>The season multiply cannot help.</b> A material colour multiply can only take light away, so summer's <code>#fdf4e5</code> is the ceiling and autumn is the same lawn dimmed 22%. It is the identical argument <code>applyGroundDetail</code> already makes for snow — "multiplying green grass by pale blue just gives dim green" — and snow was given a shader blend for exactly that reason. Grass was not.</div>
+    </div>
+
+    <div class="find minor">
+      <div class="tag"><span class="sev dead">dead</span> · F4</div>
+      <h3><code>palette.seasons.*.ground</code> is read by nothing</h3>
+      <p>Four authored ground swatches — spring <code>#8a9a5a</code>, summer <code>#7d8f5c</code>, autumn <code>#8a6b45</code>, winter <code>#a8bcc8</code>. They are the only place in the palette where somebody wrote down what grass should look like across a year. <code>grep</code> finds two readers of <code>palette.seasons</code> in the whole tree, both of them debug overlays, and both reading <code>.accent</code>. The ground season colour actually in use is <code>Game.SEASON_GRADE[...].ground</code>, a separate table of white-ish multipliers in a 3,576-line file.</p>
+      <div class="because">Two tables answering one question, and the one that reads like the answer is the dead one. Whatever the model ends up being, this should end with a single owner.</div>
+    </div>
+
+    <div class="find minor">
+      <div class="tag"><span class="sev gap">gap</span> · F5</div>
+      <h3>Grass has one length scale, and it is the wrong one</h3>
+      <p>The only variation on the lawn is the detail sheet, tiled every 3.2 u. There is no metre-scale patchiness, no wear, and nothing standing in the grass — no tufts, no clover, no weeds. Every <code>InstancedMesh</code> in the build belongs to shadows, particles or fish.</p>
+      <div class="because"><b>And the sheet carries a grid.</b> Every noise function in <code>terrain.ts</code> — <code>tileNoise</code>, <code>edgeNoise</code>, the wetness field's <code>smoothNoise</code> — is value noise sampled on the world axes. Value noise puts its extrema on lattice lines, so several octaves stacked in one frame read as a plaid rather than as a field. At the shipped 5% mask nobody can see it; run the same sheet at full strength, as the studio panel does, and it appears immediately. It is <code>AGENTS.md</code> rule 4 one level down — procedural standing in for design, and reading mechanical because of it. A low-frequency domain warp and a per-octave rotation take it out, and both are a handful of multiplies at bake time.<br><br><b>The scale problem.</b> Even with F2 fixed, the sheet's own content is aimed too high. Of the grass channel's authored swing, the clump term (8 cycles/tile = 14 screen px per cycle) survives; the fine term (26 cycles = 4.4 px) and the grit (40 cycles = 2.9 px) sit at or under the buffer's Nyquist limit and average to grey — or crawl when the camera moves. <b>Roughly half the authored amplitude cannot reach the screen at any mask value.</b></div>
+    </div>
+  </section>
+
+  <section id="mask">
+    <h2>Lab · the mask</h2>
+    <p class="lede">F2, as a curve you can drag. The line is <code>smoothstep(0, 0.09, g − r)</code>; the dots are the five shipped ground swatches at their real linear positions. Move the upper edge and watch what it takes to bring grass back — and notice what it does to dirt and rock on the way.</p>
+    <div class="lab">
+      <h3>What the classifier sees</h3>
+      <p class="hint">Everything on this chart is computed from <code>src/art/swatches.generated.ts</code> through the same sRGB→linear conversion three.js applies to the ground map. Nothing is drawn by hand.</p>
+      <canvas id="maskCanvas" width="900" height="330" aria-label="A smoothstep curve with five ground swatches plotted on it; grass sits near zero and receives almost no mask"></canvas>
+      <div class="controls">
+        <label>Upper edge <input type="range" id="maskEdge" min="0.005" max="0.14" step="0.001" value="0.09" /> <span class="num" id="maskEdgeV">0.090</span></label>
+        <label><input type="checkbox" id="maskShowSand" checked /> show the sand test too</label>
+      </div>
+      <div class="verdict" id="maskVerdict"></div>
+    </div>
+  </section>
+
+  <section id="lattice">
+    <h2>Lab · the lattice</h2>
+    <p class="lede">F1, on the real board. This is the shipped map <code>seed-80085</code> — 16 × 12 acres, every tier and mean ground height read out of the live build by <code>scripts/grass-survey.mjs</code>. Switch between what the painter uses and what the ground actually does.</p>
+    <div class="lab">
+      <h3>Two elevations, one island</h3>
+      <p class="hint">Green intensity is the value the painter would shade with. <b>Acre tier</b> is what it reads today; <b>ground height</b> is the field sitting in the next variable. The red marks are the 56.5 units of border where the two disagree — where the lawn steps and the land does not.</p>
+      <div class="lab-grid">
+        <div>
+          <canvas id="latticeCanvas" width="640" height="480" aria-label="A 16 by 12 grid of island acres shaded by elevation, with red marks on the borders where the painted colour steps but the ground does not"></canvas>
+          <div class="capt"><b id="latticeCap">Acre tier — what the painter reads</b><span id="latticeSub"></span></div>
+        </div>
+        <div>
+          <canvas id="latticeZoom" width="640" height="480" class="pix" aria-label="A close view of one acre border showing the painted colour step against the true ground profile"></canvas>
+          <div class="capt"><b>The worst border, in section</b>13.5 units of <code>river-straight</code> tier 1 against <code>cliff-transition</code> tier 0. Ground profile in cream, painted lawn value in green.</div>
+        </div>
+      </div>
+      <div class="controls">
+        <label>Shade by
+          <select id="latticeMode">
+            <option value="tier">acre tier (today)</option>
+            <option value="height">ground height (proposed)</option>
+            <option value="diff">the difference</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="latticeSeams" checked /> mark the false seams</label>
+        <label><input type="checkbox" id="latticeGrid" checked /> acre grid</label>
+      </div>
+      <div class="verdict" id="latticeVerdict"></div>
+    </div>
+  </section>
+
+  <section id="studio">
+    <h2>Lab · the grass studio</h2>
+    <p class="lede">The mockup, and the proposal. Both panels render a 13.4 × 7.6 world-unit patch of lawn into a 480 × 270 buffer at the measured 35.7 px per unit, then upscale nearest-neighbour — the same path the game's frame takes. The left panel is today's four lines of shading, including the neutral breakup channel it does receive. The right is the layer stack, and every layer can be switched off to see what it was carrying. Both are measured underneath by the same flatness test.</p>
+
+    <div class="lab">
+      <h3>Today, against the stack</h3>
+      <p class="hint">Layers 2 and 3 are the existing detail sheet, reimplemented from <code>makeGroundDetailTexture</code> verbatim and run at the strength it was authored for. Layer 1 is new paint in the base sheet. Layers 4–6 are new. Drag the divider or use the layer list.</p>
+      <div class="lab-grid">
+        <div>
+          <canvas id="studioA" width="480" height="270" class="pix" aria-label="The lawn as it renders today: flat olive with a straight acre seam"></canvas>
+          <div class="capt"><b>Today</b>Two plates, an acre seam, and the detail sheet at its measured 5%.</div>
+        </div>
+        <div>
+          <canvas id="studioB" width="480" height="270" class="pix" aria-label="The proposed lawn: a mottled green with visible blade texture, a worn path and scattered tufts"></canvas>
+          <div class="capt"><b>Proposed</b><span id="studioBCap"></span></div>
+        </div>
+      </div>
+
+      <div class="layers" id="studioLayers"></div>
+
+      <div class="controls">
+        <label>Season
+          <select id="studioSeason">
+            <option value="spring">spring</option>
+            <option value="summer" selected>summer</option>
+            <option value="autumn">autumn</option>
+            <option value="winter">winter</option>
+          </select>
+        </label>
+        <label>Camera height <input type="range" id="studioZoom" min="0.5" max="2.4" step="0.05" value="1" /> <span class="num" id="studioZoomV">1.00×</span></label>
+        <label>Hue spread <input type="range" id="studioHue" min="0" max="46" step="1" value="26" /> <span class="num" id="studioHueV">26°</span></label>
+        <label>Value spread <input type="range" id="studioVal" min="0" max="0.3" step="0.01" value="0.16" /> <span class="num" id="studioValV">0.16</span></label>
+        <label><input type="checkbox" id="studioSqueeze" /> squint (half resolution)</label>
+        <label><input type="checkbox" id="studioSeam" checked /> keep an acre border in frame</label>
+      </div>
+      <div class="verdict" id="studioVerdict"></div>
+    </div>
+
+    <div class="grid2" style="margin-top:20px">
+      <div class="panel">
+        <h3>The ramp this proposes</h3>
+        <p style="margin:.2em 0 .8em;font-size:14px;color:#4c443a">Four stops instead of two hexes. The centre of mass is deliberately left where the Era 1 grade put it — mean hue 78°, mean luma 0.27, the same lawn — and the spread is put back. Position along the ramp comes from the macro field, so hue and value move together the way a real field's does rather than as one brightness knob.</p>
+        <canvas id="rampCanvas" width="560" height="120" style="width:100%;height:auto;border-radius:9px;border:1px solid var(--edge)"></canvas>
+        <div class="readout one" style="margin-top:10px" id="rampReadout"></div>
+      </div>
+      <div class="panel">
+        <h3>Where each layer has to live</h3>
+        <p style="margin:.2em 0 .8em;font-size:14px;color:#4c443a">Set by the scale split in the anatomy, not by preference. Above 2 units the base sheet is the only thing with the reach; below 1 unit it is the only thing without the resolution.</p>
+        <canvas id="scaleCanvas" width="560" height="240" style="width:100%;height:auto;border-radius:9px;border:1px solid var(--edge)"></canvas>
+        <div class="capt" style="color:#4c443a;padding-top:9px">Feature size in world units, against what can carry it. The shaded band is what a player at the default camera can actually resolve.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reference">
+    <h2>Reference — what the games we are copying actually do</h2>
+    <p class="lede">Stated as observation of the shipped games, not as documentation of them. The point of the list is that <em>none</em> of these is expensive, and we have the machinery for four of the six already.</p>
+    <div class="grid3">
+      <div class="panel"><h3>A repeating ground motif</h3><p style="font-size:14px;margin:.2em 0">The ground carries a visible small-scale pattern that repeats on the tile grid and is never hidden. It is not photoreal grass and does not try to be — it is a legible texture with a recognisable beat, which is what makes the ground feel like a surface rather than a fill colour.</p><p style="font-size:13px;color:var(--muted);margin:.6em 0 0"><b>We have it.</b> The detail sheet is exactly this and it is switched off.</p></div>
+      <div class="panel"><h3>Things standing in it</h3><p style="font-size:14px;margin:.2em 0">Weeds, clover, flowers and small plants sit <em>on</em> the ground as separate objects at a density that reads as ground cover rather than as props. They catch the light differently from the ground, which is what gives the lawn depth at player height.</p><p style="font-size:13px;color:var(--muted);margin:.6em 0 0"><b>We have none.</b> Biggest single win available, one draw call.</p></div>
+      <div class="panel"><h3>Wear where people walk</h3><p style="font-size:14px;margin:.2em 0">Repeated traffic changes the ground under it, and stopping changes it back. It is the clearest signal a town has been lived in, and it costs no art — it is a field that accumulates.</p><p style="font-size:13px;color:var(--muted);margin:.6em 0 0"><b>We have the machine.</b> <code>WetnessField</code> is a per-cell accumulator with a shader path already wired into <code>groundUniforms</code>.</p></div>
+      <div class="panel"><h3>Seasonal colour, not seasonal dimming</h3><p style="font-size:14px;margin:.2em 0">The ground's <em>hue</em> changes with the season — spring's yellow-green, high summer's deeper green, autumn's warmth. It is a different colour, not the same colour with less light on it.</p><p style="font-size:13px;color:var(--muted);margin:.6em 0 0"><b>We dim.</b> F3. The swatches for the real version are already authored and dead (F4).</p></div>
+      <div class="panel"><h3>Blended material edges</h3><p style="font-size:14px;margin:.2em 0">Grass meets sand and dirt through a scatter of the one into the other, not on a line.</p><p style="font-size:13px;color:var(--muted);margin:.6em 0 0"><b>We half have it.</b> <code>coverageField</code> and <code>EDGE_WOBBLE</code> already push the contour off the lattice; what is missing is stipple across the boundary.</p></div>
+      <div class="panel"><h3>Large-scale patchiness</h3><p style="font-size:14px;margin:.2em 0">A field is not one colour at ten metres. Broad soft variation across a whole area is what stops a lawn reading as a painted plane in wide shots — which is most shots, at this camera.</p><p style="font-size:13px;color:var(--muted);margin:.6em 0 0"><b>We have none</b>, and the base sheet is the one thing with the reach to carry it. Free: the painter already visits every texel.</p></div>
+    </div>
+    <div class="callout"><b>The honest comparison.</b> Of six things, two are defects in work already done (F1, F2), two are cheap additions to machinery we already own (macro variation, wear), one is a table swap (season), and one is genuinely new (ground cover). None of it is a rewrite, and none of it needs the asset pipeline <code>NINTENDO_GAP.md</code> is waiting on.</div>
+  </section>
+
+  <section id="model">
+    <h2>The model — six layers, in the order they'd land</h2>
+    <p class="lede">Each layer is independently shippable, independently gate-able, and none depends on a later one. Costs are against the current budget: 161,834 scene triangles and 679 meshes.</p>
+    <div class="wrap-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Layer</th><th>Where it lives</th><th>Scale it owns</th><th>What it fixes</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td class="num">0</td><td><b>Continuous elevation shading</b><br>Shade from <code>height[i]</code>, not <code>tierAt</code></td><td><code>terrain.ts</code> · <code>paintIslandGround</code></td><td>whole island</td><td>F1 — all 56.5 u of it</td><td><span class="pill cost-s">one line + gate</span></td></tr>
+          <tr><td class="num">1</td><td><b>Macro mottle</b><br>3 rotated octaves at 11 u, 4.5 u and 1.8 u, driving position along a ramp</td><td><code>terrain.ts</code> · same per-texel loop</td><td>2 u – 15 u</td><td>F3, F5 (the wide shot)</td><td><span class="pill cost-s">bake-time only</span></td></tr>
+          <tr><td class="num">2</td><td><b>Material id in the sheet's alpha</b><br>Retire <code>grassMask</code>/<code>sandMask</code>; the painter writes what it painted</td><td><code>terrain.ts</code> · <code>put</code> + <code>applyGroundDetail</code></td><td>—</td><td>F2 — exactly, and permanently</td><td><span class="pill cost-s">no new memory</span></td></tr>
+          <tr><td class="num">3</td><td><b>Rebalance and warp the blade sheet</b><br>Move amplitude from the 26/40-cycle terms into the 8–12 band; warp the sample point and rotate each octave</td><td><code>makeGroundDetailTexture</code></td><td>0.3 u – 1.5 u</td><td>F5 — both halves, the aliasing and the lattice</td><td><span class="pill cost-s">constants</span></td></tr>
+          <tr><td class="num">4</td><td><b>Wear field</b><br>A per-cell accumulator on player and villager traffic; decays</td><td>new <code>weather/</code>-shaped module + <code>groundUniforms</code></td><td>1 u – 4 u</td><td>the town reads as lived-in</td><td><span class="pill cost-m">one data texture</span></td></tr>
+          <tr><td class="num">5</td><td><b>Ground cover</b><br>Blue-noise tufts and clover, density from the macro field</td><td>new <code>world/GroundCover.ts</code>, one <code>InstancedMesh</code></td><td>0.2 u – 0.6 u</td><td>the lawn at player height</td><td><span class="pill cost-m">1 draw, ~24k tris</span></td></tr>
+          <tr><td class="num">6</td><td><b>Season as a ramp swap</b><br>Four authored ramps; retire the multiply</td><td><code>palette.seasons</code> (revived) + shader blend</td><td>whole island</td><td>F3, F4</td><td><span class="pill cost-m">re-bake per season</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout good"><b>Layers 0–3 are the whole of the defect list and they are all bake-time or constants.</b> No new texture, no new draw call, no new triangle. If only one thing on this page gets built, it is those four, and the gate below is what says whether they landed.</div>
+
+    <h3 style="margin-top:28px">Two calls this page is making</h3>
+    <div class="props">
+      <div class="prop hero-prop">
+        <div class="tag">Call 1 · replaces the tier read entirely</div>
+        <h3>Elevation should stop tinting the lawn at all</h3>
+        <p>The <code>1 + tier × 0.12</code> multiplier is trying to say <em>high ground catches more light</em>. That is a real idea and it belongs to the lighting model, not to the ground's albedo — the sun already knows where the high ground is, and a baked brightness ramp fights it at every hour that isn't noon. Layer 0 fixes the seam by making the read continuous; this call goes one step further and asks whether the read should exist.</p>
+        <p class="free"><b>What it frees.</b> Grass becomes one ramp driven by one field (the macro mottle), instead of a ramp times an elevation term that nothing else in the world agrees with. If the uplands should read differently, that is a <em>different ramp position</em> — drier, paler, more worn — which the macro field can carry for free, and which is a statement about what the high ground <em>is</em> rather than about how much light hits it.</p>
+        <div class="meta"><span class="pill cost-s">subtractive</span><span class="pill">unblocks layer 1</span></div>
+      </div>
+      <div class="prop">
+        <div class="tag">Call 2 · the general shape of F2</div>
+        <h3>A shader must never infer a material the baker already knew</h3>
+        <p>F2 is not a bad threshold. It is a classifier standing where a fact should be, and it stayed silently wrong through a palette change that had no reason to know it existed. The ground sheet's alpha byte is written <code>255</code> for 2.4M texels and read by nobody.</p>
+        <p class="free"><b>The rule worth writing down:</b> if the bake knows it, the bake writes it. That makes the palette grade safe to re-run, which is the actual failure this page found — not a wrong number, but a coupling nobody could see.</p>
+        <div class="meta"><span class="pill cost-s">no new memory</span><span class="pill">makes the grade re-runnable</span></div>
+      </div>
+      <div class="prop">
+        <div class="tag">Call 3 · scope</div>
+        <h3>Ground cover is the biggest win and it is still third</h3>
+        <p>Tufts standing in the grass would do more for this than everything else combined. It is deliberately behind the four free layers, because a lawn with tufts on it and a visible acre seam underneath is a lawn with a visible acre seam, and because the tuft density wants the macro field (layer 1) to have something to say.</p>
+        <p class="free"><b>Budget, measured — and it only works one way.</b> A static island-wide scatter at a density that reads (one tuft per 0.45 u, which is what the studio panel draws) needs about 33,000 instances to cover 6,760 u² of land, and most of them are behind the camera. A <b>fixed pool re-anchored to the camera</b> holds the count constant instead: 6,000 instances over a 30 × 24 u footprint is the same density where it is seen, ~24,000 triangles against the world's current 161,834, and one draw call against 679 meshes. The instancing pattern is already in <code>Shadows.ts</code>.</p>
+        <div class="meta"><span class="pill cost-m">1 draw call</span><span class="pill">after layers 0–3</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="slate">
+    <h2>The slate</h2>
+    <p class="lede">Three lanes. Lane one is defect repair and can be verified by a script. Lanes two and three are visual and cannot — they end in the review queue under the jury rule, like everything else that is judged by eye.</p>
+    <div class="slate">
+      <div class="lane">
+        <header><b>1 · Stop the bleeding</b><span>Defects. Gate-verifiable. No new assets.</span></header>
+        <ol>
+          <li><b>Shade grass from <code>height[i]</code>, not <code>tierAt</code>.</b> Kills all 56.5 u of false seam. One line in <code>paintIslandGround</code>.</li>
+          <li><b>Write the material id into the ground sheet's alpha</b> and delete <code>grassMask</code>/<code>sandMask</code> from <code>applyGroundDetail</code>. Restores the blade sheet from 0.05 to 1.0.</li>
+          <li><b>Add <code>scripts/grass-gate.mjs</code></b> with the three assertions below, so neither defect can come back through a palette change.</li>
+          <li><b>Rebalance <code>makeGroundDetailTexture</code>'s R channel</b> out of the terms that land under Nyquist, and warp its sample point so the value-noise lattice stops showing.</li>
+        </ol>
+      </div>
+      <div class="lane two">
+        <header><b>2 · Give it grain</b><span>Visual. Bake-time. Ends in the queue.</span></header>
+        <ol>
+          <li><b>Author the four-stop grass ramp</b> in <code>palette.ts</code>, centred where the grade left it.</li>
+          <li><b>Macro mottle in the painter</b>, two octaves, driving ramp position rather than brightness.</li>
+          <li><b>Stipple the grass↔sand and grass↔dirt boundaries</b> using the coverage field that already exists.</li>
+          <li><b>Revive <code>palette.seasons.*.ground</code></b> as four ramps; retire <code>SEASON_GRADE.ground</code>. One owner for the question.</li>
+          <li><b>Capture the four seasons at one framing</b> and file them together.</li>
+        </ol>
+      </div>
+      <div class="lane three">
+        <header><b>3 · Give it life</b><span>New systems. Costs draw calls.</span></header>
+        <ol>
+          <li><b>Wear field</b> on the <code>WetnessField</code> pattern: accumulate on traffic, decay daily, quantise to levels in the shader.</li>
+          <li><b>Ground cover</b> — one <code>InstancedMesh</code>, blue-noise placement, density from the macro field, suppressed by wear.</li>
+          <li><b>Clover and flowers as accents</b> in the same buffer, at a fraction of the density.</li>
+          <li><b>Tie wear to the letter routes</b>, so the path the Postmaster walks every day is the path that shows.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="gate">
+    <h2>The gate</h2>
+    <p class="lede">Three assertions, in the shape <code>island-field.mjs</code> and <code>water-gate.mjs</code> use. Each one fails today, with the number it fails by. A palette grade, a swatch change or a new piece kind can all silently break grass again; this is what would catch it.</p>
+    <div class="wrap-scroll">
+      <table>
+        <thead><tr><th>Assertion</th><th>What it measures</th><th class="num">Today</th><th class="num">Threshold</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td><b>SEAM</b></td><td>Grass border, in world units, where the painted value steps more than 4% and the ground steps less than 0.4 u</td><td class="num">56.5 u</td><td class="num">0 u</td><td><span class="sev bug">fail</span></td></tr>
+          <tr><td><b>DETAIL</b></td><td>The detail sheet's effective swing on the shipped grass swatch, as a fraction of its authored swing — evaluated through the same sRGB→linear path the shader uses</td><td class="num">0.05</td><td class="num">≥ 0.80</td><td><span class="sev bug">fail</span></td></tr>
+          <tr><td><b>SPREAD</b></td><td>Over grass texels <b>in the baked sheet</b>, before the shader's neutral breakup: share held by the single most common colour, and distinct colours present</td><td class="num">57.5% / 44</td><td class="num">≤ 12% / ≥ 400</td><td><span class="sev bug">fail</span></td></tr>
+          <tr><td><b>NYQUIST</b> <em>(advisory)</em></td><td>Share of the detail sheet's grass-channel amplitude sitting above 8 cycles per tile at the default camera</td><td class="num">51%</td><td class="num">≤ 25%</td><td><span class="sev gap">warn</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout"><b>SPREAD is the one that matters.</b> SEAM and DETAIL are specific enough to be gamed by the fix that satisfies them. "No colour on the lawn holds more than an eighth of it" is a property of the result, and no amount of re-plumbing satisfies it without the lawn actually having variation in it. The survey already computes all four numbers — <code>scripts/grass-survey.mjs</code> is the measuring half of this gate.</div>
+  </section>
+
+  <section id="evidence">
+    <h2>Evidence</h2>
+    <p class="lede">Captured 2026-08-29 by <code>scripts/grass-survey.mjs</code> against the live build at 960 × 720, pinned to noon and to the acre border the census names as worst. Written to <code>docs/review-queue/grass/</code> with the full JSON. <b>None of these is approved</b>; they are the state of the build, not a claim about it.</p>
+    <div class="shots">
+      <figure>
+        <img src="/docs/review-queue/grass/seam-worst.png" alt="The Postmaster standing on flat grass; a straight vertical line runs the full height of the frame where the grass changes to a slightly brighter shade, with a second horizontal line lower down" />
+        <figcaption><b>F1 — the acre seam, at noon</b>The vertical line through the middle of the frame and the horizontal one below it are acre borders. The ground is continuous across both: this is 12% brightness answering a question about which acre you are in.</figcaption>
+      </figure>
+      <figure>
+        <img src="/docs/review-queue/grass/lawn-noon.png" alt="A riverbank at noon: the sand band shows clear ripple texture while the grass below it is completely flat" />
+        <figcaption><b>F2 — the same sheet, twice</b>The sand band and the lawn are drawn from one detail texture at one tile size in one shot. Sand shows ripples you can count. Grass shows nothing. That gap is the 0.05 mask, on screen.</figcaption>
+      </figure>
+    </div>
+    <div class="shots" style="margin-top:16px;grid-template-columns:1fr">
+      <figure>
+        <img src="/docs/review-queue/grass/seam-worst-dusk.png" alt="The same acre border at dusk; the seam is still visible under warm low light" />
+        <figcaption><b>F1 at 18:12</b>The seam is baked into the albedo, so it does not move, soften or turn with the light. Under low warm sun it reads as a change of material.</figcaption>
+      </figure>
+    </div>
+    <div class="readout" style="margin-top:20px">
+      <div class="readout-row"><span>Baked sheet</span><b>1792 × 1344</b></div>
+      <div class="readout-row"><span>Grass texels sampled</span><b>749,863</b></div>
+      <div class="readout-row warn"><span>Distinct grass colours</span><b>44</b></div>
+      <div class="readout-row warn"><span>Top two colours' share</span><b>98.1%</b></div>
+      <div class="readout-row"><span>Grass luma range</span><b>0.268 – 0.534</b></div>
+      <div class="readout-row"><span>Page errors during capture</span><b>0</b></div>
+    </div>
+  </section>
+
+  <section id="claims">
+    <h2>What this doesn't claim</h2>
+    <div class="limits">
+      <div class="limit"><b>Nothing here is built.</b><p>No engine code changed for this page. The only files it produced are <code>grass/index.html</code>, <code>scripts/grass-survey.mjs</code>, and the frames and JSON in <code>docs/review-queue/grass/</code>.</p></div>
+      <div class="limit"><b>Nothing here is approved.</b><p>Under the jury rule in <code>AGENTS.md</code>, every mockup on this page is a proposal drawn by the thing proposing it. The right-hand studio panel is not evidence that the proposal is good — only that it is specific.</p></div>
+      <div class="limit"><b>The mockups are 2D.</b><p>The studio renders the ground plane at the measured screen scale, which is honest about the base and detail sheets because those <em>are</em> flat textures. It is not honest about layer 5 — tufts are 3D and will catch light the flat marks here don't.</p></div>
+      <div class="limit"><b>One map.</b><p>Every seam number is <code>seed-80085</code>, the map <code>DEFAULT_TEMPLATE_ID</code> ships. The defect is structural, so the other seven maps will have their own totals; the survey walks whichever map is loaded.</p></div>
+      <div class="limit"><b>The reference section is observation.</b><p>The Animal Crossing behaviours listed are what the shipped games visibly do, described from play. No claim is made about how they are implemented.</p></div>
+      <div class="limit"><b>Grass is canon-independent.</b><p>Ground rendering survives either outcome of the POSTMARK/Kindly Forward question, which is why this work is safe to scope now. It touches no cast, map, dialogue or letter.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    Kindly Forward · <b>/grass</b> · survey, mockups and slate, 29 August 2026 · measurements by <code>scripts/grass-survey.mjs</code> against the live build on <code>seed-80085</code> · every number on this page is reproducible with <code>npm run dev</code> and <code>npm run grass:survey</code>
+  </footer>
+
+</main>
+<script src="/grass/grass-lab.js" type="module"></script>
+</body>
+</html>

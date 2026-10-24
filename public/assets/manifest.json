@@ -1,0 +1,40 @@
+{
+  "bench": {
+    "type": "model",
+    "url": "/assets/bench.glb"
+  },
+  "benchTimber": {
+    "type": "texture",
+    "url": "/assets/textures/weathered-timber.png",
+    "mipmaps": false
+  },
+  "sparks": {
+    "type": "model",
+    "url": "/assets/sparks.glb"
+  },
+  "orchardTree": {
+    "type": "model",
+    "url": "/assets/orchard-tree.glb"
+  },
+  "postmaster": { "type": "model", "url": "/assets/postmaster-v29.glb" },
+  "keeper": { "type": "model", "url": "/assets/keeper-v01.glb" },
+  "albert": { "type": "model", "url": "/assets/albert-v15.glb" },
+  "mira": { "type": "model", "url": "/assets/mira-v14.glb" },
+  "rowan": { "type": "model", "url": "/assets/rowan-v12.glb" },
+  "liliane": { "type": "model", "url": "/assets/liliane-v12.glb" },
+  "amina": { "type": "model", "url": "/assets/amina-v12.glb" },
+  "niko": { "type": "model", "url": "/assets/niko-v12.glb" },
+  "maeve": { "type": "model", "url": "/assets/maeve-v12.glb" },
+  "vittorio": { "type": "model", "url": "/assets/vittorio-v12.glb" },
+  "ferry-recruit": {
+    "type": "model",
+    "url": "/assets/ferry-recruit.glb"
+  },
+  "ferry": { "type": "model", "url": "/assets/ferry.glb" },
+  "post-office": { "type": "model", "url": "/assets/post-office.glb" },
+  "lantern-post": { "type": "model", "url": "/assets/lantern-post.glb" },
+  "ferry-passenger": { "type": "model", "url": "/assets/ferry-passenger.glb" },
+  "bunny": { "type": "model", "url": "/assets/equipment/bunny.glb" },
+  "staff": { "type": "model", "url": "/assets/equipment/staff.glb" },
+  "flower-pot": { "type": "model", "url": "/assets/equipment/flower-pot.glb" }
+}

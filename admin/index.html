@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KINDLY FORWARD — Creator Desk</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗂️</text></svg>" />
+<style>
+  :root {
+    --ink: #2c2620; --paper: #e9dfc8; --card: #fbf6e9; --edge: #d2c29e;
+    --accent: #8a5a2b; --accent-dark: #67401e; --muted: #756b57;
+    --night: #24221f; --night-soft: #35312a; --sage: #5f7258; --blue: #526d82;
+    --shadow: rgba(54, 43, 28, .13);
+  }
+  * { box-sizing: border-box; }
+  html { min-height: 100%; }
+  body {
+    min-height: 100vh; margin: 0; color: var(--ink);
+    background:
+      radial-gradient(circle at 8% 0%, rgba(255,255,255,.6), transparent 28rem),
+      linear-gradient(90deg, rgba(103,64,30,.035) 1px, transparent 1px), var(--paper);
+    background-size: auto, 32px 32px, auto;
+    font: 15px/1.55 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  }
+  a { color: inherit; }
+  .topbar {
+    min-height: 58px; padding: 10px 22px; display: flex; align-items: center; gap: 14px;
+    color: #f5ecd8; background: var(--night); border-bottom: 3px solid #b67b3d;
+  }
+  .brand { font-weight: 700; letter-spacing: .09em; }
+  .sub { color: #cbb98d; font-size: 13px; }
+  .topbar nav { margin-left: auto; display: flex; gap: 16px; }
+  .topbar nav a { color: #ead8a8; text-decoration: none; font-size: 13px; }
+  .topbar nav a:hover { color: #fff5d8; }
+  main { width: min(1180px, calc(100% - 36px)); margin: 0 auto; padding: 44px 0 72px; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: end; margin-bottom: 34px; }
+  .eyebrow { color: var(--accent); font: 700 11px/1.4 ui-monospace, monospace; letter-spacing: .16em; text-transform: uppercase; }
+  h1 { margin: 5px 0 8px; font-size: clamp(38px, 6vw, 66px); line-height: .98; letter-spacing: -.035em; }
+  .hero p { max-width: 700px; margin: 0; color: var(--muted); font-size: 17px; }
+  .stamp {
+    width: 118px; height: 118px; display: grid; place-items: center; border: 2px solid var(--accent);
+    border-radius: 50%; color: var(--accent); transform: rotate(-7deg); text-align: center;
+    font: 700 11px/1.35 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase;
+    box-shadow: inset 0 0 0 5px var(--paper), inset 0 0 0 6px var(--accent);
+  }
+  section { margin-top: 30px; }
+  .section-head { display: flex; gap: 12px; align-items: baseline; margin-bottom: 11px; border-bottom: 1px solid var(--edge); }
+  h2 { margin: 0; padding-bottom: 7px; font-size: 20px; }
+  .section-head p { margin: 0; color: var(--muted); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+  .card {
+    min-height: 148px; padding: 17px 18px 15px; display: flex; flex-direction: column;
+    border: 1px solid var(--edge); border-radius: 11px; background: rgba(251,246,233,.93);
+    box-shadow: 0 6px 18px var(--shadow); text-decoration: none; position: relative;
+    transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+  }
+  .card:hover, .card:focus-visible { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 10px 25px var(--shadow); }
+  .card:focus-visible { outline: 3px solid rgba(138,90,43,.25); outline-offset: 2px; }
+  .card .row { display: flex; align-items: center; gap: 10px; }
+  .icon { font-size: 23px; line-height: 1; }
+  h3 { margin: 0; font-size: 17px; }
+  .path { margin-left: auto; color: var(--muted); font: 11px/1.4 ui-monospace, monospace; }
+  .card p { margin: 10px 0 14px; color: var(--muted); font-size: 13.5px; }
+  .open { margin-top: auto; color: var(--accent-dark); font: 700 11px/1.4 ui-monospace, monospace; letter-spacing: .07em; text-transform: uppercase; }
+  .open::after { content: " →"; }
+  .featured { border-top: 4px solid var(--accent); padding-top: 14px; }
+  .play { border-top-color: var(--sage); }
+  .reference { border-top-color: var(--blue); }
+  footer { margin-top: 42px; color: var(--muted); font-size: 12px; text-align: center; }
+  @media (max-width: 860px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 580px) {
+    .topbar .sub { display: none; } .topbar nav a:first-child { display: none; }
+    main { width: min(100% - 22px, 1180px); padding-top: 28px; }
+    .hero { grid-template-columns: 1fr; } .stamp { display: none; }
+    .grid { grid-template-columns: 1fr; } .section-head { display: block; }
+    .section-head p { margin: -4px 0 8px; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="brand">KINDLY FORWARD · CREATOR DESK</span>
+  <span class="sub">the whole workshop, in one place</span>
+  <nav><a href="/review">Review queue</a><a href="/?pack=kindly-forward">Play build →</a></nav>
+</header>
+
+<main>
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Game-making control panel</div>
+      <h1>What are we making today?</h1>
+      <p>Open an editor, check the current build, or return to the design authority behind St. Mystere. Each card opens the existing tool directly.</p>
+    </div>
+    <div class="stamp" aria-hidden="true">St. Mystere<br />Post Office<br />Creator Copy</div>
+  </div>
+
+  <section>
+    <div class="section-head"><h2>Make</h2><p>Author and inspect game assets.</p></div>
+    <div class="grid">
+      <a class="card featured" href="/cutscene"><div class="row"><span class="icon">🎬</span><h3>Cutscene Editor</h3><span class="path">/cutscene</span></div><p>Stage authored scenes, cameras, dialogue, timing, and set bindings.</p><span class="open">Open editor</span></a>
+      <a class="card featured" href="/island"><div class="row"><span class="icon">🏝️</span><h3>Island Editor</h3><span class="path">/island</span></div><p>Build and inspect the authored St. Mystere island map.</p><span class="open">Open editor</span></a>
+      <a class="card featured" href="/acre"><div class="row"><span class="icon">🧩</span><h3>Acre Editor</h3><span class="path">/acre</span></div><p>Author the terrain pieces used to assemble the island.</p><span class="open">Open editor</span></a>
+      <a class="card featured" href="/models"><div class="row"><span class="icon">🗿</span><h3>Model Lab</h3><span class="path">/models</span></div><p>Inspect GLB models, materials, rigs, and animation clips.</p><span class="open">Open lab</span></a>
+      <a class="card featured" href="/audio"><div class="row"><span class="icon">🎧</span><h3>Audio Lab</h3><span class="path">/audio</span></div><p>Audition music, arrangements, sound effects, and world mixes.</p><span class="open">Open lab</span></a>
+      <a class="card featured" href="/weather"><div class="row"><span class="icon">🌦️</span><h3>Weather Lab</h3><span class="path">/weather</span></div><p>Preview and tune the authored weather system.</p><span class="open">Open lab</span></a>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Play &amp; review</h2><p>See the work in context and route visual decisions to a human.</p></div>
+    <div class="grid">
+      <a class="card featured play" href="/?pack=kindly-forward"><div class="row"><span class="icon">✉️</span><h3>Kindly Forward</h3><span class="path">/?pack=kindly-forward</span></div><p>Launch the active St. Mystere cast and content in the live runtime.</p><span class="open">Play current build</span></a>
+      <a class="card featured play" href="/"><div class="row"><span class="icon">🤖</span><h3>Legacy POSTMARK</h3><span class="path">/</span></div><p>Launch the temporary legacy runtime retained for migration checks.</p><span class="open">Play legacy build</span></a>
+      <a class="card featured play" href="/review"><div class="row"><span class="icon">🔎</span><h3>Review Queue</h3><span class="path">/review</span></div><p>Inspect evidence frames and the visual work awaiting human judgment.</p><span class="open">Open review</span></a>
+      <a class="card featured play" href="/wiki"><div class="row"><span class="icon">📚</span><h3>Project Wiki</h3><span class="path">/wiki</span></div><p>Browse the player-facing reference and captured game features.</p><span class="open">Open wiki</span></a>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Design authority</h2><p>The Kindly Forward canon and technical contracts.</p></div>
+    <div class="grid">
+      <a class="card featured reference" href="/story"><div class="row"><span class="icon">🕯️</span><h3>Story Room</h3><span class="path">/story</span></div><p>Opening, beat sheet, tone, dialogue intent, and slice acceptance.</p><span class="open">Read story</span></a>
+      <a class="card featured reference" href="/characters"><div class="row"><span class="icon">🫂</span><h3>Characters</h3><span class="path">/characters</span></div><p>The Postmaster and eight residents, their arcs, and production order.</p><span class="open">Open workshop</span></a>
+      <a class="card featured reference" href="/verbs"><div class="row"><span class="icon">🧰</span><h3>Player Verbs</h3><span class="path">/verbs</span></div><p>Minute-to-minute play, letters, progression, and activity purpose.</p><span class="open">Read verbs</span></a>
+      <a class="card featured reference" href="/water"><div class="row"><span class="icon">🌊</span><h3>Water Audit</h3><span class="path">/water</span></div><p>How rivers and the ocean work today, measured, and what to do about it.</p><span class="open">Read audit</span></a>
+      <a class="card featured reference" href="/island-contract"><div class="row"><span class="icon">🗺️</span><h3>Island Contract</h3><span class="path">/island-contract</span></div><p>Terrain bands, traversal rules, water, and island module boundaries.</p><span class="open">Read contract</span></a>
+    </div>
+  </section>
+
+  <footer>This desk links existing routes; it does not replace their source files or authority.</footer>
+</main>
+</body>
+</html>

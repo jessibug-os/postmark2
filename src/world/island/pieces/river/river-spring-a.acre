@@ -1,0 +1,31 @@
+# id: river-spring-a
+# family: river-spring
+# weight: 20
+# unique: true
+# riverEdges: 0
+# tier: 2
+gggggrrrrrrggggg
+ggggrrrrrrrggggg
+ggggrrrrrrrrgggg
+gggrrrrrrrrrrggg
+ggrrrrrrrrrrrrgg
+grrrrrrrggrrrrrg
+grrrrrrggggrrrrg
+grrrrrrggggrrrrg
+grrrrrrrggrrrrrg
+grrrrrrrrrrrrrrg
+ggrrrrrrrrrrrrrg
+ggrrrrrrrrrrrrgg
+gggrrrrrrrrrrggg
+gggggrrrrrrrgggg
+ggggggrrrrrrgggg
+gggggggggggggggg
+# fixtures:
+# prop prop-1 lantern-post at 0.88 0 -0.85 turn 90
+# mark spring.aperture at 0 0 0 turn 90
+# mark spring.keeper at 0 0.9 0
+# mark spring.player at 7.2 0 0 turn 270
+# mark spring.approach at 7.6 0 0 turn 270
+# mark spring.loom at 3.6 1.2 0
+# mark spring.recoil at 8.6 0 0 turn 270
+# mark spring.water at 0 0 0

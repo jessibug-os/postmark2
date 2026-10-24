@@ -1,0 +1,2466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>POSTMARK Wiki — the cozy clockwork town, documented</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✉️</text></svg>" />
+<link rel="stylesheet" href="/wiki-media/wiki.css" />
+</head>
+<body>
+<a class="skip" href="#article">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#main">
+      <span class="brand-mark">✉</span>
+      <span class="brand-text"><b>POSTMARK</b> Wiki</span>
+    </a>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search the wiki…" autocomplete="off" aria-label="Search the wiki" />
+      <ul id="results" class="results" hidden></ul>
+    </div>
+    <div class="topbar-links">
+      <label class="spoil-toggle"><input type="checkbox" id="spoilerAll" /> Reveal spoilers</label>
+      <a class="play" href="/">▶ Play</a>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="sidebar" id="sidebar">
+    <div class="navgroup">
+      <h4>Start here</h4>
+      <a href="#main">POSTMARK</a>
+      <a href="#getting-started">Getting started</a>
+      <a href="#controls">Controls</a>
+      <a href="#map">Map &amp; locations</a>
+    </div>
+    <div class="navgroup">
+      <h4>Townsfolk</h4>
+      <a href="#villagers">All villagers</a>
+      <a href="#sparks">SPARKS</a>
+      <a href="#reggie">REGGIE</a>
+      <a href="#cataloger">CATALOGER 734</a>
+      <a href="#marigold">MARIGOLD</a>
+      <a href="#buoy">BUOY</a>
+      <a href="#wick">WICK</a>
+      <a href="#fern">FERN</a>
+      <a href="#plink">PLINK</a>
+      <a href="#friendship">Friendship &amp; hearts</a>
+      <a href="#mail">The mailbox</a>
+    </div>
+    <div class="navgroup">
+      <h4>Story</h4>
+      <a href="#quests">Quest chain</a>
+      <a href="#dead-letters">The Dead Letter Office</a>
+      <a href="#heart-scenes">Heart moments</a>
+    </div>
+    <div class="navgroup">
+      <h4>Catalogue</h4>
+      <a href="#fish">Fish (50)</a>
+      <a href="#bugs">Bugs (50)</a>
+      <a href="#forage">Forage, fruit &amp; materials</a>
+      <a href="#relics">Relics &amp; keepsakes</a>
+      <a href="#archive">The Archive</a>
+    </div>
+    <div class="navgroup">
+      <h4>Town &amp; economy</h4>
+      <a href="#tools">Tools</a>
+      <a href="#crafting">Crafting (44 recipes)</a>
+      <a href="#emporium">Reggie's Re-Emporium</a>
+      <a href="#house">Your house &amp; furniture</a>
+      <a href="#clothing">Clothing</a>
+    </div>
+    <div class="navgroup">
+      <h4>World</h4>
+      <a href="#st-mystere-island">St. Mystere island</a>
+      <a href="#calendar">Seasons &amp; festivals</a>
+      <a href="#time">Time of day</a>
+      <a href="#weather">Weather</a>
+      <a href="#achievements">Achievements</a>
+    </div>
+    <div class="navgroup">
+      <h4>Behind the scenes</h4>
+      <a href="#design">Design doc</a>
+      <a href="#tech">Tech &amp; rendering</a>
+      <a href="#about">About this wiki</a>
+    </div>
+  </nav>
+
+  <main id="article">
+
+<!-- ============================================================ MAIN ==== -->
+<section class="page" id="main">
+  <div class="crumbs">POSTMARK Wiki › Main page</div>
+  <h1>POSTMARK</h1>
+  <p class="tagline">From the POSTMARK Wiki — the community reference for the cozy clockwork town-builder.</p>
+
+  <div class="notice" id="coastline-status">
+    <b>Coastline update — September 2026:</b> Waves wash onto sandy beaches,
+    retreat, and leave damp sand. The river mouth now blends into the coastal
+    wash, with an open channel through the retreating tide. Fishing and ambient fish shadows are currently
+    disabled while the fishing activity is being developed; saved catches remain
+    in your collection. Coastline appearance and motion are awaiting human review.
+    <a href="/docs/review-queue/coastline-2026-09/index.html">View the coastline review.</a>
+  </div>
+
+  <div class="notice" id="st-mystere-island">
+    <b>Kindly Forward runtime island:</b> St. Mystere is assembled from a saved
+    16×12 acre layout. Elevation changes are crossed at localized ramps;
+    cascades and beaches are not hidden climbs. Generated bridge decks connect
+    river banks, and an existing save retains its exact resolved island even
+    after the generator changes. A full dry shelf now separates raised cliffs
+    from the ocean, including at diagonal corners, so cliff walls never terminate
+    directly into an unsupported water junction. The terrain remains greybox
+    pending human approval of the W3 visual packet.
+  </div>
+
+  <div class="notice">
+    <b>Kindly Forward opening:</b> The ferry recruit is an ordinary postal
+    traveller in a dark route cap and tailored coat. He remains seated through
+    the crossing conversation, checks his route docket during the warning,
+    stands, and departs before the Postmaster enters St. Mystere. His v14 visual
+    pass is live but remains awaiting human review.
+  </div>
+
+  <div class="notice">
+    <b>Island object placement:</b> Runtime procedural dressing has been removed.
+    Natural resources, civic props, lamps, opening-route objects and landmarks
+    now appear only when authored through the acre or scene editors.
+  </div>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/title.jpg" alt="POSTMARK title screen" />
+    <h3>POSTMARK</h3>
+    <table>
+      <tr><th>Genre</th><td>Cozy life-sim / town-builder</td></tr>
+      <tr><th>Setting</th><td>Post-human frontier valley, 19th-century tech</td></tr>
+      <tr><th>Player</th><td>The last human — postmaster &amp; mayor</td></tr>
+      <tr><th>Villagers</th><td>8 clockwork robots</td></tr>
+      <tr><th>Clock</th><td>Real time; seasons follow the real month</td></tr>
+      <tr><th>Catalogue</th><td>50 fish · 50 bugs · 18 sea creatures · 12 fossils · 12 artworks</td></tr>
+      <tr><th>Furniture</th><td>100 pieces in 20 sets</td></tr>
+      <tr><th>Recipes</th><td>44 at the workbench</td></tr>
+      <tr><th>Engine</th><td>Three.js · TypeScript · Vite</td></tr>
+      <tr><th>Look</th><td>Low-poly retro-3D, 480×360 render target</td></tr>
+    </table>
+  </aside>
+
+  <p><b>POSTMARK</b> is a cozy post-human town-builder. You wake in a forest with no memories and
+  one address — <span class="mono">POSTMASTER, FRONTIER TOWN</span> — and find a valley whose people
+  vanished forty years ago and whose clockwork townsfolk simply ran out of light and stopped.
+  You reactivate them one at a time, build them somewhere to work, and grow an empty plot of ground
+  back into a town that knows its own name.</p>
+
+  <p>It is Animal Crossing's daily rhythm with a mystery underneath it: every villager you befriend
+  gives up one piece of their memory of the morning everyone left, and a sack of undelivered mail in
+  the post office holds the rest. See <a href="#dead-letters">The Dead Letter Office</a>.</p>
+
+  <div class="notice">
+    <b>New here?</b> Read <a href="#getting-started">Getting started</a> for the first hour, then
+    <a href="#controls">Controls</a>. If you are hunting a specific fish or bug, the
+    <a href="#fish">fish</a> and <a href="#bugs">bug</a> tables are filterable.
+  </div>
+
+  <h2>The core loop</h2>
+  <ol class="loop">
+    <li><b>Explore &amp; scavenge</b> — dig ★ spots, fell dead trees, fish, catch bugs, forage.</li>
+    <li><b>Reactivate a robot</b> — an Amber Cell wakes a dormant unit.</li>
+    <li><b>Build them somewhere to be</b> — timber and stone raise their shop, archive or cottage.</li>
+    <li><b>They move in</b> — and bring a service, a schedule, and a piece of the story.</li>
+    <li><b>The map opens</b> — a new zone unlocks. Repeat.</li>
+  </ol>
+
+  <h2>Gallery</h2>
+  <div class="gallery">
+    <figure><img src="/wiki-media/shots/plaza-day.jpg" alt="The town square by day" /><figcaption>The square, mid-morning. The well is the town's oldest thing.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/plaza-night.jpg" alt="The town square at night" /><figcaption>After dusk WICK lights forty-one lamps, in the same order every night.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/archive-day.jpg" alt="The Archive" /><figcaption>The Archive rotunda, built for a robot who had been keeping a museum in a tent.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/riverbank-day.jpg" alt="The riverbank" /><figcaption>The river runs from a cliff waterfall through the pond to the sea.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/season-winter.jpg" alt="Winter" /><figcaption>Winter lays real snow over the whole map rather than tinting it.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/inside-emporium.jpg" alt="Inside the Emporium" /><figcaption>Every building is enterable. The Emporium's chalkboard carries the day's prices.</figcaption></figure>
+  </div>
+
+  <div class="cats">Categories: <a href="#main">Game</a> · <a href="#villagers">Townsfolk</a> · <a href="#quests">Story</a></div>
+</section>
+
+<!-- ================================================== GETTING STARTED ==== -->
+<section class="page" id="getting-started" hidden>
+  <div class="crumbs">POSTMARK Wiki › Guides › Getting started</div>
+  <h1>Getting started</h1>
+  <p class="tagline">Your first crossing to St. Mystere, in order.</p>
+
+  <div class="notice">This guide covers the live Kindly Forward opening. The rest of this wiki still
+  contains legacy POSTMARK reference material while the runtime migration is completed.</div>
+
+  <h2>The intro</h2>
+  <p>You begin aboard an ordinary regional ferry on your first Postmaster assignment. A fellow
+  recruit asks your name and destination, then recognizes St. Mystere as an office decommissioned
+  years ago. The passengers leave at successive stops, fog closes around the boat, and you wake at
+  an empty berth with one voice calling inland. Albert, the island's frightened administrative
+  clerk, explains the stopped ferries and asks you to help reopen the post office. Press
+  <kbd>Esc</kbd> or choose <b>Skip opening</b> on a repeat start to enter the same first objective
+  without replaying the crossing.</p>
+
+  <h2>Day one checklist</h2>
+  <ol class="steps">
+    <li><b>Find Albert at the post office.</b> The opening keeps him as the same live resident you met
+      during the reveal rather than replacing him after the cutscene.</li>
+    <li><b>Repair the arrival board and recover the missing drawer key.</b> This is the first live
+      Kindly Forward objective after the crossing.</li>
+    <li><b>Begin reopening the office.</b> St. Mystere starts empty because the player is rebuilding
+      the conditions in which stranded residents can arrive and stay.</li>
+  </ol>
+
+  <h2>Early habits worth forming</h2>
+  <ul>
+    <li><b>Read the morning postmark.</b> On the first visit each real day it
+      names one resident request and delivers a small parcel to your pockets.
+      Bring that exact item through <i>Give a gift</i> for a generous friendship
+      bonus. A new request replaces it tomorrow, so missing a day creates no debt.</li>
+    <li><b>Talk to everyone once a day.</b> The first conversation each real day is worth 8 friendship
+      points with that villager, free. See <a href="#friendship">Friendship &amp; hearts</a>.</li>
+    <li><b>Dig every ★ you see.</b> They reset daily and they are the only source of Cut Stone,
+      the main source of Amber Cells, and the only source of <a href="#relics">relics</a>.</li>
+    <li><b>Donate the first of everything</b> to <a href="#cataloger">CATALOGER 734</a> before you sell
+      it. He only wants one of each, and a donated species is gone from your pockets but recorded forever.</li>
+    <li><b>Sell the rest to REGGIE.</b> Scrap metal and duplicate fish are the early economy.</li>
+    <li><b>Check the mailbox each morning</b> once you have a heart with anyone —
+      villagers write to you, sometimes with gifts.</li>
+  </ul>
+
+  <h2>Common early questions</h2>
+  <dl class="faq">
+    <dt>Where are the ★ dig spots?</dt>
+    <dd>Five are active at a time, scattered anywhere in the zones you have unlocked, and they
+      reshuffle at the start of each real day. Unlocking the forest and the meadow widens the pool
+      but does not increase the count.</dd>
+    <dt>I chopped a tree and got nothing.</dt>
+    <dd>A dead tree takes three swings to come down (two with the <a href="#tools">Felling Axe</a>).
+      Living trees can be shaken for apples but never felled.</dd>
+    <dt>The fish keeps getting away.</dt>
+    <dd>The strike window is <b>0.75 seconds</b> from the moment the bobber dips. Strike on the dip,
+      not the wobble — BUOY will tell you the same thing, less politely.</dd>
+    <dt>Nothing is biting / nothing is in the grass.</dt>
+    <dd>Almost every species is gated on season, hour, or place. Check the
+      <a href="#fish">fish</a> and <a href="#bugs">bug</a> tables — the pond at midnight holds
+      things the river at noon never will.</dd>
+  </dl>
+
+  <div class="cats">Categories: <a href="#getting-started">Guides</a></div>
+</section>
+
+<!-- ========================================================= CONTROLS ==== -->
+<section class="page" id="controls" hidden>
+  <div class="crumbs">POSTMARK Wiki › Guides › Controls</div>
+  <h1>Controls</h1>
+  <p class="tagline">Keyboard and gamepad. The title screen also accepts a mouse click or tap. Controls are listed in-game under <kbd>Esc</kbd> → Controls.</p>
+
+  <table class="data">
+    <thead><tr><th>Input</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / arrows</td><td>Move</td></tr>
+      <tr><td><kbd>Shift</kbd></td><td>Run (bugs spook if you run within about a metre)</td></tr>
+      <tr><td><kbd>V</kbd></td><td>Enter or leave the ocean at the beach; swim with the movement keys</td></tr>
+      <tr><td><kbd>E</kbd> / <kbd>Enter</kbd></td><td>Do everything — talk, interact, use the equipped tool, advance dialogue, deliver a letter. One context button, like Animal Crossing: what it does depends on what you're facing.</td></tr>
+      <tr><td><kbd>1</kbd>–<kbd>4</kbd></td><td>Equip net / rod / shovel / axe — always the best variant you own</td></tr>
+      <tr><td><kbd>Tab</kbd></td><td>Pockets (inventory)</td></tr>
+      <tr><td><kbd>L</kbd></td><td>Town Ledger — hearts, Case File, achievements</td></tr>
+      <tr><td><kbd>R</kbd></td><td>Rotate a piece of furniture while placing it</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>Settings / cancel</td></tr>
+      <tr><td>Gamepad</td><td>Left stick move · <b>A</b>/<b>X</b> do · <b>B</b> cancel · <b>Y</b> pockets</td></tr>
+    </tbody>
+  </table>
+
+  <div class="figrow">
+    <figure><img src="/wiki-media/shots/ui-pockets.jpg" alt="The pockets screen" /><figcaption>Pockets. Selecting a tool equips it; selecting furniture starts placing it.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/ui-ledger.jpg" alt="The town ledger" /><figcaption>The Town Ledger tracks hearts with every villager, plus the Case File and achievements.</figcaption></figure>
+  </div>
+
+  <h2>Settings</h2>
+  <p>Volume, music and SFX toggles, screen-shake toggle, and an in-game controls reference all live
+  under <kbd>Esc</kbd>. The game autosaves into one of three town slots selected on the title screen;
+  an occupied slot can be replaced only through the title screen's two-step confirmation.</p>
+
+  <div class="cats">Categories: <a href="#getting-started">Guides</a> · <a href="#tech">Interface</a></div>
+</section>
+
+<!-- ========================================================= VILLAGERS ==== -->
+<section class="page" id="villagers" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk</div>
+  <h1>Villagers</h1>
+  <p class="tagline">Eight clockwork residents. Every one of them was here before you and remembers something you don't.</p>
+
+  <div class="notice"><b>The resident roster is fixed.</b> Nobody is evicted or
+  randomly replaced: all eight are witnesses in the same mystery, and their
+  homes, letters, routines and heart scenes remain part of your town. Festivals
+  and visiting performers may bring guests without displacing a resident.</div>
+
+  <p>All eight villagers start <b>dormant</b> — powered down where they stood when their charge ran
+  out. Each needs one <b>Amber Cell</b> to reactivate. Five are part of the
+  <a href="#quests">main quest chain</a>; three (<a href="#wick">WICK</a>, <a href="#fern">FERN</a> and
+  <a href="#plink">PLINK</a>) are <i>wanderer units</i> you can find and wake in any order once you
+  have a spare cell.</p>
+
+  <div class="cast">
+    <a class="card" href="#sparks"><img src="/wiki-media/portraits/sparks.jpg" alt="SPARKS" /><div class="cname">SPARKS</div><div class="crole">Clerk &amp; town administrator</div></a>
+    <a class="card" href="#reggie"><img src="/wiki-media/portraits/reggie.jpg" alt="REGGIE" /><div class="cname">REGGIE</div><div class="crole">Shopkeeper</div></a>
+    <a class="card" href="#cataloger"><img src="/wiki-media/portraits/cataloger-734.jpg" alt="CATALOGER 734" /><div class="cname">CATALOGER 734</div><div class="crole">Archivist · nocturnal</div></a>
+    <a class="card" href="#marigold"><img src="/wiki-media/portraits/marigold.jpg" alt="MARIGOLD" /><div class="cname">MARIGOLD</div><div class="crole">Gardener</div></a>
+    <a class="card" href="#buoy"><img src="/wiki-media/portraits/buoy.jpg" alt="BUOY" /><div class="cname">BUOY</div><div class="crole">Ferryman &amp; fisher</div></a>
+    <a class="card" href="#wick"><img src="/wiki-media/portraits/wick.jpg" alt="WICK" /><div class="cname">WICK</div><div class="crole">Lamplighter · nocturnal</div></a>
+    <a class="card" href="#fern"><img src="/wiki-media/portraits/fern.jpg" alt="FERN" /><div class="cname">FERN</div><div class="crole">Herbalist</div></a>
+    <a class="card" href="#plink"><img src="/wiki-media/portraits/plink.jpg" alt="PLINK" /><div class="cname">PLINK</div><div class="crole">Composer &amp; busker</div></a>
+  </div>
+
+  <h2>Quick reference</h2>
+  <div class="filterbar" data-for="villagerTable">
+    <input type="search" placeholder="Filter villagers…" aria-label="Filter villagers" />
+    <button data-filter="quest">Main chain</button>
+    <button data-filter="wanderer">Wanderer units</button>
+    <button data-filter="nocturnal">Nocturnal</button>
+    <span class="filtercount"></span>
+  </div>
+  <div class="tablewrap">
+  <table class="data" id="villagerTable">
+    <thead><tr><th>Villager</th><th>Role</th><th>Birthday</th><th>Loves</th><th>Dislikes</th><th>Found</th></tr></thead>
+    <tbody>
+      <tr data-tags="quest"><td class="name"><a href="#sparks">SPARKS</a></td><td>Clerk, ledgers, town charter</td><td>1 March</td><td>Sealed Letter · Gearheart Locket</td><td>Scrap Metal</td><td>Awake from the intro</td></tr>
+      <tr data-tags="quest"><td class="name"><a href="#reggie">REGGIE</a></td><td>Shopkeeper</td><td>21 June</td><td>Gearheart Locket · Gear Beetle</td><td>Wild Chicory</td><td>East side of the square</td></tr>
+      <tr data-tags="quest nocturnal"><td class="name"><a href="#cataloger">CATALOGER 734</a></td><td>Archivist (museum)</td><td>31 October</td><td>Ivory Butterfly · Oak Stag Beetle · Lantern Eel</td><td>Scrap Metal</td><td>Northern forest, after dark</td></tr>
+      <tr data-tags="quest"><td class="name"><a href="#marigold">MARIGOLD</a></td><td>Gardener</td><td>12 May</td><td>Wild Chicory · Ember Berry</td><td>Old Boot</td><td>Eastern meadow, garden rows</td></tr>
+      <tr data-tags="quest"><td class="name"><a href="#buoy">BUOY</a></td><td>Ferryman &amp; fisher</td><td>8 August</td><td>Clockwork Koi · Lantern Eel</td><td>Cinder Moth</td><td>Eastern meadow, by the water</td></tr>
+      <tr data-tags="wanderer nocturnal"><td class="name"><a href="#wick">WICK</a></td><td>Lamplighter</td><td>2 November</td><td>Dusk Firefly · Cinder Moth</td><td>Mud Darter</td><td>Leaning on a lamppost, west of the square</td></tr>
+      <tr data-tags="wanderer"><td class="name"><a href="#fern">FERN</a></td><td>Herbalist</td><td>19 September</td><td>Ember Berry · Tinman Mushroom</td><td>Gear Beetle</td><td>Deep in the forest ferns</td></tr>
+      <tr data-tags="wanderer"><td class="name"><a href="#plink">PLINK</a></td><td>Composer &amp; busker</td><td>25 December</td><td>Dusk Firefly · Chipped Teacup</td><td>Cut Stone</td><td>Far eastern meadow grass</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="designnote">
+    <b>Design note</b> — Every villager is built from the same four pieces: a <i>job</i> that adds a
+    service to the town, a <i>schedule</i> that puts them somewhere specific at every hour, an
+    <i>idle quirk</i> that reads at a glance (SPARKS scribbles, REGGIE head-bobs, PLINK cranks his
+    organ), and a <i>gait</i> — no two of them walk alike. If a new resident can't fill all four,
+    they aren't ready to be in the town.
+  </div>
+
+  <h2>Schedules at a glance</h2>
+  <p>Villagers commute. They wake, walk to a work post, take hobby time at a real map location,
+  gather on the plaza for a <b>social hour at dusk</b> where they pair off into overheard
+  conversations, and power down at night. Two of them run the day backwards.</p>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Villager</th><th>Morning</th><th>Midday</th><th>Afternoon</th><th>Social hour</th></tr></thead>
+    <tbody>
+      <tr><td class="name">SPARKS</td><td>6–9 the notice board</td><td>9–12 town hall rounds · 12–2 lunch by the pond</td><td>2–6 the plaza</td><td>6–9 PM</td></tr>
+      <tr><td class="name">REGGIE</td><td colspan="2">8 AM–6 PM outside the Emporium door</td><td><b>Saturdays</b> 3–7 PM: DJ set on the plaza</td><td>6–9 PM</td></tr>
+      <tr><td class="name">CATALOGER 734</td><td colspan="3">8 PM–midnight specimen hunting in the forest · <b>Sunday nights</b> expedition to the waterfall gorge · midnight–5 AM in the Archive</td><td>—</td></tr>
+      <tr><td class="name">MARIGOLD</td><td>7–12 the orchard rows</td><td>12–2 the flower drifts</td><td>2–6 her own garden</td><td>6–8 PM</td></tr>
+      <tr><td class="name">BUOY</td><td>6–11 dock watch</td><td>11–1 beachcombing</td><td>1–5 the river bend</td><td>5–7 PM</td></tr>
+      <tr><td class="name">WICK</td><td colspan="3">8–10 PM the square's lamps · 10 PM–midnight the north circuit · midnight–3 AM keeping the square</td><td>—</td></tr>
+      <tr><td class="name">FERN</td><td>7–11 forest herbs</td><td>11–3 the pond bank</td><td>3–6 meadow gathering</td><td>6–8 PM</td></tr>
+      <tr><td class="name">PLINK</td><td>10–2 busking on the plaza</td><td>2–5 bridge serenade</td><td>—</td><td>5–9 PM</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small">Times are in-game hours, which are your real clock. Villagers in low-power mode
+  can still be talked to, but they are asleep and say so.</p>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a></div>
+</section>
+
+<!-- ============================================================ SPARKS ==== -->
+<section class="page" id="sparks" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › SPARKS</div>
+  <h1>SPARKS</h1>
+  <p class="tagline">Settlement Postal &amp; Administrative Record-Keeping System. Kept the ledgers for forty years in case anybody came back.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/sparks.jpg" alt="SPARKS" />
+    <h3>SPARKS</h3>
+    <p class="sub">"Filing, filing! Population: six!"</p>
+    <table>
+      <tr><th>Role</th><td>Clerk, town administrator</td></tr>
+      <tr><th>Unlocks</th><td>The town itself; quests, permits, zones</td></tr>
+      <tr><th>Birthday</th><td>1 March</td></tr>
+      <tr><th>Hours</th><td>6 AM – 9 PM</td></tr>
+      <tr><th>Home post</th><td>The town hall tent</td></tr>
+      <tr><th>Quirk</th><td>Scribbles constantly</td></tr>
+      <tr><th>Gait</th><td>Bustles — short, quick, eager steps</td></tr>
+      <tr><th>Build</th><td>Ivory municipal-lantern head, brass cabinet body, amber core</td></tr>
+      <tr><th>Loves</th><td>Sealed Letter · Gearheart Locket</td></tr>
+      <tr><th>Likes</th><td>Chipped Teacup · Old Boot · Orchard Apple</td></tr>
+      <tr><th>Dislikes</th><td>Scrap Metal</td></tr>
+      <tr><th>Keepsake</th><td>The Unfiled Page</td></tr>
+      <tr><th>Voice</th><td>Bright square wave, 620 Hz — chirpy and slightly anxious</td></tr>
+    </table>
+  </aside>
+
+  <p><b>SPARKS</b> is the first robot you meet and the only one who never fully powered down. When
+  the people left he stayed on half-charge and kept the town's records going, alone, for forty
+  years — on the theory that if anyone ever came back, the town should still know its own name.
+  He is the game's Isabelle: relentlessly cheerful, administratively deranged, quietly heartbroken.
+  His brass-and-ivory municipal-lantern body bustles on a real clockwork gait, with the amber
+  core in his chest carrying the one warm light in his silhouette.</p>
+
+  <div class="quotebox">
+    "The postbox stands ready. One day, a letter will come. I have decided to believe this daily."
+    <cite>— SPARKS, idle</cite>
+  </div>
+
+  <h2>Role in the game</h2>
+  <ul>
+    <li><b>Quest giver.</b> Every step of the <a href="#quests">main chain</a> runs through him.</li>
+    <li><b>Zone permits.</b> He un-boards the forest gate and the meadow bridge as the town grows.</li>
+    <li><b>The Founding Ceremony.</b> The finale of the build-up arc; he has had the speech drafted
+      since before you were born. Probably.</li>
+  </ul>
+
+  <h2>Schedule</h2>
+  <table class="data">
+    <thead><tr><th>Hours</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="num">6–9 AM</td><td>Morning post at the notice board</td></tr>
+      <tr><td class="num">9 AM–12</td><td>Rounds by the town hall</td></tr>
+      <tr><td class="num">12–2 PM</td><td>Lunch by the pond</td></tr>
+      <tr><td class="num">2–6 PM</td><td>The plaza</td></tr>
+      <tr><td class="num">6–9 PM</td><td>Social hour on the plaza</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Heart moments</h2>
+  <p>Three staged cutscenes, at 1 ♥, 3 ♥ and 5 ♥. See <a href="#heart-scenes">Heart moments</a>.</p>
+  <details class="spoilerbox"><summary>Spoiler: SPARKS's heart scenes</summary>
+    <ol>
+      <li><b>The Morning Bell</b> — 1 ♥</li>
+      <li><b>The Manifest</b> — 3 ♥</li>
+      <li><b>Seat Reserved</b> — 5 ♥, and the keepsake: <b>The Unfiled Page</b>, the last page of the
+        evacuation manifest with one seat never struck through. His.</li>
+    </ol>
+  </details>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · <a href="#quests">Story</a></div>
+</section>
+
+<!-- ============================================================ REGGIE ==== -->
+<section class="page" id="reggie" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › REGGIE</div>
+  <h1>REGGIE</h1>
+  <p class="tagline">Half cash register, half jukebox, all shopkeeper. His cash drawer opening is his laugh.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/reggie.jpg" alt="REGGIE" />
+    <h3>REGGIE</h3>
+    <p class="sub">"Everything's vintage 'cause everything's OLD! *KA-CHING*"</p>
+    <table>
+      <tr><th>Role</th><td>Shopkeeper, Reggie's Re-Emporium</td></tr>
+      <tr><th>Unlocks</th><td><a href="#emporium">Buying and selling</a>; furniture stock</td></tr>
+      <tr><th>Birthday</th><td>21 June</td></tr>
+      <tr><th>Hours</th><td>8 AM – 9 PM</td></tr>
+      <tr><th>Found</th><td>Dormant against the ruined shopfront, east side of the square</td></tr>
+      <tr><th>Quirk</th><td>Head-bob</td></tr>
+      <tr><th>Gait</th><td>Swagger — slow roll, heavy sway</td></tr>
+      <tr><th>Loves</th><td>Gearheart Locket · Gear Beetle</td></tr>
+      <tr><th>Likes</th><td>Scrap Metal · Old Boot · Clockwork Koi</td></tr>
+      <tr><th>Dislikes</th><td>Wild Chicory</td></tr>
+      <tr><th>Keepsake</th><td>Square Sounds, Side A</td></tr>
+      <tr><th>Voice</th><td>Low sawtooth, 300 Hz — funky, swaggering</td></tr>
+    </table>
+  </aside>
+
+  <p><b>REGGIE</b> is a cash-register/jukebox fusion, deliberately hip-hop styled against the town's
+  Victorian aesthetic, and the second robot you wake. He powered down beside his own shopfront when
+  the last customer left. Under the hype-man delivery he is a washed-up DJ who played to an empty
+  square and never quite got over it.</p>
+
+  <div class="quotebox">
+    "Real talk though… place got quiet. Quiet's the one track I never learned to spin."
+    <cite>— REGGIE, on waking</cite>
+  </div>
+
+  <h2>Role in the game</h2>
+  <ul>
+    <li><b>The shop.</b> Once the Emporium is built he runs a <a href="#emporium">daily-rotating stock</a>
+      of tools, clothing and furniture, and buys anything you can carry.</li>
+    <li><b>The economy.</b> Selling to REGGIE is where gears come from. Scrap metal is his entire
+      business model and he will tell you so.</li>
+    <li><b>Saturday DJ set.</b> On Saturdays he shuts the shop at 3 PM and plays the plaza until 7.</li>
+  </ul>
+
+  <h2>Schedule</h2>
+  <table class="data">
+    <thead><tr><th>Hours</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="num">8 AM–6 PM</td><td>Outside the Emporium door (until 3 PM on Saturdays)</td></tr>
+      <tr><td class="num">3–7 PM Sat</td><td>DJ set, centre of the plaza</td></tr>
+      <tr><td class="num">6–9 PM</td><td>Social hour on the plaza</td></tr>
+    </tbody>
+  </table>
+
+  <details class="spoilerbox"><summary>Spoiler: REGGIE's heart scenes</summary>
+    <ol>
+      <li><b>Crate Digging</b> — 1 ♥</li>
+      <li><b>Side A</b> — 3 ♥</li>
+      <li><b>The Needle Drop</b> — 5 ♥, and the keepsake: <b>Square Sounds, Side A</b> — a record
+        pressed on the last day, fourteen minutes of the town square alive. He kept it forty years
+        without a needle.</li>
+    </ol>
+  </details>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · <a href="#emporium">Shops</a></div>
+</section>
+
+<!-- ======================================================== CATALOGER ==== -->
+<section class="page" id="cataloger" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › CATALOGER 734</div>
+  <h1>CATALOGER 734</h1>
+  <p class="tagline">"The Nocturnal Librarian." Never powered down. Has been labelling drawers alone for forty years.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/cataloger-734.jpg" alt="CATALOGER 734" />
+    <h3>CATALOGER 734</h3>
+    <p class="sub">"The Archive persists. I persist. These facts have, until now, felt equivalent."</p>
+    <table>
+      <tr><th>Role</th><td>Archivist — runs <a href="#archive">the Archive</a></td></tr>
+      <tr><th>Unlocks</th><td>Species donation, museum wings</td></tr>
+      <tr><th>Birthday</th><td>31 October</td></tr>
+      <tr><th>Hours</th><td><b>Nocturnal</b> — 8 PM to 5 AM</td></tr>
+      <tr><th>Found</th><td>Northern forest clearing. Visit after dark.</td></tr>
+      <tr><th>Body</th><td>Daddy-long-legs frame; torso is a walking specimen cabinet of labelled drawers</td></tr>
+      <tr><th>Eyes</th><td>A cluster of jeweller's lenses; one amber lamp at his core</td></tr>
+      <tr><th>Quirk</th><td>Scans everything</td></tr>
+      <tr><th>Gait</th><td>Eight legs, no bounce — glides</td></tr>
+      <tr><th>Loves</th><td>Ivory Butterfly · Oak Stag Beetle · Lantern Eel</td></tr>
+      <tr><th>Likes</th><td>Any fish · any bug · Tinman Mushroom · Bristle Pinecone</td></tr>
+      <tr><th>Dislikes</th><td>Scrap Metal</td></tr>
+      <tr><th>Keepsake</th><td>The Field Glass</td></tr>
+    </table>
+  </aside>
+
+  <p><b>CATALOGER 734</b> is the town's museum, in person. He never shut down — he simply kept
+  cataloguing, in a tent, in the dark, for four decades. He is the easiest villager to befriend and
+  the hardest to see, because he is only awake while you should be asleep.</p>
+
+  <div class="quotebox">
+    "…specimen. Bipedal. Warm-blooded. <b>Uncatalogued.</b>"
+    <cite>— CATALOGER 734, on meeting the last human alive</cite>
+  </div>
+
+  <h2>Role in the game</h2>
+  <ul>
+    <li><b>Donations.</b> Give him one of any fish, bug, forage or relic species and it is recorded
+      forever, with a hand-written label he composes on the spot. See <a href="#archive">The Archive</a>.</li>
+    <li><b>Gift sponge.</b> He <i>likes</i> every fish and every bug in the game
+      (<span class="mono">fish:*</span>, <span class="mono">bug:*</span>), so he is the cheapest
+      villager to raise to five hearts.</li>
+    <li><b>Museum wings.</b> Completing the fish or bug catalogue earns an achievement and a
+      furniture reward.</li>
+  </ul>
+
+  <h2>Schedule</h2>
+  <table class="data">
+    <thead><tr><th>Hours</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="num">8 PM–midnight</td><td>Specimen hunting in the northwest forest</td></tr>
+      <tr><td class="num">8 PM–midnight Sun</td><td><b>Sunday only:</b> expedition to the waterfall gorge</td></tr>
+      <tr><td class="num">Midnight–5 AM</td><td>The Archive</td></tr>
+      <tr><td class="num">Daylight</td><td>Low-power. He is asleep and would rather you knew that.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="figrow">
+    <figure><img src="/wiki-media/shots/archive-night.jpg" alt="The Archive at night" /><figcaption>The Archive after dark — the only hours its keeper is awake.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/inside-archive.jpg" alt="Inside the Archive" /><figcaption>Specimen halls: bell jars, labelled exhibits, framed field plates.</figcaption></figure>
+  </div>
+
+  <details class="spoilerbox"><summary>Spoiler: CATALOGER 734's heart scenes</summary>
+    <ol>
+      <li><b>Drawer 1</b> — 1 ♥</li>
+      <li><b>The Unlabelled Thing</b> — 3 ♥</li>
+      <li><b>Everything, Clearly</b> — 5 ♥, and the keepsake: <b>The Field Glass</b>, the
+        naturalist's own lens from drawer 1, labelled <span class="mono">EVERYTHING, CLEARLY</span>.</li>
+    </ol>
+  </details>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · <a href="#archive">The Archive</a></div>
+</section>
+
+<!-- ========================================================= MARIGOLD ==== -->
+<section class="page" id="marigold" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › MARIGOLD</div>
+  <h1>MARIGOLD</h1>
+  <p class="tagline">Boiler-bodied gardener. Planted a promise before she slept and the weeds kept it for her.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/marigold.jpg" alt="MARIGOLD" />
+    <h3>MARIGOLD</h3>
+    <p class="sub">"Horticulture and holding-things-gently. Both certified."</p>
+    <table>
+      <tr><th>Role</th><td>Gardener</td></tr>
+      <tr><th>Birthday</th><td>12 May</td></tr>
+      <tr><th>Hours</th><td>7 AM – 8 PM</td></tr>
+      <tr><th>Found</th><td>Kneeling in the overgrown garden rows, eastern meadow</td></tr>
+      <tr><th>Needs</th><td>1 Amber Cell, then a cottage (6 Timber + 4 Cut Stone)</td></tr>
+      <tr><th>Quirk</th><td>Stretches</td></tr>
+      <tr><th>Gait</th><td>Unhurried gardener's amble</td></tr>
+      <tr><th>Loves</th><td>Wild Chicory · Ember Berry</td></tr>
+      <tr><th>Likes</th><td>Any forage · Orchard Apple · Meadow Hopper</td></tr>
+      <tr><th>Dislikes</th><td>Old Boot</td></tr>
+      <tr><th>Keepsake</th><td>"For Spring. — E."</td></tr>
+    </table>
+  </aside>
+
+  <p><b>MARIGOLD</b> is one of the two villagers unlocked by the meadow bridge. Her cell hatch was
+  already open when you find her, as if she meant to be found. She planted the orchard and the beds
+  on the morning everyone left, on the assumption that spring was coming for somebody.</p>
+
+  <div class="quotebox">
+    "Every seed I put in went in on faith. Nobody was coming. I planted anyway. Turns out I was planting for you."
+    <cite>— MARIGOLD, idle</cite>
+  </div>
+
+  <h2>Schedule</h2>
+  <table class="data">
+    <thead><tr><th>Hours</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="num">7 AM–12</td><td>The orchard rows</td></tr>
+      <tr><td class="num">12–2 PM</td><td>The flower drifts</td></tr>
+      <tr><td class="num">2–6 PM</td><td>Her own garden, beside her cottage</td></tr>
+      <tr><td class="num">6–8 PM</td><td>Social hour on the plaza</td></tr>
+    </tbody>
+  </table>
+
+  <details class="spoilerbox"><summary>Spoiler: MARIGOLD's heart scenes</summary>
+    <ol>
+      <li><b>The Fourteen Feet</b> — 1 ♥</li>
+      <li><b>Planting Day</b> — 3 ♥</li>
+      <li><b>The Last Pinch</b> — 5 ♥, and the keepsake: <b>"For Spring. — E."</b>, a hand-labelled
+        seed packet with half a pinch left. She plants the rest of E.'s handwriting every year.</li>
+    </ol>
+  </details>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a></div>
+</section>
+
+<!-- ============================================================= BUOY ==== -->
+<section class="page" id="buoy" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › BUOY</div>
+  <h1>BUOY</h1>
+  <p class="tagline">Ferryman, fisherman, professional float. Had a bite on the line forty years ago and is still thinking about it.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/buoy.jpg" alt="BUOY" />
+    <h3>BUOY</h3>
+    <p class="sub">"Tide's in! Tide's in and so am I!"</p>
+    <table>
+      <tr><th>Role</th><td>Ferryman &amp; fisher</td></tr>
+      <tr><th>Birthday</th><td>8 August</td></tr>
+      <tr><th>Hours</th><td>6 AM – 7 PM</td></tr>
+      <tr><th>Found</th><td>By the water in the eastern meadow, a line still tied to one finger</td></tr>
+      <tr><th>Needs</th><td>1 Amber Cell, then a cottage (6 Timber + 4 Cut Stone)</td></tr>
+      <tr><th>Quirk</th><td>Polishes himself</td></tr>
+      <tr><th>Gait</th><td>Sailor's roll — wide, slow, weight side to side</td></tr>
+      <tr><th>Loves</th><td>Clockwork Koi · Lantern Eel</td></tr>
+      <tr><th>Likes</th><td>Any fish · Old Boot</td></tr>
+      <tr><th>Dislikes</th><td>Cinder Moth</td></tr>
+      <tr><th>Keepsake</th><td>The First Knot</td></tr>
+    </table>
+  </aside>
+
+  <p><b>BUOY</b> is a barrel-round unit shaped like a bathysphere. He is the game's fishing mentor —
+  the best <a href="#fish">angling advice</a> in the game comes out of his idle lines — and the most
+  cheerfully stubborn resident of the valley.</p>
+
+  <div class="quotebox">
+    "Cast where the shadow's biggest, strike when the bobber <b>sinks</b> — not when it wobbles.
+    The wobble is the fish LAUGHING."
+    <cite>— BUOY, idle</cite>
+  </div>
+
+  <h2>Schedule</h2>
+  <table class="data">
+    <thead><tr><th>Hours</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="num">6–11 AM</td><td>Dock watch</td></tr>
+      <tr><td class="num">11 AM–1 PM</td><td>Beachcombing</td></tr>
+      <tr><td class="num">1–5 PM</td><td>The river bend</td></tr>
+      <tr><td class="num">5–7 PM</td><td>Social hour on the plaza</td></tr>
+    </tbody>
+  </table>
+
+  <details class="spoilerbox"><summary>Spoiler: BUOY's heart scenes</summary>
+    <ol>
+      <li><b>Knots</b> — 1 ♥</li>
+      <li><b>The Last Crossing</b> — 3 ♥</li>
+      <li><b>Slack Water</b> — 5 ♥, and the keepsake: <b>The First Knot</b> — a practice knot a
+        ferryman's kid tied on his finger, forty years holding.</li>
+    </ol>
+  </details>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · <a href="#fish">Fishing</a></div>
+</section>
+
+<!-- ============================================================= WICK ==== -->
+<section class="page" id="wick" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › WICK</div>
+  <h1>WICK</h1>
+  <p class="tagline">Lamplighter, first class. Keeps the dark polite. Forty-one lamps; he knows every one by its sound.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/wick.jpg" alt="WICK" />
+    <h3>WICK</h3>
+    <p class="sub">"Every lamp lit is a letter to whoever is out late, saying: you were expected."</p>
+    <table>
+      <tr><th>Role</th><td>Lamplighter (wanderer unit)</td></tr>
+      <tr><th>Birthday</th><td>2 November</td></tr>
+      <tr><th>Hours</th><td><b>Nocturnal</b> — 8 PM to 3 AM</td></tr>
+      <tr><th>Found</th><td>Leaning against a lamppost west of the square, mid-conversation with it</td></tr>
+      <tr><th>Head</th><td>A hurricane lamp, long gone out</td></tr>
+      <tr><th>Quirk</th><td>Tends things</td></tr>
+      <tr><th>Gait</th><td>Deliberate night rounds — even, quiet, never rushed</td></tr>
+      <tr><th>Loves</th><td>Dusk Firefly · Cinder Moth</td></tr>
+      <tr><th>Likes</th><td>Chipped Teacup · Amber Cell · Bristle Pinecone</td></tr>
+      <tr><th>Dislikes</th><td>Mud Darter</td></tr>
+      <tr><th>Keepsake</th><td>The Borrowed Fire</td></tr>
+    </table>
+  </aside>
+
+  <p><b>WICK</b> is a <i>wanderer unit</i> — side content, wakeable with any spare Amber Cell rather
+  than as part of the main chain. He is the reason the town looks the way it does at night, and the
+  reason the <a href="#calendar">Lantern Walk</a> festival exists.</p>
+
+  <div class="quotebox">
+    "Somebody built me to keep the lights on for people walking home. I never got to see anyone
+    walk home. Till now."
+    <cite>— WICK, idle</cite>
+  </div>
+
+  <h2>Schedule</h2>
+  <table class="data">
+    <thead><tr><th>Hours</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="num">8–10 PM</td><td>Lighting the square's lamps</td></tr>
+      <tr><td class="num">10 PM–midnight</td><td>The north circuit</td></tr>
+      <tr><td class="num">Midnight–3 AM</td><td>Keeping the square</td></tr>
+      <tr><td class="num">Daylight</td><td>Low-power. "That's not rudeness, that's chemistry."</td></tr>
+    </tbody>
+  </table>
+
+  <details class="spoilerbox"><summary>Spoiler: WICK's heart scenes</summary>
+    <ol>
+      <li><b>Grade Seven Amber</b> — 1 ♥</li>
+      <li><b>The Borrowed Fire</b> — 3 ♥</li>
+      <li><b>The Tin</b> — 5 ♥, and the keepsake: <b>The Borrowed Fire</b> — a single match from the
+        night watchman's tin. Wick's own flame was lit from its brothers.</li>
+    </ol>
+  </details>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · Wanderer units</div>
+</section>
+
+<!-- ============================================================= FERN ==== -->
+<section class="page" id="fern" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › FERN</div>
+  <h1>FERN</h1>
+  <p class="tagline">Herbalist. A copper teapot the size of a stove. Kept the kettle on for forty years and never once thought of turning it off.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/fern.jpg" alt="FERN" />
+    <h3>FERN</h3>
+    <p class="sub">"Tea, tinctures, and telling weeds from wonders."</p>
+    <table>
+      <tr><th>Role</th><td>Herbalist (wanderer unit)</td></tr>
+      <tr><th>Birthday</th><td>19 September</td></tr>
+      <tr><th>Hours</th><td>7 AM – 8 PM</td></tr>
+      <tr><th>Found</th><td>Sitting in the ferns deep in the forest, basket sprouting</td></tr>
+      <tr><th>Quirk</th><td>Steeps things</td></tr>
+      <tr><th>Gait</th><td>Pottering — small steps, a gentle settled bob</td></tr>
+      <tr><th>Loves</th><td>Ember Berry · Tinman Mushroom</td></tr>
+      <tr><th>Likes</th><td>Any forage · Wild Chicory · Chipped Teacup</td></tr>
+      <tr><th>Dislikes</th><td>Gear Beetle</td></tr>
+      <tr><th>Keepsake</th><td>The Last Entry</td></tr>
+    </table>
+  </aside>
+
+  <p><b>FERN</b> is the town's soft place to land. She has no shop, no quest and no mechanical
+  function beyond friendship — which is the point. She is also the best source of
+  <a href="#forage">forage</a> hints, since she will tell you exactly where things grow.</p>
+
+  <div class="quotebox">
+    "If you're ever having a bad one, you don't have to say so. Just come by. That's the whole system."
+    <cite>— FERN, idle</cite>
+  </div>
+
+  <h2>Schedule</h2>
+  <table class="data">
+    <thead><tr><th>Hours</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="num">7–11 AM</td><td>Forest herbs</td></tr>
+      <tr><td class="num">11 AM–3 PM</td><td>The pond bank</td></tr>
+      <tr><td class="num">3–6 PM</td><td>Meadow gathering</td></tr>
+      <tr><td class="num">6–8 PM</td><td>Social hour on the plaza</td></tr>
+    </tbody>
+  </table>
+
+  <details class="spoilerbox"><summary>Spoiler: FERN's heart scenes</summary>
+    <ol>
+      <li><b>Bedside Manner</b> — 1 ♥</li>
+      <li><b>The Recipe Book</b> — 3 ♥</li>
+      <li><b>The Last Entry</b> — 5 ♥, and the keepsake: <b>The Last Entry</b>, from the doctor's
+        recipe book — <i>"For loneliness: company, steeped. Forty years if needed."</i></li>
+    </ol>
+  </details>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · Wanderer units</div>
+</section>
+
+<!-- ============================================================ PLINK ==== -->
+<section class="page" id="plink" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › PLINK</div>
+  <h1>PLINK</h1>
+  <p class="tagline">Barrel organ on brass boots. Was writing the town a song when everything went quiet. It is still not finished.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/plink.jpg" alt="PLINK" />
+    <h3>PLINK</h3>
+    <p class="sub">"FORTY YEARS?! That is the longest fermata in recorded music. I'm putting it in the piece."</p>
+    <table>
+      <tr><th>Role</th><td>Composer &amp; busker (wanderer unit)</td></tr>
+      <tr><th>Birthday</th><td>25 December</td></tr>
+      <tr><th>Hours</th><td>10 AM – 9 PM</td></tr>
+      <tr><th>Found</th><td>Far eastern meadow grass, crank frozen mid-turn</td></tr>
+      <tr><th>Quirk</th><td>Cranks his organ</td></tr>
+      <tr><th>Gait</th><td>Walks on the beat — a pronounced springy bounce</td></tr>
+      <tr><th>Loves</th><td>Dusk Firefly · Chipped Teacup</td></tr>
+      <tr><th>Likes</th><td>Any bug · Orchard Apple</td></tr>
+      <tr><th>Dislikes</th><td>Cut Stone</td></tr>
+      <tr><th>Keepsake</th><td>Concert A</td></tr>
+    </table>
+  </aside>
+
+  <p><b>PLINK</b> premieres a carol at <a href="#calendar">The Long Night</a> and busks the plaza
+  most mornings. He and REGGIE are, technically, this town's entire music scene.</p>
+
+  <div class="quotebox">
+    "I played to an empty square for four decades. The acoustics were superb. The reviews were sparse."
+    <cite>— PLINK, idle</cite>
+  </div>
+
+  <h2>Schedule</h2>
+  <table class="data">
+    <thead><tr><th>Hours</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td class="num">10 AM–2 PM</td><td>Busking on the plaza</td></tr>
+      <tr><td class="num">2–5 PM</td><td>Bridge serenade</td></tr>
+      <tr><td class="num">5–9 PM</td><td>Social hour on the plaza</td></tr>
+    </tbody>
+  </table>
+
+  <details class="spoilerbox"><summary>Spoiler: PLINK's heart scenes</summary>
+    <ol>
+      <li><b>The Commission</b> — 1 ♥</li>
+      <li><b>Movement Two</b> — 3 ♥</li>
+      <li><b>The Premiere</b> — 5 ♥, and the keepsake: <b>Concert A</b> — the bandstand tuning fork.
+        Strike it and every song the town ever sang agrees on a starting note.</li>
+    </ol>
+  </details>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · Wanderer units</div>
+</section>
+
+<!-- ======================================================= FRIENDSHIP ==== -->
+<section class="page" id="friendship" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › Friendship &amp; hearts</div>
+  <h1>Friendship &amp; hearts</h1>
+  <p class="tagline">How the numbers under the hearts actually work.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/ui-ledger.jpg" alt="The Town Ledger" />
+    <h3>Hearts</h3>
+    <table>
+      <tr><th>Max</th><td>5 ♥ per villager</td></tr>
+      <tr><th>Points per heart</th><td>50</td></tr>
+      <tr><th>Point cap</th><td>250</td></tr>
+      <tr><th>Daily talk</th><td>+8 (first talk each real day)</td></tr>
+      <tr><th>Loved gift</th><td>+25</td></tr>
+      <tr><th>Liked gift</th><td>+12</td></tr>
+      <tr><th>Neutral gift</th><td>+6</td></tr>
+      <tr><th>Disliked gift</th><td>+2</td></tr>
+      <tr><th>Favor errand</th><td>+20 <i>on top of</i> the gift value</td></tr>
+      <tr><th>Gift limit</th><td>One counted gift per villager per day</td></tr>
+      <tr><th>Scenes at</th><td>1 ♥ · 3 ♥ · 5 ♥</td></tr>
+      <tr><th>Tracked in</th><td>Town Ledger — <kbd>L</kbd></td></tr>
+    </table>
+  </aside>
+
+  <p>Friendship is stored as <b>points</b>, one heart per 50, capped at five hearts (250 points).
+  There are three ways to earn them, and they stack.</p>
+
+  <h2>1. Talk to them, once a day</h2>
+  <p>The first conversation with each villager each <i>real</i> day is worth <b>+8</b>. Subsequent
+  conversations that day are free but worth nothing. Talking to all eight every day is 64 points —
+  more than a heart — for about a minute of walking.</p>
+  <p>Each villager has at least <b>150 individually written everyday lines</b>. What they choose
+  depends on the hour, weekday, season, weather, location, story progress, friendship, festivals
+  and birthdays. They also notice the last substantial thing you actually did: after fishing,
+  catching a bug, digging, chopping, gifting, donating or building, the next villager you speak to
+  acknowledges it once before their normal conversation rotation resumes.</p>
+
+  <h2>2. Give a gift they like</h2>
+  <p>Only <b>one gift per villager per day</b> counts (a favor item is the exception; see below).
+  Tastes are discoverable in conversation, and the reaction tells you which bracket you hit.</p>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Verdict</th><th>Points</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><b>Loved</b></td><td class="num">+25</td><td>Two or three specific items per villager. See each villager's page.</td></tr>
+      <tr><td><b>Liked</b></td><td class="num">+12</td><td>Some villagers like whole <i>categories</i> — CATALOGER 734 likes every fish and every bug; MARIGOLD and FERN like all forage; PLINK likes all bugs; BUOY likes all fish.</td></tr>
+      <tr><td>Neutral</td><td class="num">+6</td><td>Anything not on their list. Never a wasted gift.</td></tr>
+      <tr><td>Disliked</td><td class="num">+2</td><td>Still positive. They are robots and they are lonely.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="notice"><b>Efficient route:</b> CATALOGER 734 likes <i>every</i> catchable species,
+  so the surplus of a fishing session raises him fastest. MARIGOLD and FERN both like all forage,
+  so one afternoon of picking feeds two villagers.</div>
+
+  <h2>3. Favor errands</h2>
+  <p>Villagers occasionally ask you for a specific item. Handing it over is worth its normal gift
+  value <b>+20</b>, and it ignores the one-gift-per-day limit.</p>
+
+  <h2>What hearts unlock</h2>
+  <ul>
+    <li><b>1 ♥</b> — first <a href="#heart-scenes">heart moment</a>; the villager starts writing you
+      <a href="#mail">letters</a>.</li>
+    <li><b>3 ♥</b> — second heart moment; the higher tier of mailbox letters, which carry gifts.</li>
+    <li><b>5 ♥</b> — third heart moment, a unique <b>keepsake</b> that cannot be sold, permanently
+      warmer dialogue, and the <b>Kindred Spirits</b> achievement.</li>
+  </ul>
+  <p>Total town hearts also gate the final act of <a href="#dead-letters">the main story</a>.</p>
+
+  <div class="designnote">
+    <b>Design note</b> — Gifts never go negative and the daily talk is generous, because the fantasy
+    is "the town is glad you came", not "manage eight relationship meters". The one-gift-a-day cap
+    exists purely so you can't buy a friendship with a full inventory in ninety seconds.
+  </div>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · <a href="#getting-started">Guides</a></div>
+</section>
+
+<!-- =========================================================== QUESTS ==== -->
+<section class="page" id="quests" hidden>
+  <div class="crumbs">POSTMARK Wiki › Story › Quest chain</div>
+  <h1>Quest chain</h1>
+  <p class="tagline">Six quests from waking up in the forest to the Founding Ceremony. Mild spoilers for the build-up; none for the ending.</p>
+
+  <p>The tracker in the top right always shows the current step. Quests are strictly sequential —
+  finishing one starts the next — and every one of them runs through <a href="#sparks">SPARKS</a>.</p>
+
+  <div class="tablewrap">
+  <table class="data">
+    <caption>The main chain, in order.</caption>
+    <thead><tr><th>#</th><th>Quest</th><th>Steps</th><th>Unlocks</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="num">1</td><td class="name">First Day on the Frontier</td>
+        <td><ol><li>Talk to SPARKS at the town hall tent.</li><li>Catch a fish and a bug, then report back.</li></ol></td>
+        <td>Bug net, fishing rod</td>
+      </tr>
+      <tr>
+        <td class="num">2</td><td class="name">Wake the Shopkeeper</td>
+        <td><ol><li>Dig at a ★ spot to find an Amber Cell.</li><li>Install it in the dormant shopkeeper unit.</li></ol></td>
+        <td>Shovel; <a href="#reggie">REGGIE</a></td>
+      </tr>
+      <tr>
+        <td class="num">3</td><td class="name">Emporium Rising</td>
+        <td><ol><li>Gather 8 Timber and 6 Cut Stone.</li><li>Deliver them to the Emporium plot.</li></ol></td>
+        <td>Axe; <a href="#emporium">the shop</a>; the forest gate</td>
+      </tr>
+      <tr>
+        <td class="num">4</td><td class="name">The Nocturnal Librarian</td>
+        <td><ol><li>Explore the northern forest (after dark).</li><li>Bring CATALOGER 734 three different specimens.</li><li>Deliver 10 Timber, 8 Cut Stone and 1 Amber Cell to the Archive plot.</li></ol></td>
+        <td><a href="#cataloger">CATALOGER 734</a>; <a href="#archive">the Archive</a>; the meadow bridge</td>
+      </tr>
+      <tr>
+        <td class="num">5</td><td class="name">A Growing Town</td>
+        <td><ol><li>Find two dormant units in the eastern meadow.</li><li>Reactivate MARIGOLD and BUOY (one Amber Cell each).</li><li>Build each a cottage (6 Timber + 4 Cut Stone each).</li></ol></td>
+        <td><a href="#marigold">MARIGOLD</a>; <a href="#buoy">BUOY</a></td>
+      </tr>
+      <tr>
+        <td class="num">6</td><td class="name">The Town Lives</td>
+        <td><ol><li>Place 3 pieces of furniture around town.</li><li>Donate 8 species to the Archive.</li><li>Speak to SPARKS to hold the Founding Ceremony.</li></ol></td>
+        <td>The Founding Ceremony · then <a href="#dead-letters">the Dead Letter Office</a></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="notice">
+    <b>Amber Cell drop rate:</b> normally about <b>8%</b> per ★ dig — but during <i>A Growing Town</i>,
+    while you hold fewer than two cells, the game quietly raises it to <b>40%</b> so the quest can't
+    stall on bad luck.
+  </div>
+
+  <h2>Side content</h2>
+  <p>Three more villagers — <a href="#wick">WICK</a>, <a href="#fern">FERN</a> and
+  <a href="#plink">PLINK</a> — are not part of the chain. They sit dormant in the world and can be
+  woken in any order with a spare Amber Cell. Waking them is the main reason to keep digging after
+  the main quests stop asking for cells.</p>
+
+  <div class="cats">Categories: <a href="#quests">Story</a> · <a href="#getting-started">Guides</a></div>
+</section>
+
+<!-- ==================================================== DEAD LETTERS ==== -->
+<section class="page" id="dead-letters" hidden>
+  <div class="crumbs">POSTMARK Wiki › Story › The Dead Letter Office</div>
+  <h1>The Dead Letter Office</h1>
+  <p class="tagline">The main story. Everything below the first section is a spoiler and is collapsed by default.</p>
+
+  <div class="notice"><b>⚠ Heavy spoilers.</b> This article documents the ending of the game.
+  Each act is behind a click. There is a <b>Reveal spoilers</b> switch in the top bar if you would
+  rather just read it all.</div>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/day-card.jpg" alt="The franked day-start card" />
+    <h3>The Dead Letter Office</h3>
+    <table>
+      <tr><th>Type</th><td>Main story arc</td></tr>
+      <tr><th>Starts after</th><td>The Founding Ceremony</td></tr>
+      <tr><th>Letters</th><td>15, across 3 acts (5 / 6 / 4)</td></tr>
+      <tr><th>Delivered to</th><td>Villagers and landmarks</td></tr>
+      <tr><th>Act III gate</th><td>Total town hearts</td></tr>
+      <tr><th>Tracked in</th><td>The Case File (<kbd>L</kbd>)</td></tr>
+      <tr><th>Ends with</th><td>A cinematic finale, credits, and a post-game</td></tr>
+    </table>
+  </aside>
+
+  <h2>What it is (no spoilers)</h2>
+  <p>The post office holds a mail sack that never went out — letters written the week the town
+  emptied, addressed to people and places that stopped existing before the postmaster could deliver
+  them. You can now deliver them.</p>
+  <p>Each letter has an <b>address</b>. Carrying it to the right villager or the right landmark —
+  the well, the dock, the bridge, the orchard, the Archive terrace — plays a staged, letterboxed
+  scene and adds one <b>truth fragment</b> to your Case File. Three acts. The third is gated behind
+  the town's total hearts, so the ending arrives when you have actually made friends, not when you
+  have walked far enough.</p>
+
+  <div class="designnote">
+    <b>Design note</b> — The story is delivered by the same verb as the job: you find out what
+    happened by <i>doing your job</i>. No journal to read, no lore notes on the ground. The
+    postmaster learns the truth by delivering the mail, forty years late.
+  </div>
+
+  <h2>Act I — What happened</h2>
+  <details class="spoilerbox"><summary>Spoiler: Act I</summary>
+    <p>The town received a <b>Notice of Resettlement</b>. A mining concern claimed the valley's ore
+    rights and everyone was moved to a work-city called <b>Cinderhollow</b> — "temporarily," pending
+    the township's appeal. Wagons were provided. Residents were told to bring only what they could
+    carry, and that the valley would be held in trust and returned.</p>
+    <p>Everyone read the word <i>temporary</i> and packed a single trunk. They said "by spring,"
+    because the letter said so.</p>
+    <table class="data">
+      <thead><tr><th>Letter</th><th>Deliver to</th><th>Fragment</th></tr></thead>
+      <tbody>
+        <tr><td class="name">The Order</td><td>SPARKS</td><td>The town did not vanish — it was <i>ordered</i> away, "temporarily," pending appeal.</td></tr>
+        <tr><td class="name">To My Orchard</td><td>The orchard</td><td>The gardener Elowen planted the orchard the morning she left, betting on a spring she trusted was coming. She signs herself "E."</td></tr>
+        <tr><td class="name">To Buoy the Ferry-Boat</td><td>The dock</td><td>A ferryman's child, Nim, believed "spring" too. Every family packed for a season and was gone for a life.</td></tr>
+        <tr><td class="name">Behind the counter</td><td>REGGIE</td><td>Mara left REGGIE the shop key and a ledger of favours: need was a debt the shop owed the town.</td></tr>
+        <tr><td class="name">Planting instructions</td><td>MARIGOLD</td><td>Elowen entrusted MARIGOLD with spring. Her routines were a promise to one gardener, not abandoned programming.</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <h2>Act II — The letter that came too late</h2>
+  <details class="spoilerbox"><summary>Spoiler: Act II</summary>
+    <p><b>The appeal succeeded.</b> A revocation letter — the order overturned, the valley theirs
+    again, <i>welcome home</i> — was posted to the town. It arrived the week after the last wagon,
+    to a town with no one left to sign for it.</p>
+    <p>The old postmaster, your predecessor, could not deliver a letter to an empty town and would
+    not leave his post. He reactivated SPARKS to keep the ledgers, and wrote to Cinderhollow. Again
+    and again. He rang the bell for no one.</p>
+    <p>Cinderhollow answered once. It had become a city, a generation deep. The children there had
+    never seen the valley. Kindly, gently, they said: we are not coming back. Let the door close.</p>
+    <table class="data">
+      <thead><tr><th>Letter</th><th>Deliver to</th><th>Fragment</th></tr></thead>
+      <tbody>
+        <tr><td class="name">The Revocation</td><td>SPARKS</td><td>The appeal won. The valley was theirs again — one week too late.</td></tr>
+        <tr><td class="name">Draft to the residents</td><td>The town well</td><td>The postmaster stayed, woke SPARKS, and wrote to Cinderhollow over and over: come home.</td></tr>
+        <tr><td class="name">The reply</td><td>The Archive terrace</td><td>Cinderhollow had new lives, new children, a new home. Nobody was cruel. Everybody simply moved on.</td></tr>
+        <tr><td class="name">Drawer 1</td><td>CATALOGER 734</td><td>The catalogue names every living thing so no authority can call the valley empty again.</td></tr>
+        <tr><td class="name">Nim, grown</td><td>BUOY</td><td>Nim built a Cinderhollow chandlery and named a boat for BUOY; memory survived without requiring return.</td></tr>
+        <tr><td class="name">Final prescription</td><td>FERN</td><td>Dr. Ansel explicitly left FERN the surgery and called her his successor.</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <h2>Act III — Whoever comes next</h2>
+  <details class="spoilerbox"><summary>Spoiler: Act III and the ending</summary>
+    <p>Gated behind <b>24 total town hearts</b>. Four letters remain, and the unfinished one is always last.</p>
+    <table class="data">
+      <thead><tr><th>Letter</th><th>Deliver to</th><th>Fragment</th></tr></thead>
+      <tbody>
+        <tr><td class="name">For SPARKS — do not open until needed</td><td>SPARKS</td><td>The postmaster grew old alone and finally walked out to find them himself — not to bring them home, just so one soul would know the door never closed. He left the sack for "whoever comes next." That is you.</td></tr>
+        <tr><td class="name">Night watch book</td><td>WICK</td><td>Cole left one lamp burning for whoever arrived next. The player was expected before anyone knew them.</td></tr>
+        <tr><td class="name">Bandstand programme</td><td>PLINK</td><td>The blank second record was reserved for a future homecoming, even if different people arrived.</td></tr>
+        <tr><td class="name">THE LAST LETTER — unfinished</td><td>The town well</td><td>The final letter is unfinished, addressed to no one, waiting for a hand to complete it.</td></tr>
+      </tbody>
+    </table>
+    <p>The finale: you finish your predecessor's last letter. Not a summons to the old people —
+    a notice to the world that the town is alive again, addressed to no one and everyone:
+    <b class="mono">GENERAL DELIVERY</b>. Letterbox, title cards, credits, and a post-game in which
+    the town keeps running.</p>
+    <p>Achievement: <b>General Delivery</b> — "Uncovered the truth and reopened the post office."</p>
+  </details>
+
+  <div class="figrow">
+    <figure><img src="/wiki-media/shots/heart-scene-3.jpg" alt="A staged heart moment" /><figcaption>Story beats are letterboxed, camera-scripted and acted in-engine.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/plaza-west.jpg" alt="The west side of the square" /><figcaption>Several letters are addressed to places, not people. The well takes two of them.</figcaption></figure>
+  </div>
+
+  <div class="cats">Categories: <a href="#quests">Story</a> · Spoilers</div>
+</section>
+
+<!-- ===================================================== HEART SCENES ==== -->
+<section class="page" id="heart-scenes" hidden>
+  <div class="crumbs">POSTMARK Wiki › Story › Heart moments</div>
+  <h1>Heart moments</h1>
+  <p class="tagline">24 staged cutscenes — three per villager. Titles listed; contents spoiler-tagged.</p>
+
+  <p>At <b>1 ♥</b>, <b>3 ♥</b> and <b>5 ♥</b> with any villager, the next time you speak to them a
+  <b>heart moment</b> plays: letterboxed, camera-scripted, and acted out in the world rather than
+  narrated. Each one is that robot giving up a piece of what it remembers about the humans who left.</p>
+
+  <p>At the third scene the villager hands you a <b>keepsake</b> — a unique item that cannot be
+  sold, ever — and their everyday dialogue becomes permanently warmer.</p>
+
+  <div class="tablewrap">
+  <table class="data">
+    <caption>All 24 heart moments, by tier.</caption>
+    <thead><tr><th>Villager</th><th>1 ♥</th><th>3 ♥</th><th>5 ♥</th><th>Keepsake</th></tr></thead>
+    <tbody>
+      <tr><td class="name"><a href="#sparks">SPARKS</a></td><td>The Morning Bell</td><td>The Manifest</td><td>Seat Reserved</td><td>The Unfiled Page</td></tr>
+      <tr><td class="name"><a href="#reggie">REGGIE</a></td><td>Crate Digging</td><td>Side A</td><td>The Needle Drop</td><td>Square Sounds, Side A</td></tr>
+      <tr><td class="name"><a href="#cataloger">CATALOGER 734</a></td><td>Drawer 1</td><td>The Unlabelled Thing</td><td>Everything, Clearly</td><td>The Field Glass</td></tr>
+      <tr><td class="name"><a href="#marigold">MARIGOLD</a></td><td>The Fourteen Feet</td><td>Planting Day</td><td>The Last Pinch</td><td>"For Spring. — E."</td></tr>
+      <tr><td class="name"><a href="#buoy">BUOY</a></td><td>Knots</td><td>The Last Crossing</td><td>Slack Water</td><td>The First Knot</td></tr>
+      <tr><td class="name"><a href="#wick">WICK</a></td><td>Grade Seven Amber</td><td>The Borrowed Fire</td><td>The Tin</td><td>The Borrowed Fire</td></tr>
+      <tr><td class="name"><a href="#fern">FERN</a></td><td>Bedside Manner</td><td>The Recipe Book</td><td>The Last Entry</td><td>The Last Entry</td></tr>
+      <tr><td class="name"><a href="#plink">PLINK</a></td><td>The Commission</td><td>Movement Two</td><td>The Premiere</td><td>Concert A</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <details class="spoilerbox"><summary>Spoiler: what the keepsakes are</summary>
+    <ul>
+      <li><b>The Unfiled Page</b> — the last page of the evacuation manifest, one seat never struck through. SPARKS's seat.</li>
+      <li><b>Square Sounds, Side A</b> — a record pressed on the last day: fourteen minutes of the town square, alive.</li>
+      <li><b>The Field Glass</b> — the naturalist's own lens, from drawer 1. Label: <span class="mono">EVERYTHING, CLEARLY</span>.</li>
+      <li><b>"For Spring. — E."</b> — a hand-labelled seed packet, half a pinch left.</li>
+      <li><b>The First Knot</b> — the practice knot a ferryman's kid tied on BUOY's finger, forty years holding.</li>
+      <li><b>The Borrowed Fire</b> — a single match from the night watchman's tin.</li>
+      <li><b>The Last Entry</b> — from the doctor's recipe book: <i>"For loneliness: company, steeped. Forty years if needed."</i></li>
+      <li><b>Concert A</b> — the bandstand tuning fork.</li>
+    </ul>
+  </details>
+
+  <div class="designnote">
+    <b>Design note</b> — Every keepsake is one human's object, kept by a robot. The collection is the
+    real museum of the game: the <a href="#archive">Archive</a> catalogues what survived the valley,
+    and the keepsakes catalogue what survived the people.
+  </div>
+
+  <div class="cats">Categories: <a href="#quests">Story</a> · <a href="#villagers">Townsfolk</a></div>
+</section>
+
+<!-- ============================================================= FISH ==== -->
+<section class="page" id="fish" hidden>
+  <div class="crumbs">POSTMARK Wiki › Catalogue › Fish</div>
+  <h1>Fish</h1>
+  <div class="notice"><b>Current Kindly Forward runtime:</b> Fishing is disabled,
+    including casting and ambient shadows. The catalogue below describes the
+    retained prototype data; existing saved catches are preserved.</div>
+  <p class="tagline">All 50 species use real season, hour and water-body availability.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/riverbank-day.jpg" alt="The riverbank" />
+    <h3>Fishing</h3>
+    <table>
+      <tr><th>Tool</th><td>Fishing Rod (<kbd>2</kbd>) · 400 gears</td></tr>
+      <tr><th>Upgrade</th><td>Steel Rod — faster bites</td></tr>
+      <tr><th>Use</th><td><kbd>F</kbd> to cast, <kbd>F</kbd> again to strike</td></tr>
+      <tr><th>Bite delay</th><td>0.8–2.8 s (0.4–1.5 s with the Steel Rod)</td></tr>
+      <tr><th>Strike window</th><td><b>0.75 seconds</b></td></tr>
+      <tr><th>Waters</th><td>River · Pond · Ocean</td></tr>
+      <tr><th>Species</th><td>50</td></tr>
+      <tr><th>Cheapest</th><td>Silver Minnow — 60 gears</td></tr>
+      <tr><th>Priciest</th><td>Depot Sturgeon — 2,600 gears</td></tr>
+    </table>
+  </aside>
+
+  <h2>How fishing works</h2>
+  <p>Shadows drift in the water. Cast near one with <kbd>F</kbd>; the nearest shadow takes interest,
+  the bobber dips, and you have <b>0.75 seconds</b> to press <kbd>F</kbd> again. Shadow size (small,
+  medium, large) tells you roughly what class of fish is under it — the 2,600-gear Depot Sturgeon
+  never hides under a small shadow.</p>
+  <p>The <b>pond</b> is the slow, wide stretch of the same river spline, and the game tells it apart
+  by channel width rather than treating it as a separate lake. If a species says "pond," fish the
+  broad water; if it says "river," fish the narrow runs.</p>
+
+  <h2>All fish</h2>
+  <div class="filterbar" data-for="fishTable">
+    <input type="search" placeholder="Search fish…" aria-label="Search fish" />
+    <button data-filter="spring">Spring</button>
+    <button data-filter="summer">Summer</button>
+    <button data-filter="autumn">Autumn</button>
+    <button data-filter="winter">Winter</button>
+    <button data-filter="river">River</button>
+    <button data-filter="pond">Pond</button>
+    <button data-filter="ocean">Ocean</button>
+    <button data-filter="night">Night only</button>
+    <span class="filtercount"></span>
+  </div>
+  <div class="tablewrap">
+  <table class="data" id="fishTable">
+    <caption>Sell price is what REGGIE pays. Shadow: ● small · ●● medium · ●●● large.</caption>
+    <thead><tr><th>Fish</th><th>Where</th><th>Time</th><th>Season</th><th>Shadow</th><th>Rarity</th><th>Sells</th></tr></thead>
+    <tbody>
+      <tr data-tags="river pond ocean spring summer autumn winter"><td class="name">Silver Minnow</td><td>Anywhere</td><td>All day</td><td><span class="tag t-all">All year</span></td><td>●</td><td class="r-common">Common</td><td class="num">60</td></tr>
+      <tr data-tags="river pond spring summer autumn winter"><td class="name">Mud Darter</td><td>River · Pond</td><td>6 AM – 8 PM</td><td><span class="tag t-all">All year</span></td><td>●</td><td class="r-common">Common</td><td class="num">80</td></tr>
+      <tr data-tags="river pond spring summer autumn winter"><td class="name">Rust Carp</td><td>River · Pond</td><td>All day</td><td><span class="tag t-all">All year</span></td><td>●●</td><td class="r-common">Common</td><td class="num">120</td></tr>
+      <tr data-tags="ocean spring summer autumn winter"><td class="name">Tin Sardine</td><td>Ocean</td><td>All day</td><td><span class="tag t-all">All year</span></td><td>●</td><td class="r-common">Common</td><td class="num">90</td></tr>
+      <tr data-tags="river spring summer autumn winter"><td class="name">Glass Smelt</td><td>River</td><td>4 – 10 AM</td><td><span class="tag t-all">All year</span></td><td>●</td><td class="r-uncommon">Uncommon</td><td class="num">140</td></tr>
+      <tr data-tags="pond night spring summer autumn winter"><td class="name">Sump Loach</td><td>Pond</td><td>8 PM – 4 AM</td><td><span class="tag t-all">All year</span></td><td>●</td><td class="r-uncommon">Uncommon</td><td class="num">160</td></tr>
+      <tr data-tags="river spring summer autumn winter"><td class="name">Brass Bream</td><td>River</td><td>8 AM – 6 PM</td><td><span class="tag t-all">All year</span></td><td>●●</td><td class="r-uncommon">Uncommon</td><td class="num">240</td></tr>
+      <tr data-tags="river pond night spring summer autumn winter"><td class="name">Lantern Eel</td><td>River · Pond</td><td>7 PM – 5 AM</td><td><span class="tag t-all">All year</span></td><td>●●</td><td class="r-rare">Rare</td><td class="num">600</td></tr>
+      <tr data-tags="ocean night spring summer autumn winter"><td class="name">Signal Ray</td><td>Ocean</td><td>9 PM – 6 AM</td><td><span class="tag t-all">All year</span></td><td>●●●</td><td class="r-veryrare">Very rare</td><td class="num">1,600</td></tr>
+      <tr data-tags="pond night spring summer autumn winter"><td class="name">Moon Carp</td><td>Pond</td><td>Midnight – 5 AM</td><td><span class="tag t-all">All year</span></td><td>●●●</td><td class="r-veryrare">Very rare</td><td class="num">1,400</td></tr>
+      <tr data-tags="pond spring summer autumn winter"><td class="name">Clockwork Koi</td><td>Pond</td><td>All day</td><td><span class="tag t-all">All year</span></td><td>●●●</td><td class="r-veryrare">Very rare</td><td class="num">1,800</td></tr>
+      <tr data-tags="river spring summer autumn winter"><td class="name">Depot Sturgeon</td><td>River</td><td>All day</td><td><span class="tag t-all">All year</span></td><td>●●●</td><td class="r-veryrare">Very rare</td><td class="num">2,600</td></tr>
+      <tr data-tags="river spring"><td class="name">Thaw Trout</td><td>River</td><td>5 AM – Noon</td><td><span class="tag t-spring">Spring</span></td><td>●●</td><td class="r-common">Common</td><td class="num">340</td></tr>
+      <tr data-tags="river pond spring"><td class="name">Blossom Dace</td><td>River · Pond</td><td>7 AM – 7 PM</td><td><span class="tag t-spring">Spring</span></td><td>●</td><td class="r-common">Common</td><td class="num">180</td></tr>
+      <tr data-tags="river pond ocean summer"><td class="name">Sun Perch</td><td>Anywhere</td><td>10 AM – 4 PM</td><td><span class="tag t-summer">Summer</span></td><td>●●</td><td class="r-common">Common</td><td class="num">200</td></tr>
+      <tr data-tags="pond summer"><td class="name">Green Tench</td><td>Pond</td><td>6 AM – 8 PM</td><td><span class="tag t-summer">Summer</span></td><td>●●</td><td class="r-uncommon">Uncommon</td><td class="num">260</td></tr>
+      <tr data-tags="pond night summer"><td class="name">Kettle Catfish</td><td>Pond</td><td>6 PM – 4 AM</td><td><span class="tag t-summer">Summer</span></td><td>●●●</td><td class="r-rare">Rare</td><td class="num">780</td></tr>
+      <tr data-tags="ocean summer"><td class="name">Ribbon Eel</td><td>Ocean</td><td>All day</td><td><span class="tag t-summer">Summer</span></td><td>●●</td><td class="r-rare">Rare</td><td class="num">700</td></tr>
+      <tr data-tags="river pond autumn"><td class="name">Harvest Chub</td><td>River · Pond</td><td>All day</td><td><span class="tag t-autumn">Autumn</span></td><td>●●</td><td class="r-common">Common</td><td class="num">220</td></tr>
+      <tr data-tags="river autumn"><td class="name">Ember Salmon</td><td>River</td><td>5 AM – 6 PM</td><td><span class="tag t-autumn">Autumn</span></td><td>●●●</td><td class="r-rare">Rare</td><td class="num">900</td></tr>
+      <tr data-tags="river pond winter"><td class="name">Frost Pike</td><td>River · Pond</td><td>All day</td><td><span class="tag t-winter">Winter</span></td><td>●●●</td><td class="r-rare">Rare</td><td class="num">1,100</td></tr>
+      <tr data-tags="ocean winter"><td class="name">Anchor Cod</td><td>Ocean</td><td>All day</td><td><span class="tag t-winter">Winter</span></td><td>●●</td><td class="r-uncommon">Uncommon</td><td class="num">420</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Notes for collectors</h2>
+  <ul>
+    <li><b>Four fish are night-only</b> and three of them are the expensive ones. A midnight walk to
+      the pond with a rod is the single best hour of fishing in the game.</li>
+    <li><b>The ocean has its own list</b> — five species you will never see in the river. Fish off
+      the beach or from the dock.</li>
+    <li><b>Every season swaps part of the catalogue.</b> The Thaw Trout runs within a day of the
+      first thaw; the Frost Pike waits under the ice all winter.</li>
+    <li><b>Donate before you sell.</b> CATALOGER 734 wants exactly one of each, and completing the
+      fish wing earns the <b>Ichthyologist</b> achievement plus a Cog Fountain.</li>
+  </ul>
+
+  <div class="cats">Categories: <a href="#fish">Catalogue</a> · <a href="#archive">The Archive</a></div>
+</section>
+
+<!-- ============================================================= BUGS ==== -->
+<section class="page" id="bugs" hidden>
+  <div class="crumbs">POSTMARK Wiki › Catalogue › Bugs</div>
+  <h1>Bugs</h1>
+  <p class="tagline">All 50 species, with habitat, hours and season.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/forest-day.jpg" alt="The forest floor" />
+    <h3>Bug catching</h3>
+    <table>
+      <tr><th>Tool</th><td>Bug Net (<kbd>1</kbd>) · 400 gears</td></tr>
+      <tr><th>Upgrade</th><td>Fine-Mesh Net — wider, quieter</td></tr>
+      <tr><th>Catch range</th><td>~2.4 m</td></tr>
+      <tr><th>Spook range</th><td>~1.1 m <b>if running</b></td></tr>
+      <tr><th>At once</th><td>Up to 5 bugs live in the world</td></tr>
+      <tr><th>Habitats</th><td>Grass · Flowers · Trees</td></tr>
+      <tr><th>Species</th><td>50</td></tr>
+      <tr><th>Cheapest</th><td>Thaw Mayfly — 70 gears</td></tr>
+      <tr><th>Priciest</th><td>Depot Scarab — 1,500 gears</td></tr>
+    </table>
+  </aside>
+
+  <h2>How catching works</h2>
+  <p>Bugs wander the world in three habitats: butterflies and moths flutter over <b>flowers</b>,
+  beetles trundle in the <b>trees</b>, hoppers and crickets live in the <b>grass</b>. Get within
+  about 2.4 m and swing with <kbd>F</kbd>.</p>
+  <p><b>Do not run.</b> Sprinting within roughly a metre makes a bug bolt. Walk the last few steps.
+  The Fine-Mesh Net widens the swing and makes them spook less.</p>
+
+  <h2>All bugs</h2>
+  <div class="filterbar" data-for="bugTable">
+    <input type="search" placeholder="Search bugs…" aria-label="Search bugs" />
+    <button data-filter="spring">Spring</button>
+    <button data-filter="summer">Summer</button>
+    <button data-filter="autumn">Autumn</button>
+    <button data-filter="winter">Winter</button>
+    <button data-filter="grass">Grass</button>
+    <button data-filter="flowers">Flowers</button>
+    <button data-filter="trees">Trees</button>
+    <button data-filter="night">Night only</button>
+    <span class="filtercount"></span>
+  </div>
+  <div class="tablewrap">
+  <table class="data" id="bugTable">
+    <caption>Sell price is what REGGIE pays.</caption>
+    <thead><tr><th>Bug</th><th>Habitat</th><th>Time</th><th>Season</th><th>Rarity</th><th>Sells</th></tr></thead>
+    <tbody>
+      <tr data-tags="grass spring summer autumn winter"><td class="name">Meadow Hopper</td><td>Grass</td><td>7 AM – 7 PM</td><td><span class="tag t-all">All year</span></td><td class="r-common">Common</td><td class="num">90</td></tr>
+      <tr data-tags="flowers spring summer autumn winter"><td class="name">Rust Ladybird</td><td>Flowers</td><td>7 AM – 6 PM</td><td><span class="tag t-all">All year</span></td><td class="r-common">Common</td><td class="num">130</td></tr>
+      <tr data-tags="grass spring summer autumn winter"><td class="name">Shore Skimmer</td><td>Grass (shoreline)</td><td>6 AM – 7 PM</td><td><span class="tag t-all">All year</span></td><td class="r-uncommon">Uncommon</td><td class="num">190</td></tr>
+      <tr data-tags="trees spring summer autumn winter"><td class="name">Gear Beetle</td><td>Trees</td><td>All day</td><td><span class="tag t-all">All year</span></td><td class="r-uncommon">Uncommon</td><td class="num">200</td></tr>
+      <tr data-tags="grass night spring summer autumn winter"><td class="name">Cog Cricket</td><td>Grass</td><td>6 PM – 5 AM</td><td><span class="tag t-all">All year</span></td><td class="r-uncommon">Uncommon</td><td class="num">180</td></tr>
+      <tr data-tags="trees night spring summer autumn winter"><td class="name">Lantern Mantis</td><td>Trees</td><td>7 PM – 4 AM</td><td><span class="tag t-all">All year</span></td><td class="r-rare">Rare</td><td class="num">620</td></tr>
+      <tr data-tags="grass night spring summer autumn winter"><td class="name">Clockwork Firefly</td><td>Grass</td><td>9 PM – 3 AM</td><td><span class="tag t-all">All year</span></td><td class="r-veryrare">Very rare</td><td class="num">1,200</td></tr>
+      <tr data-tags="trees spring summer autumn winter"><td class="name">Depot Scarab</td><td>Trees</td><td>All day</td><td><span class="tag t-all">All year</span></td><td class="r-veryrare">Very rare</td><td class="num">1,500</td></tr>
+      <tr data-tags="flowers spring"><td class="name">Petal Blue</td><td>Flowers</td><td>8 AM – 5 PM</td><td><span class="tag t-spring">Spring</span></td><td class="r-common">Common</td><td class="num">160</td></tr>
+      <tr data-tags="grass spring"><td class="name">Thaw Mayfly</td><td>Grass</td><td>5 – 11 AM</td><td><span class="tag t-spring">Spring</span></td><td class="r-common">Common</td><td class="num">70</td></tr>
+      <tr data-tags="flowers spring"><td class="name">Seed Weevil</td><td>Flowers</td><td>9 AM – 6 PM</td><td><span class="tag t-spring">Spring</span></td><td class="r-uncommon">Uncommon</td><td class="num">110</td></tr>
+      <tr data-tags="flowers spring summer"><td class="name">Ivory Butterfly</td><td>Flowers</td><td>8 AM – 5 PM</td><td><span class="tag t-spring">Spring</span> <span class="tag t-summer">Summer</span></td><td class="r-common">Common</td><td class="num">110</td></tr>
+      <tr data-tags="grass spring summer night"><td class="name">Dusk Firefly</td><td>Grass</td><td>7 – 11 PM</td><td><span class="tag t-spring">Spring</span> <span class="tag t-summer">Summer</span></td><td class="r-uncommon">Uncommon</td><td class="num">260</td></tr>
+      <tr data-tags="trees summer"><td class="name">Brass Cicada</td><td>Trees</td><td>9 AM – 5 PM</td><td><span class="tag t-summer">Summer</span></td><td class="r-common">Common</td><td class="num">240</td></tr>
+      <tr data-tags="grass summer"><td class="name">Kiln Dragonfly</td><td>Grass (over the pond)</td><td>8 AM – 6 PM</td><td><span class="tag t-summer">Summer</span></td><td class="r-uncommon">Uncommon</td><td class="num">320</td></tr>
+      <tr data-tags="trees summer"><td class="name">Copper Hornet</td><td>Trees (dead)</td><td>8 AM – 5 PM</td><td><span class="tag t-summer">Summer</span></td><td class="r-rare">Rare</td><td class="num">480</td></tr>
+      <tr data-tags="trees summer autumn"><td class="name">Oak Stag Beetle</td><td>Trees</td><td>All day</td><td><span class="tag t-summer">Summer</span> <span class="tag t-autumn">Autumn</span></td><td class="r-rare">Rare</td><td class="num">500</td></tr>
+      <tr data-tags="flowers autumn night"><td class="name">Harvest Moth</td><td>Flowers</td><td>5 PM – 5 AM</td><td><span class="tag t-autumn">Autumn</span></td><td class="r-common">Common</td><td class="num">210</td></tr>
+      <tr data-tags="trees autumn"><td class="name">Ash Swallowtail</td><td>Trees</td><td>9 AM – 4 PM</td><td><span class="tag t-autumn">Autumn</span></td><td class="r-rare">Rare</td><td class="num">540</td></tr>
+      <tr data-tags="grass autumn winter night"><td class="name">Cinder Moth</td><td>Grass</td><td>6 PM – 6 AM</td><td><span class="tag t-autumn">Autumn</span> <span class="tag t-winter">Winter</span></td><td class="r-uncommon">Uncommon</td><td class="num">130</td></tr>
+      <tr data-tags="grass winter"><td class="name">Snow Springtail</td><td>Grass (snow)</td><td>All day</td><td><span class="tag t-winter">Winter</span></td><td class="r-common">Common</td><td class="num">150</td></tr>
+      <tr data-tags="trees winter"><td class="name">Frost Lacewing</td><td>Trees</td><td>6 AM – 4 PM</td><td><span class="tag t-winter">Winter</span></td><td class="r-rare">Rare</td><td class="num">380</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Notes for collectors</h2>
+  <ul>
+    <li><b>The Clockwork Firefly</b> (1,200 g) blinks in a repeating pattern. Cataloger's label says
+      the pattern is a postal code, and that he has not told anyone yet.</li>
+    <li><b>Winter is not empty.</b> Two species are winter-only and one of them, the Snow Springtail,
+      is available around the clock — the easiest catalogue entry in the coldest month.</li>
+    <li><b>Six bugs are night-active.</b> Combine a night bug run with the night fishing run.</li>
+    <li>Completing the bug wing of the Archive earns <b>Entomologist</b> and a Flower Planter.</li>
+  </ul>
+
+  <div class="cats">Categories: <a href="#bugs">Catalogue</a> · <a href="#archive">The Archive</a></div>
+</section>
+
+<!-- =========================================================== FORAGE ==== -->
+<section class="page" id="forage" hidden>
+  <div class="crumbs">POSTMARK Wiki › Catalogue › Forage, fruit &amp; materials</div>
+  <h1>Forage, fruit &amp; materials</h1>
+  <p class="tagline">Everything you pick up off the ground, out of a tree, or out of a hole.</p>
+
+  <h2>Forage</h2>
+  <p>Forage grows on <b>fixed spawn points</b>, but <i>what</i> grows on them is re-rolled from the
+  season's pool whenever a picked plant regrows (about six minutes). Walking the same loop in a
+  different season pays out differently.</p>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Plant</th><th>Season</th><th>Sells</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Wild Chicory</td><td><span class="tag t-spring">Spring</span> <span class="tag t-summer">Summer</span></td><td class="num">40</td><td>The commonest plant in the valley. Doubles up in the spring pool. MARIGOLD loves it.</td></tr>
+      <tr><td class="name">Tinman Mushroom</td><td><span class="tag t-all">All year</span></td><td class="num">150</td><td>Grows in robot footprints. The only forage available in every season.</td></tr>
+      <tr><td class="name">Ember Berry</td><td><span class="tag t-summer">Summer</span> <span class="tag t-autumn">Autumn</span></td><td class="num">70</td><td>Warm to the touch. Loved by MARIGOLD and FERN.</td></tr>
+      <tr><td class="name">Thaw Crocus</td><td><span class="tag t-spring">Spring</span></td><td class="num">90</td><td>Comes up through the last of the snow.</td></tr>
+      <tr><td class="name">Sun Clover</td><td><span class="tag t-summer">Summer</span></td><td class="num">60</td><td>Four leaves more often than it should have.</td></tr>
+      <tr><td class="name">Copper Fern</td><td><span class="tag t-autumn">Autumn</span></td><td class="num">120</td><td>Turns kettle-coloured in the first cold week.</td></tr>
+      <tr><td class="name">Bristle Pinecone</td><td><span class="tag t-autumn">Autumn</span> <span class="tag t-winter">Winter</span></td><td class="num">30</td><td>Also drops from shaken trees, ~20% of the time.</td></tr>
+      <tr><td class="name">Frost Holly</td><td><span class="tag t-winter">Winter</span></td><td class="num">140</td><td>The only colour left outdoors in the deep of the year.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Seasonal pools</h3>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Season</th><th>What regrows</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag t-spring">Spring</span></td><td>Thaw Crocus · Wild Chicory (×2 weight) · Tinman Mushroom</td></tr>
+      <tr><td><span class="tag t-summer">Summer</span></td><td>Sun Clover · Wild Chicory · Ember Berry · Tinman Mushroom</td></tr>
+      <tr><td><span class="tag t-autumn">Autumn</span></td><td>Copper Fern · Ember Berry · Bristle Pinecone · Tinman Mushroom</td></tr>
+      <tr><td><span class="tag t-winter">Winter</span></td><td>Frost Holly · Bristle Pinecone · Tinman Mushroom</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Fruit</h2>
+  <p><b>Orchard Apple</b> (100 g). Shake a living fruit tree with <kbd>E</kbd> for <b>2 apples</b>,
+  plus a 20% chance of a Bristle Pinecone. The tree refruits after about <b>10 minutes</b>.
+  Living trees can never be felled — only the grey dead standing ones can.</p>
+
+  <h2>Materials</h2>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Material</th><th>Source</th><th>Sells</th><th>Used for</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Timber</td><td>Dead standing trees, 3 axe swings (2 with the Felling Axe)</td><td class="num">20</td><td>Every building; most furniture recipes</td></tr>
+      <tr><td class="name">Cut Stone</td><td>★ dig spots (~34% of digs)</td><td class="num">20</td><td>Buildings, fountains, anvil, stove</td></tr>
+      <tr><td class="name">Scrap Metal</td><td>★ dig spots (~24% of digs)</td><td class="num">25</td><td>Tool upgrades, lamps, metalwork</td></tr>
+      <tr><td class="name">Amber Cell</td><td>★ dig spots (~8%, or 40% during <i>A Growing Town</i>)</td><td class="num">400</td><td><b>Waking robots.</b> Also lamps and lanterns.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="notice"><b>Timber yield:</b> a felled dead tree drops <b>2 Timber</b> (3 with the
+  Felling Axe) and regrows after about 8 minutes. Flowers and forage regrow in about 6.</div>
+
+  <h2>Digging</h2>
+  <p><b>Five ★ spots</b> are active at any time, scattered through the zones you have unlocked, and
+  they reshuffle each real day. One dig each:</p>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Result</th><th>Chance</th></tr></thead>
+    <tbody>
+      <tr><td>Cut Stone</td><td class="num">~34% (plus the remainder, so ~62% total)</td></tr>
+      <tr><td>Scrap Metal</td><td class="num">~24%</td></tr>
+      <tr><td>A relic</td><td class="num">~14%</td></tr>
+      <tr><td>Amber Cell</td><td class="num">~8% (40% while the game needs you to have one)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>With the <b>Iron Shovel</b>, every dig has a further <b>40% chance of a bonus find</b> —
+  scrap metal, or an Amber Cell 30% of the time. It pays for itself.</p>
+
+  <div class="cats">Categories: <a href="#forage">Catalogue</a> · <a href="#crafting">Crafting</a></div>
+</section>
+
+<!-- =========================================================== RELICS ==== -->
+<section class="page" id="relics" hidden>
+  <div class="crumbs">POSTMARK Wiki › Catalogue › Relics &amp; keepsakes</div>
+  <h1>Relics &amp; keepsakes</h1>
+  <p class="tagline">Objects the people left behind. One kind you can sell; one kind you never will.</p>
+
+  <h2>Relics</h2>
+  <p>Dug up from ★ spots, roughly 14% of the time. Three of the four can be donated to the
+  <a href="#archive">Archive</a>. They are also the best gifts in the game for several villagers.</p>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Relic</th><th>Sells</th><th>Loved by</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Gearheart Locket</td><td class="num">900</td><td>SPARKS · REGGIE</td><td>A locket shaped like a gear. Inside: a portrait of a robot. <i>"They loved us. This is the proof."</i></td></tr>
+      <tr><td class="name">Sealed Letter</td><td class="num">550</td><td>SPARKS</td><td>Never delivered. The address weathered away; the name did not. Cataloger has not opened it.</td></tr>
+      <tr><td class="name">Chipped Teacup</td><td class="num">300</td><td>—<br><span class="small">(liked by SPARKS, WICK, FERN; loved by PLINK)</span></td><td>Someone drank from this every morning. The chip fits a thumb.</td></tr>
+      <tr><td class="name">Old Boot</td><td class="num">10</td><td>—<br><span class="small">(liked by SPARKS, REGGIE, BUOY; disliked by MARIGOLD)</span></td><td>Every river has one. Tradition, probably. Not donatable.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Keepsakes</h2>
+  <p>Given once each, at <b>five hearts</b>, by each villager. Sell price is <b>0</b> — they cannot
+  be sold, and the game is not subtle about why. See <a href="#heart-scenes">Heart moments</a>.</p>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Keepsake</th><th>From</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td class="name">The Unfiled Page</td><td>SPARKS</td><td>The last page of the evacuation manifest — one seat never struck through.</td></tr>
+      <tr><td class="name">Square Sounds, Side A</td><td>REGGIE</td><td>A record pressed on the last day: fourteen minutes of the town square, alive.</td></tr>
+      <tr><td class="name">The Field Glass</td><td>CATALOGER 734</td><td>The naturalist's own lens, from drawer 1. Label: <span class="mono">EVERYTHING, CLEARLY</span>.</td></tr>
+      <tr><td class="name">"For Spring. — E."</td><td>MARIGOLD</td><td>A hand-labelled seed packet, half a pinch left.</td></tr>
+      <tr><td class="name">The First Knot</td><td>BUOY</td><td>A practice knot tied on his finger by a ferryman's kid, forty years holding.</td></tr>
+      <tr><td class="name">The Borrowed Fire</td><td>WICK</td><td>A single match from the night watchman's tin.</td></tr>
+      <tr><td class="name">The Last Entry</td><td>FERN</td><td><i>"For loneliness: company, steeped. Forty years if needed."</i></td></tr>
+      <tr><td class="name">Concert A</td><td>PLINK</td><td>The bandstand tuning fork.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="cats">Categories: <a href="#forage">Catalogue</a> · <a href="#heart-scenes">Story</a></div>
+</section>
+
+<!-- ========================================================== ARCHIVE ==== -->
+<section class="page" id="archive" hidden>
+  <div class="crumbs">POSTMARK Wiki › Town › The Archive</div>
+  <h1>The Archive</h1>
+  <p class="tagline">The museum. Run by a robot who has been labelling drawers alone since before you were born.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/archive-day.jpg" alt="The Archive" />
+    <h3>The Archive</h3>
+    <table>
+      <tr><th>Keeper</th><td><a href="#cataloger">CATALOGER 734</a></td></tr>
+      <tr><th>Location</th><td>Northern forest clearing</td></tr>
+      <tr><th>Built with</th><td>10 Timber · 8 Cut Stone · 1 Amber Cell</td></tr>
+      <tr><th>Unlocked by</th><td>Quest 4, <i>The Nocturnal Librarian</i></td></tr>
+      <tr><th>Donatable</th><td>50 fish · 50 bugs · 18 sea creatures · 12 fossils · 6 authentic artworks · forage/relics</td></tr>
+      <tr><th>Wings</th><td>Fish · Bugs · Sea · Fossils · Art · Field collections</td></tr>
+      <tr><th>Open</th><td>Always; its keeper is awake 8 PM – 5 AM</td></tr>
+    </table>
+  </aside>
+
+  <p>Bring CATALOGER 734 one of any species and he records it, permanently, with a label he writes
+  on the spot. The labels are the best writing in the game and are worth donating for on their own:</p>
+
+  <div class="quotebox">
+    <b>Ephemera liquescens</b> — one day. I have had forty years and done less.
+    <cite>— the Thaw Mayfly's archive label</cite>
+  </div>
+
+  <h2>How donating works</h2>
+  <ul>
+    <li>He wants <b>one of each</b>. Duplicates are yours to sell.</li>
+    <li>A donated item leaves your pockets for good — but you can view the whole catalogue any time
+      from inside the Archive.</li>
+    <li>Donations count toward quest 6 (<i>donate 8 species</i>) and toward the museum wings.</li>
+    <li>Not everything is donatable. Tools, materials, furniture, clothing and the Old Boot are not.</li>
+    <li>Bring an unassessed fossil to CATALOGER; he identifies it before it can enter a drawer.</li>
+    <li>Art is inspected for a work-specific tell. Forgeries are returned with the exact discrepancy named.</li>
+  </ul>
+
+  <h2>Critterpedia and diving</h2>
+  <p>The Town Ledger (<kbd>L</kbd>) keeps a personal sightings total separate from donations:
+  <b>50 fish, 50 bugs and 18 sea creatures</b>. At the beach, press <kbd>V</kbd> to swim,
+  follow a moving underwater shadow, and press <kbd>E</kbd> nearby to dive. Swim back into
+  the shallows and press <kbd>V</kbd> to climb ashore.</p>
+
+  <h2>Wings</h2>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Wing</th><th>Requires</th><th>Achievement</th><th>Reward</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Fish</td><td>All 50 <a href="#fish">fish</a></td><td>Ichthyologist</td><td>Cog Fountain (worth 3,000 gears)</td></tr>
+      <tr><td class="name">Bugs</td><td>All 50 <a href="#bugs">bugs</a></td><td>Entomologist</td><td>Flower Planter</td></tr>
+      <tr><td class="name">Sea</td><td>All 18 diving finds</td><td>—</td><td>Complete marine drawer</td></tr>
+      <tr><td class="name">Fossils</td><td>All 12 assessed fossils</td><td>—</td><td>Complete palaeontology drawer</td></tr>
+      <tr><td class="name">Art</td><td>All 6 authentic works</td><td>—</td><td>Complete fine-arts provenance record</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Both wings are a full year's work, since a third of each catalogue is season-locked.</p>
+
+  <div class="figrow">
+    <figure><img src="/wiki-media/shots/inside-archive.jpg" alt="Inside the Archive" /><figcaption>Specimen halls, bell jars, labelled exhibits and framed field plates.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/archive-night.jpg" alt="The Archive at night" /><figcaption>The domed rotunda after dark, lit from inside.</figcaption></figure>
+  </div>
+
+  <div class="designnote">
+    <b>Design note</b> — The Archive is the game's second story vector. Each label is written in
+    Cataloger's voice and half of them are quietly about him: forty years of solitude, described
+    through fish. The museum is not a checklist; it is a diary he did not mean to keep.
+  </div>
+
+  <div class="cats">Categories: <a href="#archive">Town</a> · <a href="#fish">Catalogue</a></div>
+</section>
+
+<!-- ============================================================ TOOLS ==== -->
+<section class="page" id="tools" hidden>
+  <div class="crumbs">POSTMARK Wiki › Town › Tools</div>
+  <h1>Tools</h1>
+  <p class="tagline">Four tools, four upgrades. Every upgrade measurably changes its activity.</p>
+
+  <p>Tools equip with <kbd>1</kbd>–<kbd>4</kbd>, which always selects <b>the best variant you own</b>,
+  and fire with <kbd>F</kbd>. The base four are bought from <a href="#emporium">REGGIE</a>; the
+  upgrades are made at the <a href="#crafting">workbench</a> and consume the base tool.</p>
+
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Key</th><th>Tool</th><th>Buy</th><th>Upgrade</th><th>What the upgrade does</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>1</kbd></td><td class="name">Bug Net</td><td class="num">400</td><td class="name">Fine-Mesh Net</td><td>A wider, quieter swing — bugs spook less.</td></tr>
+      <tr><td><kbd>2</kbd></td><td class="name">Fishing Rod</td><td class="num">400</td><td class="name">Steel Rod</td><td>Bites come in 0.4–1.5 s instead of 0.8–2.8 s, and shadows spawn readier.</td></tr>
+      <tr><td><kbd>3</kbd></td><td class="name">Shovel</td><td class="num">600</td><td class="name">Iron Shovel</td><td>40% chance of a bonus find per dig (30% of those are Amber Cells).</td></tr>
+      <tr><td><kbd>4</kbd></td><td class="name">Axe</td><td class="num">600</td><td class="name">Felling Axe</td><td>Dead trees fall in 2 swings instead of 3, and drop 3 Timber instead of 2.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Upgrade costs</h3>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Upgrade</th><th>Materials</th><th>Gears</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Steel Rod</td><td>6 Scrap Metal · 3 Timber</td><td class="num">400</td></tr>
+      <tr><td class="name">Fine-Mesh Net</td><td>4 Scrap Metal · 4 Timber</td><td class="num">400</td></tr>
+      <tr><td class="name">Iron Shovel</td><td>6 Scrap Metal · 4 Cut Stone</td><td class="num">400</td></tr>
+      <tr><td class="name">Felling Axe</td><td>6 Scrap Metal · 5 Timber</td><td class="num">400</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="notice"><b>Which first?</b> The <b>Iron Shovel</b> — it pays for its own scrap back,
+  and the extra Amber Cells are what let you wake WICK, FERN and PLINK without grinding. The
+  <b>Felling Axe</b> is second: +50% timber and a third less swinging.</div>
+
+  <p>Crafting any tool upgrade earns the <b>Master of Tools</b> achievement.</p>
+
+  <div class="cats">Categories: <a href="#tools">Town</a> · <a href="#crafting">Crafting</a></div>
+</section>
+
+<!-- ========================================================= CRAFTING ==== -->
+<section class="page" id="crafting" hidden>
+  <div class="crumbs">POSTMARK Wiki › Town › Crafting</div>
+  <h1>Crafting</h1>
+  <p class="tagline">44 workbench recipes: 40 pieces of furniture and 4 tool upgrades.</p>
+
+  <p>The <b>workbench</b> lives in your house. It turns scavenged materials — timber, cut stone,
+  scrap metal, relics, even chicory — into furniture and better tools. Most furniture is
+  <b>cheaper to craft than to buy</b>, and a few pieces are craft-only in practice because REGGIE's
+  stock rotates.</p>
+
+  <div class="filterbar" data-for="craftTable">
+    <input type="search" placeholder="Search recipes…" aria-label="Search recipes" />
+    <button data-filter="tool">Tools</button>
+    <button data-filter="postal">Postal</button>
+    <button data-filter="garden">Garden</button>
+    <button data-filter="parlour">Parlour</button>
+    <button data-filter="workshop">Workshop</button>
+    <button data-filter="kitchen">Kitchen</button>
+    <button data-filter="archive">Archive</button>
+    <button data-filter="seaside">Seaside</button>
+    <button data-filter="town">Town</button>
+    <span class="filtercount"></span>
+  </div>
+  <div class="tablewrap">
+  <table class="data" id="craftTable">
+    <caption>All 44 recipes. "Gears" is in addition to the materials.</caption>
+    <thead><tr><th>Recipe</th><th>Set</th><th>Materials</th><th>Gears</th></tr></thead>
+    <tbody>
+      <tr data-tags="tool"><td class="name">Steel Rod</td><td>Tool upgrade</td><td>6 Scrap · 3 Timber</td><td class="num">400</td></tr>
+      <tr data-tags="tool"><td class="name">Fine-Mesh Net</td><td>Tool upgrade</td><td>4 Scrap · 4 Timber</td><td class="num">400</td></tr>
+      <tr data-tags="tool"><td class="name">Iron Shovel</td><td>Tool upgrade</td><td>6 Scrap · 4 Stone</td><td class="num">400</td></tr>
+      <tr data-tags="tool"><td class="name">Felling Axe</td><td>Tool upgrade</td><td>6 Scrap · 5 Timber</td><td class="num">400</td></tr>
+
+      <tr data-tags="postal"><td class="name">Brass Postbox</td><td>Postal</td><td>5 Scrap · 2 Timber</td><td class="num">200</td></tr>
+      <tr data-tags="postal"><td class="name">Sorting Desk</td><td>Postal</td><td>8 Timber · 2 Scrap</td><td class="num">250</td></tr>
+      <tr data-tags="postal"><td class="name">Mail Trolley</td><td>Postal</td><td>4 Timber · 4 Scrap</td><td class="num">—</td></tr>
+      <tr data-tags="postal"><td class="name">Parcel Stack</td><td>Postal</td><td>3 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="postal"><td class="name">Postal Scales</td><td>Postal</td><td>4 Scrap · 1 Timber</td><td class="num">150</td></tr>
+
+      <tr data-tags="garden"><td class="name">Garden Bench</td><td>Garden</td><td>4 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="garden"><td class="name">Flower Planter</td><td>Garden</td><td>2 Timber · 2 Stone</td><td class="num">—</td></tr>
+      <tr data-tags="garden"><td class="name">Birdbath</td><td>Garden</td><td>6 Stone</td><td class="num">—</td></tr>
+      <tr data-tags="garden"><td class="name">Rose Trellis</td><td>Garden</td><td>5 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="garden"><td class="name">Rain Barrel</td><td>Garden</td><td>4 Timber · 2 Scrap</td><td class="num">—</td></tr>
+
+      <tr data-tags="parlour"><td class="name">Wingback Chair</td><td>Parlour</td><td>6 Timber · 4 Wild Chicory</td><td class="num">300</td></tr>
+      <tr data-tags="parlour"><td class="name">Side Table</td><td>Parlour</td><td>3 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="parlour"><td class="name">Bookcase</td><td>Parlour</td><td>9 Timber</td><td class="num">200</td></tr>
+      <tr data-tags="parlour"><td class="name">Standing Lamp</td><td>Parlour</td><td>4 Scrap · 1 Amber Cell</td><td class="num">—</td></tr>
+      <tr data-tags="parlour"><td class="name">Hearth Rug</td><td>Parlour</td><td>6 Wild Chicory</td><td class="num">—</td></tr>
+      <tr data-tags="parlour"><td class="name">Mantel Clock</td><td>Parlour</td><td>5 Scrap · 3 Timber</td><td class="num">350</td></tr>
+
+      <tr data-tags="workshop"><td class="name">Workbench</td><td>Workshop</td><td>8 Timber · 3 Scrap</td><td class="num">—</td></tr>
+      <tr data-tags="workshop"><td class="name">Tool Rack</td><td>Workshop</td><td>4 Timber · 2 Scrap</td><td class="num">—</td></tr>
+      <tr data-tags="workshop"><td class="name">Anvil</td><td>Workshop</td><td>10 Scrap · 4 Stone</td><td class="num">400</td></tr>
+      <tr data-tags="workshop"><td class="name">Crate Stack</td><td>Workshop</td><td>4 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="workshop"><td class="name">Oil Lamp</td><td>Workshop</td><td>3 Scrap · 1 Amber Cell</td><td class="num">—</td></tr>
+
+      <tr data-tags="kitchen"><td class="name">Iron Stove</td><td>Kitchen</td><td>9 Scrap · 5 Stone</td><td class="num">450</td></tr>
+      <tr data-tags="kitchen"><td class="name">Kitchen Cupboard</td><td>Kitchen</td><td>8 Timber</td><td class="num">200</td></tr>
+      <tr data-tags="kitchen"><td class="name">Scrubbed Table</td><td>Kitchen</td><td>6 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="kitchen"><td class="name">Ladderback Chair</td><td>Kitchen</td><td>3 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="kitchen"><td class="name">Kettle Shelf</td><td>Kitchen</td><td>3 Timber · 2 Scrap</td><td class="num">—</td></tr>
+
+      <tr data-tags="archive"><td class="name">Specimen Cabinet</td><td>Archive</td><td>10 Timber · 3 Scrap</td><td class="num">500</td></tr>
+      <tr data-tags="archive"><td class="name">Bell Jar Stand</td><td>Archive</td><td>4 Scrap · 4 Timber</td><td class="num">300</td></tr>
+      <tr data-tags="archive"><td class="name">Reading Desk</td><td>Archive</td><td>7 Timber</td><td class="num">200</td></tr>
+      <tr data-tags="archive"><td class="name">Brass Globe</td><td>Archive</td><td>5 Scrap · 4 Timber</td><td class="num">400</td></tr>
+      <tr data-tags="archive"><td class="name">Map Stand</td><td>Archive</td><td>5 Timber</td><td class="num">—</td></tr>
+
+      <tr data-tags="seaside"><td class="name">Harbour Buoy</td><td>Seaside</td><td>4 Scrap · 2 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="seaside"><td class="name">Net Rack</td><td>Seaside</td><td>5 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="seaside"><td class="name">Driftwood Stool</td><td>Seaside</td><td>2 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="seaside"><td class="name">Harbour Lantern</td><td>Seaside</td><td>5 Scrap · 1 Amber Cell</td><td class="num">250</td></tr>
+      <tr data-tags="seaside"><td class="name">Tackle Chest</td><td>Seaside</td><td>5 Timber · 2 Scrap</td><td class="num">—</td></tr>
+
+      <tr data-tags="town"><td class="name">Cog Fountain</td><td>Town</td><td>6 Stone · 4 Scrap</td><td class="num">300</td></tr>
+      <tr data-tags="town"><td class="name">Gas Lamp</td><td>Town</td><td>3 Scrap · 1 Stone</td><td class="num">—</td></tr>
+      <tr data-tags="town"><td class="name">Notice Post</td><td>Town</td><td>4 Timber</td><td class="num">—</td></tr>
+      <tr data-tags="town"><td class="name">Hedge Planter</td><td>Town</td><td>4 Timber · 3 Wild Chicory</td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="notice"><b>Craft or buy?</b> Almost always craft. The Cog Fountain costs 3,000 gears
+  at the Emporium but 6 Stone, 4 Scrap and 300 gears at the bench — an afternoon of digging against
+  a fortnight of selling fish.</div>
+
+  <p>Your first craft earns <b>Tinkerer</b>; your first tool upgrade earns <b>Master of Tools</b>.</p>
+
+  <div class="cats">Categories: <a href="#crafting">Town</a> · <a href="#house">Furniture</a></div>
+</section>
+
+<!-- ========================================================= EMPORIUM ==== -->
+<section class="page" id="emporium" hidden>
+  <div class="crumbs">POSTMARK Wiki › Town › Reggie's Re-Emporium</div>
+  <h1>Reggie's Re-Emporium</h1>
+  <p class="tagline">"Everything's vintage 'cause everything's OLD!" The town's only shop.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/inside-emporium.jpg" alt="Inside the Emporium" />
+    <h3>Re-Emporium</h3>
+    <table>
+      <tr><th>Keeper</th><td><a href="#reggie">REGGIE</a></td></tr>
+      <tr><th>Location</th><td>East side of the town square</td></tr>
+      <tr><th>Built with</th><td>8 Timber · 6 Cut Stone</td></tr>
+      <tr><th>Hours</th><td>8 AM – 6 PM (until 3 PM Saturdays)</td></tr>
+      <tr><th>Buy stock</th><td>One missing starter tool + 5 / 7 / 8 rotating goods</td></tr>
+      <tr><th>Rotation</th><td>Daily, by date</td></tr>
+      <tr><th>Sells everything</th><td>Yes — no item is unsellable except tools in use and keepsakes</td></tr>
+      <tr><th>Currency</th><td>Gears ⚙</td></tr>
+    </table>
+  </aside>
+
+  <h2>Buying</h2>
+  <p>Walk inside and browse the two display racks: today's next starter tool and
+  <b>date-rotated goods are physical objects on their own plinths</b>. Approach
+  one and press <kbd>E</kbd> to read its shelf tag, then ask REGGIE to wrap it.
+  The rotation is deterministic per day, so yesterday's sofa may not be there
+  tomorrow. Selling is handled separately at REGGIE's counter.</p>
+  <h2>Shop tiers</h2>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Tier</th><th>Daily goods</th><th>How it opens</th></tr></thead>
+    <tbody>
+      <tr><td class="name">REGGIE's Counter</td><td>5 + one missing tool</td><td>Build the shop</td></tr>
+      <tr><td class="name">REGGIE's Emporium</td><td>7 + one missing tool</td><td>Earn 3 Town Stamps or finish the town story</td></tr>
+      <tr><td class="name">REGGIE's Grand Emporium</td><td>8 + one missing tool</td><td>Earn 6 Town Stamps or complete both cottage expansions</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Higher tiers widen the choice but never discount it. A purchase made early
+  is never made foolish by later progress.</p>
+  <p>Prices for the full furniture catalogue are on the <a href="#house">furniture</a> page;
+  clothing is on the <a href="#clothing">clothing</a> page.</p>
+
+  <h2>Selling</h2>
+  <p>The SELL tab takes anything: surplus fish, duplicate bugs, forage, scrap, relics. Sell prices
+  are listed throughout this wiki. Two things you cannot sell:</p>
+  <ul>
+    <li><b>Tools</b> — sell price 0 by design, so you can't accidentally sell your rod.</li>
+    <li><b>Keepsakes</b> — sell price 0. Obviously.</li>
+  </ul>
+  <p>Furniture sells back for <b>one third</b> of its purchase price, so crafting and flipping is
+  not an exploit.</p>
+
+  <h2>Best things to sell</h2>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Item</th><th>Gears</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Depot Sturgeon</td><td class="num">2,600</td><td>The single most valuable catch. River, any hour, very rare.</td></tr>
+      <tr><td class="name">Clockwork Koi</td><td class="num">1,800</td><td>Pond, any hour. Also loved by BUOY — consider gifting it instead.</td></tr>
+      <tr><td class="name">Signal Ray</td><td class="num">1,600</td><td>Ocean, 9 PM – 6 AM.</td></tr>
+      <tr><td class="name">Depot Scarab</td><td class="num">1,500</td><td>Trees, any hour, very rare.</td></tr>
+      <tr><td class="name">Moon Carp</td><td class="num">1,400</td><td>Pond, midnight – 5 AM.</td></tr>
+      <tr><td class="name">Clockwork Firefly</td><td class="num">1,200</td><td>Grass, 9 PM – 3 AM.</td></tr>
+      <tr><td class="name">Amber Cell</td><td class="num">400</td><td><b>Don't.</b> You need these to wake robots.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="cats">Categories: <a href="#emporium">Town</a> · <a href="#reggie">Townsfolk</a></div>
+</section>
+
+<!-- ============================================================ HOUSE ==== -->
+<section class="page" id="house" hidden>
+  <div class="crumbs">POSTMARK Wiki › Town › Your house &amp; furniture</div>
+  <h1>Your house &amp; furniture</h1>
+  <p class="tagline">One bare room, 100 pieces of furniture in 20 matched sets, 12 wallpapers and 12 floors.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/inside-cottage.jpg" alt="A furnished cottage interior" />
+    <h3>The postmaster's cottage</h3>
+    <table>
+      <tr><th>Starts as</th><td>One bare room — a crate, a candle, a ledger on the wall</td></tr>
+      <tr><th>Expansions</th><td>2 (3,000 then 8,000 gears)</td></tr>
+      <tr><th>Wallpaper</th><td>12 styles · 400 gears to change</td></tr>
+      <tr><th>Flooring</th><td>12 styles · 400 gears to change</td></tr>
+      <tr><th>Furniture</th><td>100 pieces, 20 sets</td></tr>
+      <tr><th>Placement</th><td><kbd>R</kbd> rotates while placing; <kbd>E</kbd> puts a nearby piece back in your pockets</td></tr>
+      <tr><th>Also placeable</th><td>Outdoors, anywhere in town</td></tr>
+      <tr><th>Workbench</th><td>Inside; runs all 44 <a href="#crafting">recipes</a></td></tr>
+    </table>
+  </aside>
+
+  <p>Your cottage has a mail slot in the door and starts almost empty. The <b>renovation ledger</b>
+  pinned to the wall handles expansions and redecoration; everything else you place yourself.
+  Furniture is not restricted to indoors — placing three pieces <i>around town</i> is a step in
+  <a href="#quests">quest 6</a>, and villagers will detour to sit on a Garden Bench you leave out.
+  A red placement ghost means the ground is occupied by terrain, a building prop, existing
+  furniture, or a villager; move until it returns to its normal translucent colour. Stand beside
+  a placed piece and press <kbd>E</kbd> to put it back in your pockets. If your pockets are full,
+  the piece stays safely where it is.</p>
+
+  <h2>Renovation ledger</h2>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Option</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Expand the cottage (first)</td><td class="num">3,000 gears</td></tr>
+      <tr><td>Expand the cottage (second)</td><td class="num">8,000 gears</td></tr>
+      <tr><td>Change wallpaper</td><td class="num">400 gears</td></tr>
+      <tr><td>Change flooring</td><td class="num">400 gears</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Furniture</h2>
+  <p>The original Postal, Garden, Parlour, Workshop, Kitchen, Archive, Seaside and Town sets are
+  joined by twelve five-piece suites: <b>Orchard, Tidehouse, Foundry, Field Station, Station,
+  Snowbound, Greenhouse, Night Watch, Bakery, Schoolroom, Festival, and Observatory</b>.</p>
+  <div class="filterbar" data-for="furnTable">
+    <input type="search" placeholder="Search furniture…" aria-label="Search furniture" />
+    <button data-filter="postal">Postal</button>
+    <button data-filter="garden">Garden</button>
+    <button data-filter="parlour">Parlour</button>
+    <button data-filter="workshop">Workshop</button>
+    <button data-filter="kitchen">Kitchen</button>
+    <button data-filter="archive">Archive</button>
+    <button data-filter="seaside">Seaside</button>
+    <button data-filter="town">Town</button>
+    <span class="filtercount"></span>
+  </div>
+  <div class="tablewrap">
+  <table class="data" id="furnTable">
+    <caption>Buy price at the Emporium. Sells back for a third. Most pieces are cheaper to <a href="#crafting">craft</a>.</caption>
+    <thead><tr><th>Piece</th><th>Set</th><th>Buy</th><th>Craftable</th></tr></thead>
+    <tbody>
+      <tr data-tags="postal"><td class="name">Sorting Desk</td><td>Postal</td><td class="num">1,400</td><td>Yes</td></tr>
+      <tr data-tags="postal"><td class="name">Mail Trolley</td><td>Postal</td><td class="num">1,100</td><td>Yes</td></tr>
+      <tr data-tags="postal"><td class="name">Brass Postbox</td><td>Postal</td><td class="num">900</td><td>Yes</td></tr>
+      <tr data-tags="postal"><td class="name">Postal Scales</td><td>Postal</td><td class="num">800</td><td>Yes</td></tr>
+      <tr data-tags="postal"><td class="name">Parcel Stack</td><td>Postal</td><td class="num">500</td><td>Yes</td></tr>
+      <tr data-tags="garden"><td class="name">Birdbath</td><td>Garden</td><td class="num">750</td><td>Yes</td></tr>
+      <tr data-tags="garden"><td class="name">Rose Trellis</td><td>Garden</td><td class="num">650</td><td>Yes</td></tr>
+      <tr data-tags="garden"><td class="name">Garden Bench</td><td>Garden</td><td class="num">600</td><td>Yes</td></tr>
+      <tr data-tags="garden"><td class="name">Rain Barrel</td><td>Garden</td><td class="num">400</td><td>Yes</td></tr>
+      <tr data-tags="garden"><td class="name">Flower Planter</td><td>Garden</td><td class="num">350</td><td>Yes</td></tr>
+      <tr data-tags="parlour"><td class="name">Wingback Chair</td><td>Parlour</td><td class="num">1,300</td><td>Yes</td></tr>
+      <tr data-tags="parlour"><td class="name">Bookcase</td><td>Parlour</td><td class="num">1,200</td><td>Yes</td></tr>
+      <tr data-tags="parlour"><td class="name">Mantel Clock</td><td>Parlour</td><td class="num">950</td><td>Yes</td></tr>
+      <tr data-tags="parlour"><td class="name">Standing Lamp</td><td>Parlour</td><td class="num">850</td><td>Yes</td></tr>
+      <tr data-tags="parlour"><td class="name">Side Table</td><td>Parlour</td><td class="num">450</td><td>Yes</td></tr>
+      <tr data-tags="parlour"><td class="name">Hearth Rug</td><td>Parlour</td><td class="num">300</td><td>Yes</td></tr>
+      <tr data-tags="workshop"><td class="name">Anvil</td><td>Workshop</td><td class="num">1,500</td><td>Yes</td></tr>
+      <tr data-tags="workshop"><td class="name">Workbench</td><td>Workshop</td><td class="num">1,000</td><td>Yes</td></tr>
+      <tr data-tags="workshop"><td class="name">Tool Rack</td><td>Workshop</td><td class="num">600</td><td>Yes</td></tr>
+      <tr data-tags="workshop"><td class="name">Oil Lamp</td><td>Workshop</td><td class="num">500</td><td>Yes</td></tr>
+      <tr data-tags="workshop"><td class="name">Crate Stack</td><td>Workshop</td><td class="num">350</td><td>Yes</td></tr>
+      <tr data-tags="kitchen"><td class="name">Iron Stove</td><td>Kitchen</td><td class="num">1,600</td><td>Yes</td></tr>
+      <tr data-tags="kitchen"><td class="name">Kitchen Cupboard</td><td>Kitchen</td><td class="num">1,100</td><td>Yes</td></tr>
+      <tr data-tags="kitchen"><td class="name">Scrubbed Table</td><td>Kitchen</td><td class="num">700</td><td>Yes</td></tr>
+      <tr data-tags="kitchen"><td class="name">Kettle Shelf</td><td>Kitchen</td><td class="num">550</td><td>Yes</td></tr>
+      <tr data-tags="kitchen"><td class="name">Ladderback Chair</td><td>Kitchen</td><td class="num">300</td><td>Yes</td></tr>
+      <tr data-tags="archive"><td class="name">Specimen Cabinet</td><td>Archive</td><td class="num">1,800</td><td>Yes</td></tr>
+      <tr data-tags="archive"><td class="name">Brass Globe</td><td>Archive</td><td class="num">1,400</td><td>Yes</td></tr>
+      <tr data-tags="archive"><td class="name">Bell Jar Stand</td><td>Archive</td><td class="num">1,200</td><td>Yes</td></tr>
+      <tr data-tags="archive"><td class="name">Reading Desk</td><td>Archive</td><td class="num">1,000</td><td>Yes</td></tr>
+      <tr data-tags="archive"><td class="name">Map Stand</td><td>Archive</td><td class="num">900</td><td>Yes</td></tr>
+      <tr data-tags="seaside"><td class="name">Harbour Lantern</td><td>Seaside</td><td class="num">900</td><td>Yes</td></tr>
+      <tr data-tags="seaside"><td class="name">Harbour Buoy</td><td>Seaside</td><td class="num">700</td><td>Yes</td></tr>
+      <tr data-tags="seaside"><td class="name">Tackle Chest</td><td>Seaside</td><td class="num">650</td><td>Yes</td></tr>
+      <tr data-tags="seaside"><td class="name">Net Rack</td><td>Seaside</td><td class="num">550</td><td>Yes</td></tr>
+      <tr data-tags="seaside"><td class="name">Driftwood Stool</td><td>Seaside</td><td class="num">250</td><td>Yes</td></tr>
+      <tr data-tags="town"><td class="name">Cog Fountain</td><td>Town</td><td class="num">3,000</td><td>Yes — far cheaper</td></tr>
+      <tr data-tags="town"><td class="name">Gas Lamp</td><td>Town</td><td class="num">800</td><td>Yes</td></tr>
+      <tr data-tags="town"><td class="name">Hedge Planter</td><td>Town</td><td class="num">600</td><td>Yes</td></tr>
+      <tr data-tags="town"><td class="name">Notice Post</td><td>Town</td><td class="num">450</td><td>Yes</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Wallpapers</h2>
+  <p>Whitewash Plaster · Sage Green · Rose Stripe · Postal Blue Stripe · Ochre Wash · Ink Blue ·
+  Ember Rose · Deep Moss · Mattress Ticking · Exposed Brick · Oak Panelling · Canvas Duck</p>
+
+  <h2>Flooring</h2>
+  <p>Pine Boards · Walnut Boards · Hearth Brick · Slate Tile · Bleached Ash · Smoked Ebony ·
+  Cherry Boards · Flagstone · Chequer Tile · Sandstone · Rush Matting · Wine Carpet</p>
+
+  <figure class="wide"><img src="/wiki-media/shots/furniture-showcase-b.jpg" alt="Furniture showcase" /><figcaption>Pieces from several sets. Every one is procedural geometry with a hand-painted texture sheet.</figcaption></figure>
+
+  <div class="designnote">
+    <b>Design note</b> — Sets exist so a room reads as <i>a room</i> rather than a shelf of unlocks.
+    Twenty matched sets mean any two pieces from the same suite belong together, and
+    the Postal set exists so the postmaster's front room can look like an office again.
+  </div>
+
+  <div class="cats">Categories: <a href="#house">Town</a> · <a href="#crafting">Crafting</a></div>
+</section>
+
+<!-- ========================================================= CLOTHING ==== -->
+<section class="page" id="clothing" hidden>
+  <div class="crumbs">POSTMARK Wiki › Town › Clothing</div>
+  <h1>Clothing</h1>
+  <p class="tagline">Forty fabric-and-dye coats. Equip from your pockets; the change is instant and persists until you swap.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/portraits/player.jpg" alt="The postmaster" />
+    <h3>The postmaster</h3>
+    <table>
+      <tr><th>Starts in</th><td>Postal Blue</td></tr>
+      <tr><th>Coats</th><td>40</td></tr>
+      <tr><th>Bought from</th><td><a href="#emporium">REGGIE</a>, rotating stock</td></tr>
+      <tr><th>Equip</th><td><kbd>Tab</kbd> → select the coat</td></tr>
+    </table>
+  </aside>
+
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Coat</th><th>Buy</th><th>Sells</th><th>Flavour</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Postal Blue Coat</td><td class="num">480</td><td class="num">120</td><td>Standard issue, last issued a lifetime ago.</td></tr>
+      <tr><td class="name">Ember Red Coat</td><td class="num">520</td><td class="num">130</td><td>Dyed with ember berries. REGGIE says it "goes hard."</td></tr>
+      <tr><td class="name">Moss Green Coat</td><td class="num">520</td><td class="num">130</td><td>Blends into the meadow. The bugs will never see you coming.</td></tr>
+      <tr><td class="name">Ivory Duster</td><td class="num">800</td><td class="num">200</td><td>Impractical, dramatic, magnificent.</td></tr>
+      <tr><td class="name">Ink Black Coat</td><td class="num">800</td><td class="num">200</td><td>For postmasters with a mysterious past.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>The full rail adds rainwear, field greens, orchard and winter dyes, foundry neutrals,
+  blossom colours, festival coats, Archive tones and seaside blues. Daily stock always reserves
+  one clothing slot, so every date advances the wardrobe rotation.</p>
+
+  <p class="small">The Moss Green Coat's description is a joke — coat colour does not actually change
+  bug spook range. <span class="mono">[citation needed]</span></p>
+
+  <div class="cats">Categories: <a href="#house">Town</a> · <a href="#emporium">Shops</a></div>
+</section>
+
+<!-- ========================================================= CALENDAR ==== -->
+<section class="page" id="calendar" hidden>
+  <div class="crumbs">POSTMARK Wiki › World › Seasons &amp; festivals</div>
+  <h1>Seasons &amp; festivals</h1>
+  <p class="tagline">The season follows your real calendar month. Four festivals, eight birthdays.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/season-autumn.jpg" alt="Autumn in the valley" />
+    <h3>The year</h3>
+    <table>
+      <tr><th>Spring</th><td>March – May</td></tr>
+      <tr><th>Summer</th><td>June – August</td></tr>
+      <tr><th>Autumn</th><td>September – November</td></tr>
+      <tr><th>Winter</th><td>December – February</td></tr>
+      <tr><th>Festivals</th><td>4 — one per season, fixed dates</td></tr>
+      <tr><th>Birthdays</th><td>8 — one per villager</td></tr>
+      <tr><th>HUD</th><td>Shows season and day-of-season</td></tr>
+    </table>
+  </aside>
+
+  <p>POSTMARK takes the season straight from your system's month, the way cozy games take the clock:
+  spring in the game is spring outside your window. Each season repaints the whole map — cherry-pink
+  spring, clean-green summer, amber autumn, and snow-blue winter that lays <b>real snow</b> across
+  the terrain rather than tinting it — and swaps roughly a third of the
+  <a href="#fish">fish</a>, <a href="#bugs">bug</a> and <a href="#forage">forage</a> catalogues.</p>
+
+  <div class="gallery">
+    <figure><img src="/wiki-media/shots/season-spring.jpg" alt="Spring" /><figcaption>Spring — blossom on the water; the Blossom Dace only runs where petals fall.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/season-autumn.jpg" alt="Autumn" /><figcaption>Autumn — the whole forest changes its mind at once.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/season-winter.jpg" alt="Winter" /><figcaption>Winter — snow over the map, not a filter over it.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/season-winter-night.jpg" alt="Winter night" /><figcaption>Winter night, with lamps. The Long Night festival happens here.</figcaption></figure>
+  </div>
+
+  <h2>Festivals</h2>
+  <p>One per season, on a fixed date. The plaza is decorated, there is a gather mini-activity, and
+  each has a unique furniture reward.</p>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Festival</th><th>Date</th><th>What happens</th><th>Reward</th></tr></thead>
+    <tbody>
+      <tr><td class="name">The Blossom Post</td><td>15 April</td><td>Petals on the plaza and the first mail of spring. Gather fallen blossoms with SPARKS.</td><td>Flower Planter</td></tr>
+      <tr><td class="name">The River Regatta</td><td>15 July</td><td>BUOY floats paper boats down the river. Catch the most before they reach the sea.</td><td>Cog Fountain</td></tr>
+      <tr><td class="name">The Lantern Walk</td><td>15 October</td><td>WICK lights the whole town amber. Follow the lanterns and gather fallen leaves.</td><td>Gas Lamp</td></tr>
+      <tr><td class="name">The Long Night</td><td>15 January</td><td>The shortest day, the warmest square. PLINK premieres a carol; everyone gathers by the well.</td><td>Brass Postbox</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Birthdays</h2>
+  <p>Villagers expect a gift on their birthday and the friendship bonus is large. Mark these:</p>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Date</th><th>Villager</th><th>Give them</th></tr></thead>
+    <tbody>
+      <tr><td>1 March</td><td class="name"><a href="#sparks">SPARKS</a></td><td>Sealed Letter or Gearheart Locket</td></tr>
+      <tr><td>12 May</td><td class="name"><a href="#marigold">MARIGOLD</a></td><td>Wild Chicory or Ember Berry</td></tr>
+      <tr><td>21 June</td><td class="name"><a href="#reggie">REGGIE</a></td><td>Gearheart Locket or Gear Beetle</td></tr>
+      <tr><td>8 August</td><td class="name"><a href="#buoy">BUOY</a></td><td>Clockwork Koi or Lantern Eel</td></tr>
+      <tr><td>19 September</td><td class="name"><a href="#fern">FERN</a></td><td>Ember Berry or Tinman Mushroom</td></tr>
+      <tr><td>31 October</td><td class="name"><a href="#cataloger">CATALOGER 734</a></td><td>Ivory Butterfly, Oak Stag Beetle or Lantern Eel</td></tr>
+      <tr><td>2 November</td><td class="name"><a href="#wick">WICK</a></td><td>Dusk Firefly or Cinder Moth</td></tr>
+      <tr><td>25 December</td><td class="name"><a href="#plink">PLINK</a></td><td>Dusk Firefly or Chipped Teacup</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="notice"><b>Awkward gifts:</b> CATALOGER's loved bugs are spring/summer/autumn species
+  and his birthday is 31 October — plan ahead or settle for any fish, which he also likes. WICK's
+  Dusk Firefly is summer-only and his birthday is 2 November; the Cinder Moth is the seasonal
+  answer.</div>
+
+  <div class="cats">Categories: <a href="#calendar">World</a></div>
+</section>
+
+<!-- ============================================================= TIME ==== -->
+<section class="page" id="time" hidden>
+  <div class="crumbs">POSTMARK Wiki › World › Time of day</div>
+  <h1>Time of day</h1>
+  <p class="tagline">The in-game hour <i>is</i> your wall-clock hour. There is no time skip.</p>
+
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Phase</th><th>Hours</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Dawn</td><td>5:00 – 7:30 AM</td><td>Low warm light. Nocturnal villagers head home.</td></tr>
+      <tr><td class="name">Day</td><td>7:30 AM – 5:30 PM</td><td>Everyone at their work posts. Full catalogue of daytime species.</td></tr>
+      <tr><td class="name">Dusk</td><td>5:30 – 8:00 PM</td><td><b>Social hour.</b> Villagers gather on the plaza and pair off into conversations you can overhear.</td></tr>
+      <tr><td class="name">Night</td><td>8:00 PM – 5:00 AM</td><td>Deep blue world, painted lamp pools, lit windows. Nocturnal villagers awake; everyone else powers down.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Night</h2>
+  <p>Night is not a blue filter. The world goes deep blue, WICK's lamps throw painted pools of warm
+  light onto the ground, and every occupied building lights its windows from the inside. It is also
+  where the most valuable <a href="#fish">fish</a> and <a href="#bugs">bugs</a> live — four fish and
+  six bugs are night-only, including the three priciest catches in the game.</p>
+
+  <h2>Solar power</h2>
+  <p>Villagers run on solar. At night they switch to <b>low-power mode</b> and sleep where they
+  stand — you can still talk to them, and they will tell you they were asleep. Two villagers run the
+  schedule <b>inverted</b>: <a href="#cataloger">CATALOGER 734</a> and <a href="#wick">WICK</a> are
+  awake 8 PM to about 4 AM and dormant through the day.</p>
+
+  <figure class="wide"><img src="/wiki-media/shots/plaza-night.jpg" alt="The plaza at night" /><figcaption>The square at night, with lamps lit and windows glowing.</figcaption></figure>
+
+  <div class="cats">Categories: <a href="#calendar">World</a></div>
+</section>
+
+<!-- ========================================================== WEATHER ==== -->
+<section class="page" id="weather" hidden>
+  <div class="crumbs">POSTMARK Wiki › World › Weather</div>
+  <h1>Weather</h1>
+  <p class="tagline">Rain, snow, fog, and seasonal falling petals and leaves.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/weather-rain.jpg" alt="Rain over the town" />
+    <h3>Weather</h3>
+    <table>
+      <tr><th>Rain</th><td>Water ripples, surface-specific impacts, wet ground, puddles and roof runoff</td></tr>
+      <tr><th>Snow</th><td>Winter only; lays over the whole map</td></tr>
+      <tr><th>Fog</th><td>Draws the draw distance in close</td></tr>
+      <tr><th>Petals / leaves</th><td>Seasonal ambient fall</td></tr>
+      <tr><th>Affects</th><td>Dialogue selection · ambience layers</td></tr>
+    </table>
+  </aside>
+
+  <p>Weather is atmospheric rather than punitive — nothing is gated behind it and no activity is
+  blocked by it. What it <i>does</i> change is what the villagers say: dialogue is picked using time
+  of day, weekday, location, weather, friendship and story progress together, so a rainy Tuesday
+  afternoon on the dock produces lines you will not hear on a clear Sunday morning in the square.
+  Recent fishing, catching, digging, chopping, gifting, donating and building can also prompt a
+  one-time acknowledgement from the next villager you speak to.</p>
+
+  <p>Rain belongs to the surface it reaches. Water opens into rings; sand, soil and grass darken;
+  hard roofs and timber answer with a sharper patter; tree crowns catch drops before they reach the
+  ground. Sustained rain fills deliberately placed hollows and starts a few strong eave streams.
+  Every gameplay cell keeps its own moisture value. Rain intensity, soil, slope and cover decide
+  how quickly it changes: sand drains, dirt holds water, low flats pool, slopes shed moisture
+  downhill, and level wet cells pass moisture toward drier outlets after a storm. Tree or roof shade slows both soaking and drying. When the cloud passes, the
+  streaks stop first while wet ground, sheltered soil and puddles dry on different schedules.</p>
+
+  <div class="quotebox">
+    "There's a piece I only play when it rains. I'll not tell you which. You'll know it when it comes."
+    <cite>— PLINK</cite>
+  </div>
+
+  <p>The soundtrack reacts too: weather adds ambience layers over the day/dawn/dusk/night themes,
+  which crossfade rather than cutting. See <a href="#tech">Tech &amp; rendering</a>.</p>
+
+  <div class="cats">Categories: <a href="#calendar">World</a></div>
+</section>
+
+<!-- ============================================================= MAIL ==== -->
+<section class="page" id="mail" hidden>
+  <div class="crumbs">POSTMARK Wiki › Townsfolk › The mailbox</div>
+  <h1>The mailbox</h1>
+  <p class="tagline">Villagers write to you. Sixteen letters, some with gifts.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/day-card.jpg" alt="The franked day-start card" />
+    <h3>Mail</h3>
+    <table>
+      <tr><th>Letters</th><td>16 — two per villager</td></tr>
+      <tr><th>Tiers</th><td>1 ♥ and 3 ♥</td></tr>
+      <tr><th>Arrives</th><td>In the morning</td></tr>
+      <tr><th>Gifts</th><td>Enclosed with several</td></tr>
+      <tr><th>Not to be confused with</th><td><a href="#dead-letters">The Dead Letter Office</a> — the story arc</td></tr>
+    </table>
+  </aside>
+
+  <p>Once you have at least one heart with a villager, they start writing. Letters land in your
+  mailbox in the morning; some have a small gift tucked in the fold. Each villager has two —
+  one that unlocks at <b>1 ♥</b> and a warmer one at <b>3 ♥</b>, and the 3 ♥ letters are the ones
+  that tend to carry presents.</p>
+
+  <div class="quotebox">
+    "Mayor — I have started a new drawer. Its label is simply <b>THINGS THAT WENT RIGHT</b>. It was
+    empty for a very long time. It is not empty now.<br>
+    Enclosed: one stamp. Ceremonial. My only one."
+    <cite>— SPARKS, "RE: THE GOOD DRAWER" (3 ♥)</cite>
+  </div>
+
+  <h2>Known letters</h2>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>From</th><th>Tier</th><th>Subject</th><th>Encloses</th></tr></thead>
+    <tbody>
+      <tr><td class="name">SPARKS</td><td>1 ♥</td><td>A NOTE, FILED IN DUPLICATE</td><td>—</td></tr>
+      <tr><td class="name">SPARKS</td><td>3 ♥</td><td>RE: THE GOOD DRAWER</td><td>Sealed Letter</td></tr>
+      <tr><td class="name">REGGIE</td><td>1 ♥</td><td>yo. mail. wild.</td><td>—</td></tr>
+      <tr><td class="name">REGGIE</td><td>3 ♥</td><td>a lil somethin off the top</td><td>Gas Lamp</td></tr>
+      <tr><td class="name">CATALOGER 734</td><td>1 ♥</td><td>Correspondence, an experiment</td><td>—</td></tr>
+      <tr><td class="name">CATALOGER 734</td><td>3 ♥</td><td colspan="2"><i>A second, warmer letter.</i></td></tr>
+      <tr><td class="name">MARIGOLD</td><td>1 ♥ / 3 ♥</td><td colspan="2"><i>Two letters.</i></td></tr>
+      <tr><td class="name">BUOY</td><td>1 ♥ / 3 ♥</td><td colspan="2"><i>Two letters.</i></td></tr>
+      <tr><td class="name">WICK</td><td>1 ♥ / 3 ♥</td><td colspan="2"><i>Two letters.</i></td></tr>
+      <tr><td class="name">FERN</td><td>1 ♥ / 3 ♥</td><td colspan="2"><i>Two letters.</i></td></tr>
+      <tr><td class="name">PLINK</td><td>1 ♥ / 3 ♥</td><td colspan="2"><i>Two letters.</i></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="stub">This section is a stub. Subjects and enclosures for the later letters are
+  deliberately left blank so first-time readers can find them in their own mailbox. If you would
+  like them documented, that is an edit worth making.</div>
+
+  <h2>The day card</h2>
+  <p>Each morning opens with a <b>franked day-start card</b> — the date, the season, the weather,
+  and anything the day is holding (a birthday, a festival). It is the game's version of Isabelle's
+  morning announcement, in postal drag.</p>
+
+  <div class="cats">Categories: <a href="#villagers">Townsfolk</a> · <a href="#friendship">Friendship</a></div>
+</section>
+
+<!-- ============================================================== MAP ==== -->
+<section class="page" id="map" hidden>
+  <div class="crumbs">POSTMARK Wiki › World › Map &amp; locations</div>
+  <h1>Map &amp; locations</h1>
+  <p class="tagline">Three zones, one river, and about a dozen places worth knowing by name.</p>
+
+  <p>The valley opens in stages. You start in the <b>town</b>; <a href="#sparks">SPARKS</a>
+  un-boards the north gate to the <b>forest</b> once the Emporium is up, and the bridge to the
+  eastern <b>meadow</b> once the Archive is built.</p>
+
+  <h2>Zones</h2>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Zone</th><th>Unlocked by</th><th>Holds</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Town</td><td>Start</td><td>The square, the well, the Emporium, your cottage, the dock, the beach</td></tr>
+      <tr><td class="name">Forest</td><td>Quest 3 — Emporium built</td><td>The Archive, CATALOGER 734, FERN, the cliff waterfall</td></tr>
+      <tr><td class="name">Meadow</td><td>Quest 4 — Archive built</td><td>MARIGOLD, BUOY, PLINK, the orchard, the garden rows</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Landmarks</h2>
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Place</th><th>Why you go there</th></tr></thead>
+    <tbody>
+      <tr><td class="name">The town square (plaza)</td><td>Social hour every dusk; REGGIE's Saturday DJ set; PLINK busking; the festivals.</td></tr>
+      <tr><td class="name">The town well</td><td>The oldest thing in the valley. Takes two <a href="#dead-letters">dead letters</a>.</td></tr>
+      <tr><td class="name">The town hall tent</td><td>SPARKS's post. Where the quest chain runs from.</td></tr>
+      <tr><td class="name">Reggie's Re-Emporium</td><td>The <a href="#emporium">shop</a>. East side of the square.</td></tr>
+      <tr><td class="name">Your cottage</td><td>Mail-slotted door, <a href="#crafting">workbench</a>, renovation ledger.</td></tr>
+      <tr><td class="name">The Archive</td><td>Domed rotunda in the northern forest. The <a href="#archive">museum</a>.</td></tr>
+      <tr><td class="name">The river &amp; pond</td><td>One watercourse from the cliff waterfall through the pond to the sea. Where neighboring water surfaces change elevation, the drop is rendered as falling water between stone bank shoulders. Different fish live in the narrow runs and the broad water.</td></tr>
+      <tr><td class="name">The waterfall gorge</td><td>CATALOGER 734's Sunday-night expedition.</td></tr>
+      <tr><td class="name">The bridge</td><td>PLINK's afternoon serenade spot. A letter address.</td></tr>
+      <tr><td class="name">The dock</td><td>BUOY's morning watch. Ocean fishing without the walk to the beach. A letter address.</td></tr>
+      <tr><td class="name">The beach &amp; ocean</td><td>Five fish you cannot catch anywhere else.</td></tr>
+      <tr><td class="name">The orchard</td><td>MARIGOLD's mornings. Fruit trees to shake. A letter address.</td></tr>
+      <tr><td class="name">The garden rows</td><td>Where MARIGOLD was found, still holding forty-year-old seeds.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="gallery">
+    <figure><img src="/wiki-media/shots/plaza-west.jpg" alt="West side of the square" /><figcaption>The west side of the square.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/beach-day.jpg" alt="The beach" /><figcaption>The beach. Wind ripples in the sand come from a tiling detail sheet, not the base texture.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/cottage-day.jpg" alt="A cottage" /><figcaption>A villager cottage — gabled shingle roof, porch, dormer, smoking chimney.</figcaption></figure>
+    <figure><img src="/wiki-media/shots/forest-day.jpg" alt="The forest" /><figcaption>The northern forest, where the Archive is.</figcaption></figure>
+  </div>
+
+  <div class="stub">This article is a stub. A proper annotated map image would be a good addition —
+  the coordinates exist in the game's map constants but no one has drawn it yet.</div>
+
+  <div class="cats">Categories: <a href="#calendar">World</a></div>
+</section>
+
+<!-- ===================================================== ACHIEVEMENTS ==== -->
+<section class="page" id="achievements" hidden>
+  <div class="crumbs">POSTMARK Wiki › World › Achievements</div>
+  <h1>Achievements</h1>
+  <p class="tagline">Eight, recorded in the Town Ledger (<kbd>L</kbd>).</p>
+
+  <div class="tablewrap">
+  <table class="data">
+    <thead><tr><th>Achievement</th><th>How</th><th>Reward</th></tr></thead>
+    <tbody>
+      <tr><td class="name">First Cast</td><td>Catch your first fish.</td><td>200 gears</td></tr>
+      <tr><td class="name">Bug in the System</td><td>Catch your first bug.</td><td>200 gears</td></tr>
+      <tr><td class="name">Tinkerer</td><td>Craft your first item at the workbench.</td><td>200 gears</td></tr>
+      <tr><td class="name">Master of Tools</td><td>Upgrade any tool.</td><td>200 gears</td></tr>
+      <tr><td class="name">Kindred Spirits</td><td>Reach five hearts with a villager.</td><td>200 gears + their keepsake</td></tr>
+      <tr><td class="name">Ichthyologist</td><td>Donate all 50 <a href="#fish">fish</a> to the Archive.</td><td>200 gears + Cog Fountain</td></tr>
+      <tr><td class="name">Entomologist</td><td>Donate all 50 <a href="#bugs">bugs</a> to the Archive.</td><td>200 gears + Flower Planter</td></tr>
+      <tr><td class="name">General Delivery</td><td>Uncover the truth and reopen the post office.</td><td>200 gears + the ending</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>The two wing achievements are the long game — a third of each catalogue is season-locked, so
+  both are a full real year's work.</p>
+  <p><b>Economy math:</b> all eight Stamps total 1,600 gears. Both cottage
+  expansions cost 11,000; all four tool upgrades cost 1,600 plus materials;
+  wallpaper and flooring remain repeatable 400-gear choices. For a concrete
+  early benchmark, a 400-gear starter tool costs two Brass Bream (240 each) or
+  five Mud Darters (80 each), while the first cottage expansion costs about
+  thirteen Brass Bream. Furniture resells for one third, so buying is a choice,
+  not a gear-printing loop.</p>
+
+  <div class="cats">Categories: <a href="#calendar">World</a></div>
+</section>
+
+<!-- =========================================================== DESIGN ==== -->
+<section class="page" id="design" hidden>
+  <div class="crumbs">POSTMARK Wiki › Behind the scenes › Design doc</div>
+  <h1>Design doc</h1>
+  <p class="tagline">The intentions behind the systems. This page doubles as the project's living design document — if a rule here and the game disagree, one of them needs changing.</p>
+
+  <aside class="infobox">
+    <img src="/wiki-media/shots/title.jpg" alt="Title screen" />
+    <h3>Pillars</h3>
+    <table>
+      <tr><th>Tone</th><td>Cozy first, with an undercurrent of melancholy and wonder</td></tr>
+      <tr><th>Reference</th><td>Animal Crossing, heavily — in every aspect</td></tr>
+      <tr><th>Ambition</th><td>What Stardew did for Harvest Moon: same cozy surface, deeper heart</td></tr>
+      <tr><th>Tech era</th><td>19th century, clockwork</td></tr>
+      <tr><th>Player fantasy</th><td>The last human, made welcome</td></tr>
+      <tr><th>Anti-goal</th><td>Chores. Nothing in the game punishes a day off.</td></tr>
+    </table>
+  </aside>
+
+  <h2>Premise</h2>
+  <p>Post-apocalyptic cozy life-sim. The player is the last human, arriving as
+  postmaster-turned-mayor of an abandoned settlement. The town starts <b>empty</b>. She wakes in the
+  forest, stumbles on a deactivated administrative robot, and rebuilds a frontier hamlet into a real
+  town one resident at a time.</p>
+
+  <h2>The core loop, and why it is that shape</h2>
+  <ol class="loop">
+    <li><b>Explore &amp; scavenge</b> — the world is the resource.</li>
+    <li><b>Restore a robot</b> — one Amber Cell, one person back.</li>
+    <li><b>Build them somewhere to function</b> — a robot without a building has a job it can't do.</li>
+    <li><b>They move in and add a service</b> — the town gets a verb it did not have.</li>
+    <li><b>The map unlocks further</b> — new ground, new species, new dormant units.</li>
+  </ol>
+  <p>Each turn of the loop must add a <i>verb</i>, not just a number. REGGIE adds buying and selling.
+  CATALOGER adds collecting-as-record. MARIGOLD, BUOY, WICK, FERN and PLINK add company, which is
+  the actual point.</p>
+
+  <h2>Rules the systems are held to</h2>
+  <ul>
+    <li><b>No species is available everywhere, always.</b> Every fish and bug is gated on at least one
+      of season, hour or place — a species you can catch anywhere at any time teaches the player
+      nothing about the world.</li>
+    <li><b>Gifts never go negative.</b> Even a disliked gift is +2. The town is glad you came.</li>
+    <li><b>Show, don't tell.</b> Items pop out of trees and holes as physical icons that arc, bounce,
+      rest, then fly to your pockets. Inventory changes at the moment of collection.</li>
+    <li><b>The story is delivered by the job.</b> You learn what happened by delivering mail, not by
+      reading a lore note on the ground.</li>
+    <li><b>Every villager needs four things</b> — a job, a schedule, an idle quirk, and a gait.
+      If a character can't fill all four, they aren't ready to exist.</li>
+    <li><b>Nothing punishes absence.</b> No crops die, no friendship decays to zero, no timer runs
+      out while you are away.</li>
+  </ul>
+
+  <h2>Art direction</h2>
+  <p><b>Concept art reference</b> is painterly gouache storybook: aged brass, ivory, ink-black, a
+  muted earthy palette, and exactly one warm amber glow per character.</p>
+  <p><b>The in-engine target is deliberately different.</b> Low-poly retro-3D, roughly 600–900
+  triangles per character. Detail lives in <b>textures</b>, not geometry: 128–256 px hand-painted
+  texture sheets with the lighting baked in. Faces are painted sheets that swap live between
+  idle, blink, happy, surprised and asleep.</p>
+  <p><b>Camera</b> is Animal Crossing-style: elevated, angled down, fixed-ish, following the player.</p>
+  <p><b>Kindly Forward pipeline status (2026-07-30):</b> ten rigged GLBs now load
+  through the authored asset registry with baked 128px sheets and idle/walk clips.
+  Later modelling passes add distinct faces, jaw/chin head planes, tailored
+  torso profiles, posed two-part arms, clothing layers, footwear and signature
+  props. The meshes remain replaceable production scaffolds and all visual
+  quality remains awaiting human review.</p>
+
+  <div class="designnote">
+    <b>Design note</b> — The gap between the concept art and the engine look is intentional. The
+    gouache boards set the <i>palette and mood</i>; the low-poly build delivers them through painted
+    texture sheets and a low-res render target. Concept art that could be reproduced literally in
+    engine would not have been ambitious enough about colour.
+  </div>
+
+  <h2>Open questions</h2>
+  <div class="stub">Living-document section — things the team has not settled. Edit freely.
+    <ul>
+      <li>Does the post-game need a reason to keep playing beyond the two museum wings?</li>
+      <li>Should festivals have a failure state, or stay purely celebratory? (Currently: celebratory.)</li>
+      <li>The working title is still a working title.</li>
+    </ul>
+  </div>
+
+  <div class="cats">Categories: <a href="#design">Behind the scenes</a></div>
+</section>
+
+<!-- ============================================================= TECH ==== -->
+<section class="page" id="tech" hidden>
+  <div class="crumbs">POSTMARK Wiki › Behind the scenes › Tech &amp; rendering</div>
+  <h1>Tech &amp; rendering</h1>
+  <p class="tagline">Three.js, TypeScript, Vite. No art files, no audio files.</p>
+
+  <aside class="infobox">
+    <h3>Stack</h3>
+    <table>
+      <tr><th>Engine</th><td>Three.js</td></tr>
+      <tr><th>Language</th><td>TypeScript</td></tr>
+      <tr><th>Build</th><td>Vite</td></tr>
+      <tr><th>Render target</th><td>~480 × 360, upscaled nearest-neighbour</td></tr>
+      <tr><th>Materials</th><td>MeshLambertMaterial, flat shading. No PBR.</td></tr>
+      <tr><th>Shadows</th><td>Blob shadows only. No realtime shadow maps.</td></tr>
+      <tr><th>Vertex snap</th><td>In the vertex shader — PSX wobble</td></tr>
+      <tr><th>Models</th><td>Procedural geometry, generated at runtime</td></tr>
+      <tr><th>Textures</th><td>Painted to a canvas at runtime</td></tr>
+      <tr><th>Audio</th><td>Synthesized live — zero audio files</td></tr>
+      <tr><th>UI</th><td>DOM overlay, so text stays crisp over the pixelated scene</td></tr>
+      <tr><th>Save</th><td>Versioned localStorage schema, three autosave slots, v1 migration and corruption recovery</td></tr>
+    </table>
+  </aside>
+
+  <h2>The retro pipeline</h2>
+  <p>The scene renders to a low-resolution <span class="mono">WebGLRenderTarget</span> at about
+  480 × 360 and is then blitted up with nearest-neighbour filtering — so the whole world is
+  genuinely low-res rather than a post-process filter over a high-res image. A vertex-snapping step
+  in the vertex shader produces the PSX-era wobble. The final blit carries the film grade.</p>
+  <p>Materials are <span class="mono">MeshLambertMaterial</span> with flat shading. There is no PBR
+  and there are no realtime shadows; every character, tree, prop and building footprint gets a
+  <b>blob shadow</b> instead, so nothing floats.</p>
+
+  <h2>Ground</h2>
+  <p>The map texture carries biomes, worn dirt paths with trodden edges, cliff strata and riverbed
+  cobbles. A separate tiling <b>detail sheet</b> adds blade-level grass patterning and wind ripples
+  in the sand on top of it — a second material pass rather than more pixels in the base map.</p>
+
+  <h2>Characters</h2>
+  <p>Every model is procedural low-poly geometry built in code, ~600–900 triangles, wearing a
+  canvas-painted texture sheet. Faces are painted sheets that swap live between expressions.
+  Animation is hand-authored gait: footfall squash, turn lean, bent elbows, spring on hair and
+  satchel — and each villager has their own gait parameters, so SPARKS bustles, BUOY rolls and
+  PLINK bounces on the beat.</p>
+
+  <h2>Audio</h2>
+  <p>Everything is synthesized at runtime. Each of the 24 real-clock hours has
+  its own authored melody built around the six-note POSTMARK hook; spring,
+  summer, autumn and winter reharmonize it, and interiors soften the arrangement.
+  Shop and ceremony themes crossfade in as events; weather adds ambience layers over
+  the top; and birdsong, crickets and river wash sit underneath. Each villager has an Animalese-style
+  pitched voice — SPARKS is a bright 620 Hz square wave, REGGIE a low 300 Hz sawtooth.</p>
+  <p><b>PLINK's concert set:</b> eight 900-gear records rotate through the
+  Emporium once it reaches its second tier. Collected records appear on the
+  gramophone in your cottage: approach it, press <kbd>E</kbd>, and choose a
+  side. The set runs from <i>Postmark Overture</i> to
+  <i>Homecoming, With Blank</i>.</p>
+
+  <h2>Interface</h2>
+  <p>All UI is a DOM overlay above the canvas, so text stays crisp while the 3D scene stays
+  deliberately pixelated. The look is postal: kraft-paper dialogue cards with per-character portrait
+  medallions and nameplate colours, wax-seal key prompts, and a display serif throughout.</p>
+
+  <div class="cats">Categories: <a href="#design">Behind the scenes</a></div>
+</section>
+
+<!-- ============================================================ ABOUT ==== -->
+<section class="page" id="about" hidden>
+  <div class="crumbs">POSTMARK Wiki › About</div>
+  <h1>About this wiki</h1>
+  <p class="tagline">What this is, how it is organised, and how to keep it honest.</p>
+
+  <h2>What this is</h2>
+  <p>A player-facing reference for POSTMARK that doubles as the project's living design document.
+  Two audiences, one page set: someone learning to play can find the fish table and the controls,
+  and someone building the game can find the intent behind a system next to its actual numbers.</p>
+
+  <h2>Where the numbers come from</h2>
+  <p>Every price, drop rate, hour window and season on this wiki was read out of the game's own data
+  tables — the item catalogue, the fish and bug definitions, the crafting recipes, the calendar, the
+  friendship rules and the villager schedules. If a number here disagrees with the game, <b>the game
+  is right</b> and this page needs an edit.</p>
+
+  <h2>How it is organised</h2>
+  <ul>
+    <li><b>Start here</b> — the first hour and the controls.</li>
+    <li><b>Townsfolk</b> — a page per villager, plus friendship and mail.</li>
+    <li><b>Story</b> — the quest chain, the Dead Letter Office, the heart moments. Spoilers are
+      collapsed behind a click; the <b>Reveal spoilers</b> switch in the top bar opens them all
+      and remembers your choice.</li>
+    <li><b>Catalogue</b> — fish, bugs, forage, relics. All tables are searchable and filterable.</li>
+    <li><b>Town &amp; economy</b> — tools, crafting, the shop, your house.</li>
+    <li><b>World</b> — seasons, time, weather, achievements.</li>
+    <li><b>Behind the scenes</b> — the design doc and the tech.</li>
+  </ul>
+
+  <h2>Conventions</h2>
+  <ul>
+    <li>Times are in-game hours, which are real wall-clock hours.</li>
+    <li>Prices are in <b>gears</b> ⚙, the town's currency.</li>
+    <li>Rarity labels are derived from each species' spawn weight:
+      <span class="r-common">Common</span> (weight 20+),
+      <span class="r-uncommon">Uncommon</span> (12–19),
+      <span class="r-rare">Rare</span> (5–11),
+      <span class="r-veryrare">Very rare</span> (4 or less).</li>
+    <li>A <span class="mono">Design note</span> box is authorial intent, not player-facing rules.</li>
+    <li>Stub banners mark sections that are knowingly incomplete.</li>
+  </ul>
+
+  <h2>Known gaps</h2>
+  <div class="stub">
+    <ul>
+      <li>No annotated map image yet.</li>
+      <li>Mailbox letter subjects are only documented for the first three villagers, on purpose.</li>
+      <li>Festival mini-activities are described but not documented step by step.</li>
+      <li>The overheard social-hour conversations are not catalogued at all.</li>
+    </ul>
+  </div>
+
+  <p class="editnote">This wiki lives at <span class="mono">/wiki</span> and is built from
+  <span class="mono">wiki/index.html</span> in the project repo. It ships with the game.</p>
+
+  <div class="cats">Categories: Meta</div>
+</section>
+
+  </main>
+</div>
+
+<footer class="foot">
+  <p><b>POSTMARK Wiki</b> — maintained by the town. Data on this wiki is read straight out of the
+  game's own tables; if a number here disagrees with the game, the game is right and this page needs
+  an edit.</p>
+  <p class="mono small">Served at <span class="mono">/wiki</span> · <a href="/">back to the game</a></p>
+</footer>
+
+<script src="/wiki-media/wiki.js"></script>
+</body>
+</html>
+    <!-- Weather is a shared simulation: storm phases and one wind field drive
+         precipitation, delayed canopy drips, cell hydrology/runoff, wet
+         footfalls, contextual ambience, and persistent local snow/melt. -->
+    <!-- Developer console: `/weather` toggles live atmosphere diagnostics;
+         `/weather on|off|clear|rain|snow|fog` provides explicit control. -->

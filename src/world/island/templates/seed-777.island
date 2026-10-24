@@ -1,0 +1,75 @@
+# id: seed-777
+# name: Seed 777
+# library: cc71c853
+# legend:
+# jf cliff-cascade-01@3
+# qj cliff-cascade-12@3
+# ag cliff-corner-inner-01
+# iz cliff-corner-inner-01@1
+# 7y cliff-corner-inner-01@2
+# wx cliff-corner-inner-01@3
+# fz cliff-corner-inner-12@1
+# 4y cliff-corner-inner-12@2
+# pd cliff-corner-outer-01
+# ra cliff-corner-outer-01@1
+# 2b cliff-corner-outer-01@2
+# dc cliff-corner-outer-01@3
+# 25 cliff-corner-outer-12
+# ua cliff-corner-outer-12@1
+# 5b cliff-corner-outer-12@2
+# gc cliff-corner-outer-12@3
+# dv cliff-ramp-01@1
+# gd cliff-ramp-12@3
+# o2 cliff-straight-01
+# px cliff-straight-01@1
+# n0 cliff-straight-01@2
+# bz cliff-straight-01@3
+# 36 cliff-straight-12
+# it cliff-straight-12@1
+# fw cliff-straight-12@2
+# 4v cliff-straight-12@3
+# ks dock-a
+# th inland-a
+# qk inland-b
+# sj inland-f@1
+# oa inland-h
+# e5 inland-i
+# nw islet-a
+# 8f ocean-a
+# 70 pond-a
+# cb post-office-a@1
+# uv river-bend-a@2
+# c2 river-bend-b@2
+# am river-bend-e@1
+# ty river-cascade-b@1
+# mf river-mouth-a@2
+# a7 river-spring-a
+# gq river-straight-a@2
+# 5w shore-a
+# ef shore-a@1
+# 3e shore-a@2
+# sd shore-a@3
+# ei shore-corner-a
+# 99 shore-corner-a@1
+# 6c shore-corner-a@2
+# vb shore-corner-a@3
+# 8c shore-cove-a
+# fe shore-cove-b@1
+# un shore-cove-c@3
+# jd shore-cove-f
+# ue shore-cove-g
+# zd shore-cove-g@1
+# 0u shore-e@2
+# yb shore-f@2
+8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f
+8f ei 8c jd 3e 8c 8c 8c 3e ue ue 99 8f 8f 8f 8f
+8f ef th 2b n0 n0 n0 n0 n0 dc th sd 8f 8f 8f 8f
+8f ef 2b 7y 5b fw gc qk 70 wx dc sd 8f 8f 8f 8f
+8f ef px 5b 4y oa 4v qk qk uv jf mf 8f 8f nw 8f
+8f ef dv it e5 am qj ty gq c2 bz sd 8f 8f nw 8f
+8f ef px ua fz a7 gd qk qk qk bz sd 8f 8f 8f 8f
+8f un ra iz ua 36 25 cb sj ag pd zd 8f 8f 8f 8f
+8f ef th ra o2 o2 o2 o2 o2 pd th fe 8f 8f 8f 8f
+8f vb ks 0u 5w yb 5w 5w 5w 5w 5w 6c 8f 8f 8f 8f
+8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f
+8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f

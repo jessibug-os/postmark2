@@ -1,0 +1,480 @@
+# scene: kindly-opening
+# set: ferry
+# note: Ferry to fog to the spring. Ordinary, wrong, eerie, and then leaned on.
+
+shot establish on deck.bow dist 8.15 pitch 9.2 az 181.4 lift 1.4 axis aperture
+shot two-shot between player recruit dist 6.4 pitch 17 az 62 lift 1.2 axis actors bias 0.5
+shot warning between player recruit dist 4.8 pitch 11 az 62 lift 1.3 axis actors bias 0.74
+shot departure on deck.bow dist 8 pitch 30 az 0 lift 0.2 axis aperture
+shot emptying on deck.bow dist 11 pitch 32 az 0 lift 0.15 axis aperture
+shot horizon on deck.bow dist 11.5 pitch 11 az 0 lift 0.9 axis aperture
+shot listening on deck.bow dist 8 pitch 8 az 0 lift 0.8 axis aperture
+shot wake on player dist 8.2 pitch 33 az 14 lift 0.7 axis actors
+shot pier on player dist 8.5 pitch 12 az 0 lift 1.4 axis actors
+shot spring-wide between player keeper dist 13 pitch 16 az 0 lift 2.4 axis actors bias 0.58
+shot folded on keeper dist 10.5 pitch 7 az 12 lift 2.6 axis aperture
+shot keeper-rise on keeper dist 9 pitch -5 az 0 lift 2.8 axis aperture
+shot keeper-close on keeper dist 9 pitch 2 az 16 lift 3 axis aperture
+shot looming between player keeper dist 12 pitch -4 az 22 lift 2 axis actors bias 0.52
+shot cornered between player keeper dist 7.6 pitch -3 az 40 lift 2.1 axis actors bias 0.3
+shot burden on keeper dist 6 pitch 9 az -26 lift 2.9 axis aperture
+shot threat on keeper dist 5.4 pitch 1 az 5 lift 3.4 axis aperture
+shot farewell between player keeper dist 11.5 pitch 21 az 12 lift 1.6 axis actors bias 0.45
+
+actor player at deck.player
+actor recruit at deck.recruit facing deck.player
+actor albert at office.counter
+actor keeper at spring.keeper facing spring.player
+actor passenger.a at seat.a
+actor passenger.b at seat.b
+actor passenger.c at seat.c
+
+# ------------------------------------------------- ordinary
+# Establish the working vessel before anything is taken away. Nothing
+# supernatural can leave a world that was never shown as normal.
+#
+# She sits down. The Postmaster has had `seated_idle` and `sit_down` in her
+# packet for as long as the recruit has had his, and the ferry used neither —
+# so for the whole first half she stood on the deck of a passenger ferry, in
+# front of a bench, talking to a man who was sitting on one. She stands again
+# when the horizon goes, which is the first thing in the sequence worth
+# standing up for.
+#
+# Albert is placed and hidden here and never referred to again. He is not in
+# this sequence any more — he is the first thing the player finds once it lets
+# go of her — but he still has to be standing behind his counter when she gets
+# there, and `actor albert at office.counter` above is what puts him on his
+# mark.
+beat arrival
+  @0 theme day
+  @0 bed engine 0.85 1 over 2.4
+  @0 hide albert
+  @0 hide keeper
+  @0 pose recruit seated_idle
+  @0 pose player seated_idle
+  @0 camera establish over 1.6
+  @0 fade in 1.6
+  @1.6 hold 1.4
+
+beat greeting
+  @0 sfx gull
+  @0 camera two-shot over 1
+  @0.35 pose recruit seated_talk_warm
+  @0.4 say recruit recruitOrdinary
+
+# The first thing the Postmaster ever says, and the player says it. Put here
+# because the stakes are nothing: the mechanic gets taught on a beat where a
+# wrong answer costs nothing, so that the two at the spring — where it is a very
+# old thing leaning on her — are read rather than fumbled.
+beat first-words
+  @0 pose recruit seated_talk_warm
+  @0 choice firstWords
+
+beat recruit-answers
+  @0 pose recruit seated_talk_warm
+  @0 say recruit recruitReply
+
+beat question
+  @0 pose recruit seated_talk_warm
+  @0 say recruit recruitQuestion
+
+# The player names themselves and their island here, so the recruit's warning
+# can quote the island back at them one beat later.
+beat assignment
+  @0 pose recruit seated_idle
+  @0 ask assignment
+
+# The one line the sequence turns on, so it is the one beat with its own
+# push-in — and for a long time that push-in was pointed at the back of his
+# head. Composed `on recruit` at a bare azimuth it put the camera outside the
+# boat's rail: the rail ran across both faces at chest height, he was turned
+# away from it because he is facing *her*, and the most important sentence in
+# the first half played on his hood.
+#
+# It is the two-shot pushed in now — the same axis, the same side of the line,
+# biased three quarters of the way onto him. Continuity comes free from reusing
+# the angle the conversation has already been established on, and the only thing
+# that changes between the beats is how close we are, which is what a push-in
+# is supposed to be.
+beat warning
+  @0 camera warning over 0.9
+  @0.3 pose recruit seated_concern
+  @0.3 say recruit recruitWarning
+  @0.3 mood recruit surprised 1.1
+
+beat goodbye
+  @0 camera establish over 1.1
+  @0.15 pose recruit seated_talk_warm
+  @0.2 say recruit lastGoodbye
+
+# He leaves through the cabin door and is occluded by the cabin, rather than
+# switched invisible in open frame. This is the last ordinary goodbye in the
+# game and it was playing off-screen: there was a `departure` shot in the list,
+# it was byte-identical to `emptying`, no cue ever called it, and the camera sat
+# on the bow from the beat before while the only other person on the boat walked
+# out of the story behind it.
+#
+# `departure` is now the close version of the frame the three stops repeat —
+# same mark, same axis, eight metres instead of eleven. Deliberately a relation
+# rather than a new angle: his exit is the first of four, and shooting it down
+# the same line makes the three that follow read as the same thing happening
+# again with fewer people each time.
+#
+# Both this and `emptying` used to be composed *on `cabin.door`*, and that is
+# what made them unusable. The door is a mark inside a doorway, so the sightline
+# solver moved the camera until it could see it — into the cabin, through the
+# wall, with the door itself faded out by subject protection. Every shot down
+# this deck now frames an open mark and lets the door sit in the background
+# where it belongs.
+beat recruit-leaves
+  @0 camera departure over 1.2
+  @0 pose recruit stand_up
+  @0.75 move recruit to cabin.door over 1.7
+  @2.45 move recruit to cabin.offstage over 1.2
+  @3.65 hide recruit
+  @3.65 layer counter 0.35 1.2
+  @3.65 hold 1.1
+
+# ------------------------------------------------- emptying
+# The same framing at every stop, so the only thing that changes between them
+# is how many people are left.
+#
+# The timings are *not* the same, and that is the point. Three identical beats
+# played back to back read as a loop rather than as a passage of time — the eye
+# learns the rhythm on the second and stops watching on the third. Each stop is
+# tighter than the last, so the sequence accelerates the way a journey does
+# when you have stopped counting the hours.
+#
+# The score goes with the light. `theme dusk` lands on the second stop rather
+# than the first or the last, so the turn is buried in the middle of the
+# sequence where nobody is looking for it — a change on the first stop reads as
+# a cue, and one on the last reads as an announcement.
+#
+# The light goes with them. `/story` asks this sequence to be "a gentle
+# time-lapse" and until now the only thing that passed was the passenger count
+# — the ferry emptied under a fixed mid-afternoon sun, so three stops read as
+# three events rather than as an afternoon. Each stop now runs the world clock
+# forward, and by the empty deck the sun is most of the way down. Nobody will
+# notice it happening, which is the whole idea; they will notice that the boat
+# got colder.
+beat stop-one
+  @0 camera emptying over 1
+  @0.6 pose passenger.a standing
+  @0.8 move passenger.a to cabin.door over 1.1
+  @1.9 move passenger.a to cabin.offstage over 0.9
+  @2.8 hide passenger.a
+  @2.8 layer kit 0 0.9
+  @0 clock 16.6 over 2.6
+
+beat stop-two
+  @0.9 sfx gull
+  @0 camera emptying over 0.8
+  @0.4 pose passenger.b standing
+  @0.55 move passenger.b to cabin.door over 0.95
+  @1.5 move passenger.b to cabin.offstage over 0.8
+  @2.3 hide passenger.b
+  @2.3 layer arp 0 0.8
+  @0 clock 17.5 over 2.2
+  @0.9 theme dusk
+
+beat stop-three
+  @0 camera emptying over 0.6
+  @0.25 pose passenger.c standing
+  @0.35 move passenger.c to cabin.door over 0.85
+  @1.2 move passenger.c to cabin.offstage over 0.7
+  @1.9 hide passenger.c
+  @1.9 layer bass 0 0.7
+  @0 clock 18.2 over 1.9
+
+# Absence is the subject of this shot, framed on the same axis as the full
+# deck so the empty frame rhymes with the crowded one. The hold is long — long
+# enough to be uncomfortable — because the three stops before it were getting
+# faster and this is where that stops.
+# The last gull. Nothing on the island ever makes this sound, and the player
+# will not notice that it stopped — they will notice, later and without being
+# able to say why, that the quiet on St. Mystere is a different quiet.
+beat empty-deck
+  @2.1 sfx gull
+  @0 camera emptying over 1.4
+  @1.4 hold 2.4
+
+# ------------------------------------------------- the fog
+# Visibility loss is rendered scene fog. The veil is only ever a cut cover.
+#
+# The engine goes with it, and goes *wrong* rather than quiet. `/story` asks
+# for an engine that stretches here, and a bed that only faded would read as
+# somebody turning the volume down — so the rate falls to under half across
+# four and a half seconds while the filter closes with it, and again to a fifth
+# under the voice. What the player hears is the machine losing its top end,
+# which is the same thing the horizon is doing.
+#
+# Two different jobs, and for a while one number was doing both badly.
+#
+# **On the boat**, the fog has to take the *horizon* — `/story` asks for exactly
+# that image and nothing else in the beat carries it. A horizon is at infinity,
+# so erasing it needs a genuinely tight far plane; at 46 the sea still met the
+# sky in a crisp line and the beat had no subject. Nothing here needs to be
+# legible except the deck and the person standing on it, and both are inside
+# seven metres of their own camera, so 26 costs nothing.
+#
+# **On the dock and the walk**, the opposite. `DayNight` copies the sky into the
+# fog colour every frame, so at dusk the fog is a *bright* salmon — closed to
+# the crossing's numbers it put an opaque warm wash over everything, including
+# the Postmaster eight metres from her own camera, and the frame the player was
+# handed control on had nothing legible in it at all. So the fog opens again as
+# she comes to. Navigation is the wisp's job by then, and the fog only has to
+# take the island's far end away.
+beat horizon-loss
+  @0 pose player stand_up
+  @0 bed engine 0.62 0.44 over 4.5
+  @0 camera horizon over 2.2
+  @0 layer lead 0.18 2.4
+  @0 theme night
+  @0.2 fog 7 26 2.6
+  @2.8 hold 1.2
+
+# A voice from nowhere, over a horizon that is no longer there. The beat had no
+# camera cue at all, which left it as a dialogue box over a held frame — the one
+# moment in the sequence where something is *reaching* for her, played with the
+# camera parked.
+#
+# The push is slow, long and eased out: six seconds to cover three and a half
+# metres, so it is still moving under the second line and has almost stopped by
+# the time the box closes. Both ends sit further back than they want to on
+# paper, because the Postmaster stands off the bow axis and close to the lens —
+# framed for the *sea*, this shot puts the back of her head across a third of
+# the picture. Nobody should be able to say the camera moved. They
+# should only notice that the frame got smaller while somebody was talking.
+beat voice
+  @0 bed engine 0.3 0.2 over 5.5
+  @0 camera listening over 6 ease out
+  @0.4 say keeper fogVoice
+
+# The cut from boat to dock. The veil covers it, the ferry is struck behind it,
+# and the picture comes back on the berth — so the boat is not seen to vanish,
+# which would be an effect rather than an absence.
+# The last of the light goes under the veil, with the boat. She was not awake
+# for it — which is the one piece of time in this sequence the player is not
+# shown, and the only honest place to move a clock without showing it.
+beat fog-cut
+  @0 bed engine 0 0.12 over 1.4
+  @0 fade out 1.2
+  @1.2 strike ferry
+  @1.2 clock 18.6 over 1.4
+
+# ------------------------------------------------- the dock
+# The boat is gone and the player comes to on the berth it was tied to.
+#
+# She is left lying for a beat before she is allowed up. The old staging had
+# her on her feet six tenths of a second after the picture came back, which
+# played as waking briskly from a nap rather than as coming to on a pier with
+# no memory of arriving.
+beat wake
+  @0 fog 11 44 3
+  @0 move player to dock.wake over 0
+  @0 pose player lying
+  @0 camera wake over 1.3
+  @0 fade in 2.4
+  @2.4 hold 1.4
+  @3.8 pose player standing
+
+# The narration names the light before the player is asked to follow it, and
+# the light is already burning at the end of the pier when she looks up.
+beat pier-light
+  @0 camera pier over 1.6
+  @0.6 wisp lead to spring.approach
+  @1 say keeper dock
+
+# The first real choice, and by a long way the longest beat in the sequence:
+# forty-five seconds of walking, and until now forty-five seconds in which
+# nothing whatsoever happened. The wisp holds station ahead of her the whole way
+# — see `Wisp.ts` for why this is a light and not the trail of lamp posts it
+# replaced — but a light that waits is company, not an event.
+#
+# So a bell rings. `/story` asks this walk for "a bell that rings without wind"
+# and there was no bell in the game at all. It is unaccompanied, inharmonic and
+# long, and it arrives three times: once alone, then twice close together much
+# later, which is the pattern of something being struck rather than something
+# keeping time. Nothing explains it and nothing ever will — it is the first
+# evidence the player gets that this island is occupied.
+#
+# The offsets are wall-clock from the beat's start rather than tied to a place
+# on the route, because the route is hers to walk at her own pace: a bell keyed
+# to a position would ring early for a player who hurries and never at all for
+# one who stops to look at the letters.
+#
+# They are also early. A cue that has not fired when `control` resolves never
+# fires at all, and ninety-three metres is about twenty-five seconds for
+# somebody walking it straight — so a pair scheduled at thirty-one seconds is a
+# pair only the dawdlers ever hear. All three are inside the fastest plausible
+# crossing now, and a slow walk simply gets more silence after them rather than
+# a different scene.
+beat walk-inland
+  @0 control to spring.approach radius 3
+  @8 sfx bell
+  @20 sfx bell
+  @21.4 sfx bell
+
+# ------------------------------------------------- the Keeper
+# Nothing is revealed here yet. The shape by the water is held in frame long
+# enough to be seen and not long enough to be read, because the thing that
+# tells the player what it is should be the light going into it.
+# He is posed by *not* being posed. `keeper_unfold` is the only clip that could
+# describe him before he wakes and it ends risen, so there is nothing to hold at
+# a first frame; the bind pose is what the player sees, and it is upright. What
+# says he is not awake is the ember: `OpeningStage` blacks it out, and nothing
+# lights it until the wisp goes in.
+beat spring-arrival
+  @0 bed keeper 0.3 0.55 over 3.5
+  @0 sfx page
+  @0 move player to spring.player over 0
+  @0 show keeper
+  @0 camera spring-wide over 1.8
+  @1.8 hold 1.2
+  @1.8 say keeper spring
+
+beat approach-the-shape
+  @0 bed keeper 0.5 0.7 over 2
+  @0 camera folded over 1.4
+  @1.4 hold 1
+
+# The payoff of the walk. The light the player followed for sixty metres is
+# what he has been missing, and it goes *into* him rather than arriving beside
+# him. `wisp into` blocks until the light is out, so the unfold below starts on
+# the frame it disappears in.
+beat the-light-returns
+  @0 camera keeper-rise over 2.2
+  @0.4 wisp into keeper
+  @1.9 sfx stinger
+  @1.9 bed keeper 0.95 1 over 1.6
+  @0 fog 14 60 2.6
+
+beat unfold
+  @0 pose keeper keeper_unfold
+  @0.9 layer lead 0.42 2.2
+  @1.4 camera keeper-close over 1.8
+  @2.6 say keeper keeperWake
+
+# It does not wake frightening; it wakes *uninterested*, and then it comes
+# closer. Almost none of this beat is in the words — "you wear her coat" is four
+# short lines of nothing much — and what carries it is that he crosses half the
+# pool while he says them and she gives ground without being asked to. The
+# camera drops below his eye line as he arrives, so the frame is looking up at
+# him by the time he mentions the last one.
+#
+# The fog closes here rather than opening. It opened on this beat when he was a
+# mourner and the scene was letting its held breath out; he is applying pressure
+# now, so the world gets smaller around the two of them and stays small until
+# she has agreed.
+beat mistaken
+  @0 pose keeper keeper_talk
+  @0 camera looming over 3.4
+  @0.2 fog 6 26 3
+  @0.6 move keeper to spring.loom over 3.2
+  @1.4 move player to spring.recoil over 1.1
+  @1.4 face player keeper
+  @1.4 say keeper keeperMistake
+
+# Both of these are composed for where the actors *end up*, not where they
+# start. `looming` and `cornered` were framed on the standing positions and
+# played as an extreme close-up of his robes with the Postmaster off-screen
+# entirely, because by the time either is on screen he has crossed half the pool
+# and she has given a metre and a half of ground — five metres between them
+# where the shot list assumed nine.
+#
+# Held at his new distance rather than pulled back out to a comfortable
+# two-shot. He has closed on her, and the scene does not give her the room back
+# until he has what he came for. `cornered` sits behind her shoulder and below
+# his, which is the only frame in the game composed to make the player small.
+#
+# Its `lift` is shorter than the geometry wants, as `looming` and `farewell` are
+# too, because the dialogue box owns the bottom fifth of the frame and aiming a
+# shot lower lifts its content up out of the way. Composed on the geometry alone
+# these three put the Postmaster exactly where the words she is listening to
+# would cover her.
+# She answers him, from the ground she has just been backed onto. Three ways to
+# take it — frightened, curious, defiant — and he has something for each. The
+# beat after this exists only to say it back to her, because a choice nobody
+# answers is a choice the player correctly reads as decoration.
+beat stand-ground
+  @0 camera cornered over 2.2
+  @0.4 choice standGround
+
+beat he-answers
+  @0 pose keeper keeper_talk
+  @0 say keeper keeperReply
+
+# Nobody says anything here. Four fourteen-second talking beats were running
+# back to back through the climax — `mistaken`, `who-he-is`, `the-backlog`,
+# `the-asking` — which is a minute of the same rhythm at the one point in the
+# sequence where the rhythm should be doing the work. The emptying ferry got a
+# tempo and this did not.
+#
+# So the beat between his answer and his account of himself is silent, close,
+# and off his axis: the letters pinned to him and turning around him, held long
+# enough for the player to read what he is carrying before he explains it. It
+# is also the cheapest possible version of the thing this whole revision is
+# for — the answer arriving before the question is asked out loud.
+beat the-burden
+  @0 camera burden over 2.6
+  @2.6 hold 1.6
+
+beat who-he-is
+  @0 pose keeper keeper_talk
+  @0.3 say keeper keeperWho
+
+beat the-backlog
+  @0 pose keeper keeper_talk
+  @0 say keeper keeperBacklog
+
+# The one sentence where he says what happens if she refuses, given its own
+# beat and its own push-in. It was the back half of a two-line block, arriving
+# mid-paragraph at the same size as the exposition around it.
+beat the-threat
+  @0 camera threat over 1.6
+  @0.5 say keeper keeperThreat
+
+# The score comes back with the air. `dusk` is the theme the ferry emptied
+# into — warm, a touch melancholy, the one the sequence lost when the fog took
+# it — so bringing it back on the beat she agrees says the pressure is over
+# without anybody saying so, and says it in the register the *ordinary* world
+# was in. She has not escaped him; she has been let go.
+#
+# The parts come back the way they left: one at a time, staggered, and not all
+# the way. Bass and arp were dropped a passenger at a time across the three
+# stops and the arrangement has been down to a single line since the fog, so
+# restoring them in one cue would announce the ending. `arp` stops at half —
+# the ferry's version of this had it whole, and this island does not.
+#
+# He gets what he wanted, and the world gives her the air back: he withdraws to
+# where he was standing, the fog opens all the way out, and the frame widens off
+# the two of them onto the island she has just agreed to work. None of that is
+# stated. The release *is* the statement — the pressure was applied deliberately
+# and it stops the instant it has done its job, which is the last thing this
+# scene tells the player about him.
+beat the-asking
+  @0 bed keeper 0.4 0.85 over 4
+  @0 camera farewell over 2.8
+  @0.4 pose keeper keeper_summon
+  @0.4 move keeper to spring.keeper over 2.6
+  @0.6 say keeper keeperAsk
+
+# She takes the work on her own terms, or on his. Both accept — the opening has
+# one exit and a branch that changed that would need a second island behind it —
+# but the terms are hers, and his last line is an answer to the ones she set.
+beat the-bargain
+  @0 choice theBargain
+
+beat struck
+  @0 bed keeper 0.12 0.7 over 5
+  @0 theme dusk
+  @0 layer lead 1 3
+  @0.4 layer bass 0.85 3.5
+  @0.9 layer arp 0.5 4
+  @0 pose keeper keeper_talk
+  @0 say keeper keeperClose
+  @0 fog 40 150 3.5
+
+beat handoff
+  @0 hold 1.2
+  @1.2 title KINDLY FORWARD

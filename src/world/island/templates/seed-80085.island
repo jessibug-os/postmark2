@@ -1,0 +1,81 @@
+# id: seed-80085
+# name: Seed 80085
+# library: cc71c853
+# legend:
+# 7m beach-end-corner
+# jf cliff-cascade-01@3
+# bi cliff-cascade-12
+# ag cliff-corner-inner-01
+# iz cliff-corner-inner-01@1
+# 7y cliff-corner-inner-01@2
+# wx cliff-corner-inner-01@3
+# xo cliff-corner-inner-12
+# 4y cliff-corner-inner-12@2
+# pd cliff-corner-outer-01
+# ra cliff-corner-outer-01@1
+# 2b cliff-corner-outer-01@2
+# dc cliff-corner-outer-01@3
+# 25 cliff-corner-outer-12
+# ua cliff-corner-outer-12@1
+# 5b cliff-corner-outer-12@2
+# gc cliff-corner-outer-12@3
+# vk cliff-ramp-01
+# pw cliff-ramp-12
+# 6o cliff-ramp-corner-e-12
+# o2 cliff-straight-01
+# px cliff-straight-01@1
+# n0 cliff-straight-01@2
+# bz cliff-straight-01@3
+# 36 cliff-straight-12
+# fw cliff-straight-12@2
+# ks dock-a
+# th inland-a
+# qk inland-b
+# fj inland-c
+# x9 inland-c@2
+# cm inland-d
+# ir inland-d@3
+# sj inland-f@1
+# nw islet-a
+# 8f ocean-a
+# i0 post-office-a
+# a4 river-bend-b
+# 61 river-bend-f@3
+# 7u river-bend-h
+# nv river-cascade-c@3
+# 67 river-mouth-i@2
+# 04 river-spring-a@1
+# 60 river-straight-e
+# wj river-straight-f@2
+# jy river-straight-g
+# 5w shore-a
+# ef shore-a@1
+# 3e shore-a@2
+# sd shore-a@3
+# ei shore-corner-a
+# 99 shore-corner-a@1
+# 6c shore-corner-a@2
+# vb shore-corner-a@3
+# 8c shore-cove-a
+# at shore-cove-a@3
+# b9 shore-cove-b
+# 1g shore-cove-b@3
+# gg shore-cove-e
+# e0 shore-e
+# bv shore-e@1
+# 0u shore-e@2
+# na shore-f@1
+# yb shore-f@2
+# 9c shore-f@3
+8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f
+8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f
+8f 8f 8f ei b9 3e 8c 3e gg 8c e0 gg 8c 3e 99 8f
+8f 8f 8f 1g x9 2b n0 n0 n0 n0 n0 n0 dc th na 8f
+8f 8f 8f at 2b 7y 5b fw fw fw fw gc wx dc sd 8f
+8f nw 8f ef px 5b 4y 04 61 xo 36 25 ir bz bv 8f
+8f 8f 8f 9c px ua 36 pw bi 6o qk a4 60 jf 67 8f
+8f 8f 8f ef px i0 qk cm nv wj jy 7u ag pd sd 8f
+8f 8f 8f at ra iz sj ag o2 o2 o2 vk pd th sd 8f
+8f 8f 8f ef fj ra vk pd fj 7m 0u 5w 5w 5w 6c 8f
+8f 8f 8f vb 5w ks yb 5w 5w 6c 8f 8f 8f 8f 8f 8f
+8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f 8f

@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KINDLY FORWARD — Cutscene Editor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>" />
+<style>
+  /*
+   * The palette has real steps in it.
+   *
+   * Every surface used to sit within about three percent of every other, so a
+   * panel edge was invisible and the whole tool read as one undifferentiated
+   * field of beige. The storybook warmth is the game's and it is right for the
+   * game; a tool needs the range widened so chrome recedes and content comes
+   * forward. Four steps now: the app's ground, the panels on it, the wells cut
+   * into those, and the ink.
+   */
+  :root {
+    --ground: #e6dabb;
+    --card: #f7f0dd;
+    --sunk: #ddd0ab;
+    --edge: #c6b287;
+    --edge-soft: #d9caa4;
+    --ink: #2b2519;
+    --accent: #8a5a2b;
+    --muted: #766a53;
+    --good: #416f43;
+    --bad: #9d3527;
+    /* The surround the picture sits in. Nearly black on purpose: an eye judging
+       a frame should be judging the frame, not the furniture around it. */
+    --stage: #14161a;
+    --clip: #cbb78a; --clip-block: #b58f63; --clip-camera: #93a3c2;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font: 15px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    display: flex; flex-direction: column;
+    /*
+     * Chrome is not text.
+     *
+     * Nearly every gesture in this tool is a drag — the ruler, the range
+     * handles, the clips, the numbers, the preview — and each one was also
+     * sweeping a text selection across whatever labels it passed, so scrubbing
+     * left `PREVIEW` and `ORDINARY` highlighted in blue behind the playhead.
+     * Selection is turned off for the furniture and handed back below to the
+     * things anyone would actually want to copy.
+     */
+    -webkit-user-select: none; user-select: none;
+  }
+  input, textarea, .problems, .status, .aside-list .meta, .stage .overlay {
+    -webkit-user-select: text; user-select: text;
+  }
+  .topbar { background: #241f16; color: #f4ecd8; padding: 7px 16px; display: flex; align-items: center; gap: 14px; flex: none; }
+  .topbar b { letter-spacing: .06em; }
+  .topbar .sub { color: #bda87c; font-size: 13px; }
+  .topbar nav { display: flex; gap: 16px; }
+  .topbar a { color: #e8d9a8; text-decoration: none; font-size: 13px; }
+  /*
+   * The document's own actions live with the document's name.
+   *
+   * Save, revert and the history are about the *file*, not about the shot you
+   * are working on, and down in the toolbar they crowded the transport off the
+   * end of the row — the clock and the status message were being clipped
+   * entirely at 1500px. Up here they have the space the title bar was wasting,
+   * and the toolbar below is left holding only things that change what you see.
+   */
+  .topbar .doc { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .topbar .chip { background: #3b3327; color: #ecdcb2; border-color: #574a39; }
+  .topbar .chip:hover:not(:disabled) { border-color: #b98a52; }
+
+  /* The picture and the timeline are the work; the inspector is a sidecar. */
+  .lab { flex: 1; min-height: 0; display: grid; grid-template-columns: 232px minmax(0, 1fr) 316px; }
+
+  aside { background: var(--card); display: flex; flex-direction: column; min-height: 0; }
+  .scenes { border-right: 1px solid var(--edge); }
+  .inspector { border-left: 1px solid var(--edge); }
+  .aside-head { padding: 8px 12px; border-bottom: 1px solid var(--edge-soft); display: flex; gap: 8px; align-items: center; }
+  .aside-head strong { font: 700 11px/1.4 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  /*
+   * The outline gets the room; the two lists are sized to their contents.
+   *
+   * All three panes were `flex: 1`, so a scene list holding one row claimed the
+   * same third of the sidebar as twenty-three beats did — and the outline, the
+   * thing this column exists for, was cut off after seven.
+   */
+  .aside-list { overflow-y: auto; padding: 7px; flex: 0 1 auto; max-height: 168px; }
+  .aside-list button {
+    appearance: none; display: block; width: 100%; text-align: left;
+    border: 1px solid transparent; border-radius: 7px; background: none;
+    color: var(--ink); padding: 6px 8px; cursor: pointer; font: inherit;
+  }
+  .aside-list button:hover { background: var(--sunk); }
+  .aside-list button[aria-current="true"] { border-color: var(--accent); background: #f1e2c0; }
+  .aside-list .meta { display: block; color: var(--muted); font: 11px/1.5 ui-monospace, monospace; }
+  .aside-head .mini { margin-left: auto; }
+  .mini {
+    appearance: none; border: 1px solid var(--edge); background: #fffdf6; color: var(--ink);
+    border-radius: 5px; width: 19px; height: 19px; display: grid; place-items: center;
+    cursor: pointer; font: 12px/1 ui-monospace, monospace; padding: 0;
+  }
+  .mini:hover:not(:disabled) { border-color: var(--accent); }
+  .mini:disabled { opacity: .35; cursor: default; }
+  .mini.wide { width: auto; padding: 0 7px; }
+
+  /*
+   * The scene outline.
+   *
+   * This replaces the ruler that used to run along the top. The ruler was the
+   * only navigator, and it was a bad one for a reason that had nothing to do
+   * with taste: twenty-three beat names crammed into a thirty-pixel bar meant
+   * three of them could be printed and the other twenty lived in tooltips. A
+   * vertical row per beat has room for the whole name, room for its length, and
+   * room for the section it belongs to as a real heading — and it is somewhere
+   * a row can be dragged, which is what makes reordering a beat possible at all.
+   */
+  .outline { overflow-y: auto; flex: 1 1 auto; padding: 4px 6px 8px; min-height: 120px; }
+  .outline .sect {
+    font: 700 9.5px/1.6 ui-monospace, monospace; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent);
+    padding: 8px 6px 2px; border-bottom: 1px solid var(--edge-soft); margin-bottom: 3px;
+  }
+  .outline .beat {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 6px; align-items: center;
+    padding: 3px 4px 4px 7px; border-radius: 6px; cursor: pointer;
+    border: 1px solid transparent; position: relative;
+  }
+  .outline .beat:hover { background: var(--sunk); }
+  .outline .beat[aria-current="true"] { border-color: var(--accent); background: #f1e2c0; }
+  .outline .beat .nm { font: 12px/1.5 ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .outline .beat .dur { font: 10px/1.5 ui-monospace, monospace; color: var(--muted); }
+  .outline .beat .x { opacity: 0; }
+  .outline .beat:hover .x, .outline .beat[aria-current="true"] .x { opacity: 1; }
+  /*
+   * The one thing a list cannot say that the proportional ruler could: that the
+   * ferry's four talking beats outweigh the whole walk to the office. A bar per
+   * row gives the shape back without giving up the room for a name.
+   */
+  .outline .beat .bar {
+    grid-column: 1 / -1; height: 2px; background: var(--edge-soft); border-radius: 2px;
+  }
+  .outline .beat .bar i { display: block; height: 100%; background: var(--accent); border-radius: 2px; opacity: .55; }
+  .outline .beat.estimated .bar i {
+    background-image: repeating-linear-gradient(-45deg, transparent 0 3px, rgba(255,255,255,.55) 3px 6px);
+  }
+  .outline .beat.dragging { opacity: .4; }
+  .outline .drop { height: 0; border-top: 2px solid var(--accent); margin: -1px 4px; }
+  .outline .rename {
+    font: 12px/1.5 ui-monospace, monospace; width: 100%;
+    border: 1px solid var(--accent); border-radius: 4px; padding: 1px 4px;
+  }
+
+  main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+
+  /*
+   * The toolbar, in groups.
+   *
+   * Fourteen identical pills in two ragged rows meant `save` looked exactly
+   * like `guides`, and the destructive `revert` looked exactly like the play
+   * button you press a hundred times an hour. Three groups now — the file, the
+   * transport, the view — separated rather than merely spaced, with the
+   * transport given weight because it carries the most traffic.
+   */
+  .toolbar {
+    display: flex; gap: 0; align-items: center; padding: 6px 12px;
+    border-bottom: 1px solid var(--edge); flex: none; background: var(--card);
+    /* Wraps as a fallback rather than clipping. Grouped, a second row is
+       legible; ungrouped, which is what this was, it was fourteen pills in two
+       ragged lines and no way to tell one kind of button from another. */
+    flex-wrap: wrap; row-gap: 6px;
+  }
+  /* Groups reflow internally too. A group wider than the bar cannot wrap on
+     its own, so at a genuinely narrow window the last chips were clipped by the
+     edge rather than moved to the next line. */
+  .group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 0 10px; }
+  .group:first-child { padding-left: 0; }
+  .group + .group { border-left: 1px solid var(--edge-soft); }
+  .group label { color: var(--muted); font: 11px/1.6 ui-monospace, monospace; }
+  .chip {
+    appearance: none; border: 1px solid var(--edge); border-radius: 999px;
+    background: #fffdf6; color: var(--ink); padding: 4px 12px; cursor: pointer;
+    font: 12px/1.6 ui-monospace, monospace; white-space: nowrap;
+  }
+  .chip:hover:not(:disabled) { border-color: var(--accent); }
+  .chip:disabled { opacity: .38; cursor: default; }
+  .chip[aria-pressed="true"] { border-color: var(--accent); background: #eedcb6; }
+  /* Transport: bigger target, heavier fill, so the thing you reach for most is
+     the thing your hand finds without looking. */
+  .transport .chip { padding: 5px 15px; font-size: 12.5px; background: #f1e4c4; }
+  .transport .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fdf7e6; }
+  .transport .chip.rec:disabled { background: var(--bad); border-color: var(--bad); color: #fdf1ee; opacity: 1; }
+  select {
+    border: 1px solid var(--edge); border-radius: 6px; background: #fffdf6; color: var(--ink);
+    padding: 3px 6px; font: 12px/1.6 ui-monospace, monospace; max-width: 100%;
+  }
+  input[type="text"], input[type="number"] {
+    border: 1px solid var(--edge); border-radius: 6px; background: #fffdf6; color: var(--ink);
+    padding: 3px 6px; font: 12px/1.6 ui-monospace, monospace; max-width: 100%;
+  }
+  /*
+   * No spinners on the numbers.
+   *
+   * Six of them stacked in the shot panel were the noisiest thing in the
+   * inspector, they ate width a four-digit azimuth wanted, and they advertised
+   * the wrong gesture: nobody dials a camera in by clicking a one-pixel arrow.
+   * The real interaction is alt-drag, which the cursor and the field's own
+   * tooltip now say and the arrows never did.
+   */
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .spacer { flex: 1; }
+  .status { font: 12px/1.6 ui-monospace, monospace; color: var(--muted); }
+  .status.bad { color: var(--bad); }
+  .status.good { color: var(--good); }
+  #clock { color: var(--ink); }
+
+  /* preview over timeline */
+  /* The timeline pane takes the larger share, and the share grew when the
+     Keeper joined the cast: lanes are one per channel plus one per actor, so a
+     seventh actor is a seventh row, and the timeline is the *lower* pane —
+     at 5fr/3fr the stack overflowed its own `overflow: auto` box by about a
+     row. A scrolling lane pane is not a
+     rendering bug — everything is drawn — but a clip inside a scrolling
+     container is one you have to find before you can drag it, and the point of
+     this timeline is that the whole scene is in front of you. */
+  .panes { flex: 1; min-height: 0; display: grid; grid-template-rows: minmax(0, 4fr) minmax(0, 5fr); }
+  .pane { min-height: 0; display: flex; flex-direction: column; }
+  .pane + .pane { border-top: 1px solid var(--edge); }
+  /*
+   * A slim header, not a manual.
+   *
+   * Two rows of all-caps instructions stood here permanently, teaching the
+   * orbit gesture and the meaning of a ragged clip edge to someone who learned
+   * both on their first afternoon — about ninety pixels of vertical space, for
+   * ever, taken from the two things the tool is actually for. The text is not
+   * gone; it moved into the `?`, where it is available and not shouting.
+   */
+  .pane h2 {
+    margin: 0; padding: 4px 12px; font: 11px/1.6 ui-monospace, monospace;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    border-bottom: 1px solid var(--edge-soft); flex: none;
+    display: flex; gap: 8px; align-items: center; background: var(--card);
+  }
+  .pane h2 .spacer { flex: 1; }
+  .pane h2 .why {
+    border: 1px solid var(--edge); border-radius: 50%; width: 15px; height: 15px;
+    display: grid; place-items: center; font-size: 9.5px; cursor: help;
+    color: var(--muted); letter-spacing: 0; flex: none;
+  }
+
+  /*
+   * The stage letterboxes the picture to the aspect the game will ship at.
+   *
+   * This is the one item in this pass that is a bug rather than a matter of
+   * taste. `CameraRig`'s camera takes its aspect from the window it is in, and
+   * the editor's iframe was whatever shape the layout left — about 2.6:1, an
+   * aspect no player will ever have. Three's `fov` is vertical, so the vertical
+   * framing was honest and the horizontal was not: everything to the left and
+   * right of a real frame was picture nobody will see, and it was being
+   * composed against.
+   *
+   * Note what is *not* asserted here: that the game renders 4:3. The 480x360
+   * render target is a resolution, not a frame — the scene is rendered at the
+   * window's aspect into that buffer and stretched back out on the blit, so the
+   * pixels are anamorphic and the frame is the window's shape. Which means the
+   * only honest thing to letterbox to is a chosen delivery aspect, and that
+   * choice belongs to the author rather than to a constant in a stylesheet.
+   */
+  .stage {
+    flex: 1; min-height: 0; background: var(--stage); position: relative;
+    display: grid; place-items: center; container-type: size; overflow: hidden;
+  }
+  .frame-box {
+    position: relative;
+    aspect-ratio: var(--ar, 16 / 9);
+    width: min(100cqw, calc(100cqh * var(--ar, 16 / 9)));
+    box-shadow: 0 0 0 1px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.35);
+  }
+  .frame-box iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .stage .overlay {
+    position: absolute; left: 10px; bottom: 8px; background: rgba(12,14,18,.85);
+    color: #d9e2ee; padding: 5px 9px; border-radius: 6px;
+    font: 11px/1.5 ui-monospace, monospace; max-width: 62%; pointer-events: none;
+  }
+  .stage .overlay .bad { color: #f0a08c; }
+  .stage .overlay .good { color: #a8d3a0; }
+
+  /*
+   * Framing guides, drawn on the real frame.
+   *
+   * They used to draw their own 4:3 box inside a wider iframe, standing in for
+   * a letterbox that did not exist and asserting an aspect the game does not
+   * have. Now the frame *is* the frame, so these are only thirds and a
+   * title-safe inset — an aid on top of a correct picture rather than a
+   * correction applied to a wrong one.
+   */
+  .guides { position: absolute; inset: 0; pointer-events: none; }
+  .guides::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(to right, transparent calc(33.333% - 1px), rgba(240,230,200,.3) calc(33.333% - 1px) 33.333%, transparent 33.333%),
+      linear-gradient(to right, transparent calc(66.666% - 1px), rgba(240,230,200,.3) calc(66.666% - 1px) 66.666%, transparent 66.666%),
+      linear-gradient(to bottom, transparent calc(33.333% - 1px), rgba(240,230,200,.3) calc(33.333% - 1px) 33.333%, transparent 33.333%),
+      linear-gradient(to bottom, transparent calc(66.666% - 1px), rgba(240,230,200,.3) calc(66.666% - 1px) 66.666%, transparent 66.666%);
+  }
+  /* Title-safe, at the broadcast-conventional 10%. */
+  .guides::after {
+    content: ''; position: absolute; inset: 10%;
+    outline: 1px dashed rgba(240,230,200,.42);
+  }
+
+  /*
+   * The loop range lives on the cue timeline now.
+   *
+   * It used to sit on the ruler at the top, which was also the only navigator.
+   * With navigation moved to the outline there is one timeline left, and the
+   * range belongs on it — which is also where every editing tool puts it.
+   */
+  .range {
+    position: absolute; top: 0; bottom: 0; pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(138,90,43,.5) inset; background: rgba(138,90,43,.08);
+  }
+  .veil { position: absolute; top: 0; bottom: 0; background: rgba(43,37,25,.16); pointer-events: none; }
+  .handle {
+    position: absolute; top: 0; bottom: 0; width: 9px; margin-left: -4px;
+    background: var(--accent); opacity: .85; cursor: col-resize; border: 0;
+    appearance: none; padding: 0; touch-action: none; z-index: 4; border-radius: 3px;
+  }
+
+  /* take compare: two frames, one wipe */
+  .compare {
+    position: absolute; inset: 0; z-index: 3; background: #0e1013;
+    display: grid; place-items: center;
+  }
+  .compare .frames { position: relative; aspect-ratio: var(--ar, 16 / 9); height: 100%; max-width: 100%; }
+  .compare img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: contain; image-rendering: pixelated;
+  }
+  /* The wipe is a clip on the top image, so the two frames are compared in the
+     same pixels rather than side by side at half size — a shot's framing is
+     hard to judge and impossible to judge small. */
+  .compare img.top { clip-path: inset(0 calc(100% - var(--wipe, 50%)) 0 0); }
+  .compare .seam {
+    position: absolute; top: 0; bottom: 0; left: var(--wipe, 50%);
+    width: 0; border-left: 1px solid rgba(240,220,180,.8); pointer-events: none;
+  }
+  .compare .bar {
+    position: absolute; left: 0; right: 0; bottom: 6px; display: flex;
+    gap: 8px; align-items: center; padding: 0 10px;
+  }
+  .compare input[type="range"] { flex: 1; }
+  .compare .tag {
+    background: rgba(12,14,18,.85); color: #d9e2ee; padding: 3px 8px; border-radius: 6px;
+    font: 11px/1.5 ui-monospace, monospace;
+  }
+
+  /* cue timeline: lanes and clips */
+  .lanes { flex: 1; min-height: 0; overflow: auto; padding: 8px 12px 12px; }
+  .ruler { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .ruler .track { position: relative; height: 16px; border-bottom: 1px solid var(--edge-soft); }
+  .ruler .track i { position: absolute; top: 0; font-style: normal; color: var(--muted); font: 10px/1.4 ui-monospace, monospace; transform: translateX(-50%); }
+  .lane { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 8px; margin-bottom: 3px; }
+  .lane > .name { color: var(--muted); font: 11px/1.7 ui-monospace, monospace; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lane > .track { position: relative; height: 20px; background: var(--sunk); border-radius: 5px; overflow: hidden; }
+  /*
+   * The beat strip: which beat each stretch of the timeline belongs to.
+   *
+   * The dividers below run through every lane, but a line alone cannot say
+   * *whose* boundary it is. This is the row that names them, and it is the last
+   * remnant of the ruler that used to sit at the top — one lane of it, in the
+   * one timeline, rather than a second timeline of its own.
+   */
+  .lane.beats > .track { background: transparent; }
+  .beat-block {
+    position: absolute; top: 0; bottom: 0; appearance: none; border: 0;
+    border-right: 1px solid var(--edge); background: #f2e7cb; color: var(--ink);
+    padding: 0 6px; cursor: pointer; overflow: hidden; white-space: nowrap;
+    text-align: left; font: 10.5px/20px ui-monospace, monospace; border-radius: 3px;
+  }
+  .beat-block:hover { background: #fbf3dc; }
+  .beat-block[aria-current="true"] { background: #e3cb98; font-weight: 700; }
+  .beat-block.estimated {
+    background-image: repeating-linear-gradient(
+      -45deg, transparent 0 5px, rgba(138,90,43,.16) 5px 10px);
+  }
+  /* A beat boundary, through every lane. */
+  .lanes .divider {
+    position: absolute; top: 0; bottom: 0; width: 0; pointer-events: none;
+    border-left: 1px dashed rgba(138,90,43,.45);
+  }
+  .lanes .head {
+    position: absolute; top: 0; bottom: 0; width: 0; pointer-events: none;
+    border-left: 2px solid var(--bad); font-style: normal; z-index: 3;
+  }
+  .clip {
+    position: absolute; top: 1px; bottom: 1px; background: var(--clip); border-radius: 5px;
+    display: block; padding: 0 7px; white-space: nowrap; overflow: hidden;
+    /* Ellipsis rather than a hard cut: "pose recr" and "hide albe" are a label
+       failing silently, and a reader cannot tell a truncation from a typo. */
+    text-overflow: ellipsis;
+    color: #33291a; font: 11px/18px ui-monospace, monospace; cursor: grab; border: 1px solid transparent;
+  }
+  .clip[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px #ecd9ae; }
+  .clip.camera { background: var(--clip-camera); }
+  /* Blocking cues have no authorable length — the ragged edge says the player
+     decides when this ends, and a square edge would be a lie about duration. */
+  .clip.blocking {
+    background: var(--clip-block);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent 100%);
+    cursor: grab;
+  }
+
+  /* shot contact sheet */
+  .sheet { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; overflow-y: auto; flex: 1; align-content: start; }
+  .sheet figure { margin: 0; }
+  .sheet button {
+    appearance: none; border: 1px solid var(--edge); border-radius: 7px; background: #fffdf6;
+    padding: 3px; cursor: pointer; width: 100%; display: block;
+  }
+  .sheet button[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px #ecd9ae; }
+  .sheet img { width: 100%; aspect-ratio: var(--ar, 16 / 9); object-fit: cover; image-rendering: pixelated; border-radius: 4px; background: var(--stage); }
+  .sheet .empty { aspect-ratio: var(--ar, 16 / 9); display: grid; place-items: center; background: var(--sunk); border-radius: 4px; color: var(--muted); font: 10px/1.4 ui-monospace, monospace; }
+  .sheet figcaption { font: 10.5px/1.5 ui-monospace, monospace; color: var(--muted); padding: 3px 2px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sheet figcaption b { color: var(--ink); font-weight: 700; }
+  .sheet .dupe { color: var(--bad); }
+
+  /* takes */
+  .takes { padding: 10px 12px; overflow-y: auto; flex: 1; }
+  .takes .take { display: grid; grid-template-columns: 72px 1fr auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .takes .take img { width: 72px; aspect-ratio: var(--ar, 16 / 9); object-fit: cover; image-rendering: pixelated; border-radius: 4px; border: 1px solid var(--edge); cursor: pointer; }
+  .takes .take .meta { font: 10.5px/1.5 ui-monospace, monospace; color: var(--muted); overflow: hidden; }
+  .takes .take .meta b { display: block; color: var(--ink); }
+  .takes .take[aria-current="true"] img { border-color: var(--accent); box-shadow: 0 0 0 2px #ecd9ae; }
+
+  /* inspector */
+  .tabs { display: flex; gap: 5px; margin-left: auto; }
+  .tabs .chip { padding: 3px 9px; font-size: 11px; }
+  .form { padding: 10px 12px; overflow-y: auto; flex: 1; }
+  .field { display: grid; grid-template-columns: 68px 1fr; gap: 8px; align-items: center; margin-bottom: 7px; }
+  .field > label { color: var(--muted); font: 11px/1.6 ui-monospace, monospace; text-align: right; }
+  .field > .ctl { display: flex; gap: 6px; align-items: center; min-width: 0; }
+  .field input, .field select { width: 100%; }
+  .seg { display: inline-flex; border: 1px solid var(--edge); border-radius: 999px; overflow: hidden; }
+  .seg button { appearance: none; border: 0; background: #fffdf6; color: var(--ink); padding: 3px 9px; cursor: pointer; font: 11.5px/1.6 ui-monospace, monospace; }
+  .seg button[aria-pressed="true"] { background: #eedcb6; font-weight: 700; }
+  /* A number you can drag. Typing a number is fine; typing `dist 6.4 pitch 17
+     az 62 lift 1.2` is the thing this editor exists to stop. */
+  input.scrub { cursor: ew-resize; }
+  .hint { color: var(--muted); font: 11px/1.55 ui-monospace, monospace; margin: 2px 0 10px 76px; }
+  h3.section { margin: 14px 0 7px; font: 700 11px/1.6 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  textarea {
+    flex: 1; min-height: 0; width: 100%; resize: none; border: none; outline: none;
+    padding: 10px 12px; background: #f3ebd5; color: #47402f;
+    font: 12.5px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace; tab-size: 2;
+  }
+  .problems { margin: 0; padding: 8px 12px; list-style: none; overflow-y: auto; max-height: 30%; border-top: 1px solid var(--edge-soft); background: var(--card); }
+  .problems li { color: var(--bad); font: 12px/1.6 ui-monospace, monospace; }
+  .problems li.ok { color: var(--good); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <b>KINDLY FORWARD</b>
+  <span class="sub">Cutscene Editor</span>
+  <div class="doc">
+    <button class="chip" id="save" type="button" disabled>save</button>
+    <button class="chip" id="revert" type="button" disabled>revert</button>
+    <button class="chip" id="undo" type="button" disabled title="Undo (⌘Z)">undo</button>
+    <button class="chip" id="redo" type="button" disabled title="Redo (⇧⌘Z)">redo</button>
+  </div>
+  <nav>
+    <a href="/island">island</a>
+    <a href="/acre">acre</a>
+    <a href="/models">models</a>
+    <a href="/story">story</a>
+    <a href="/wiki">wiki</a>
+  </nav>
+</div>
+
+<div class="lab">
+  <aside class="scenes">
+    <div class="aside-head"><strong>Scenes</strong></div>
+    <div class="aside-list" id="scene-list"></div>
+    <div class="aside-head">
+      <strong>Beats</strong>
+      <button class="mini" id="beat-add" type="button"
+        title="Add a beat after the selected one">+</button>
+    </div>
+    <div class="outline" id="outline"></div>
+    <div class="aside-head"><strong>Sets</strong></div>
+    <div class="aside-list" id="set-list"></div>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <!-- One play/pause toggle rather than two buttons, because it is one
+           question — is the scene running — and space already answers it. -->
+      <div class="group transport">
+        <button class="chip" id="play" type="button" aria-pressed="false"
+          title="Play from the playhead, stopping at the out point (space)">play</button>
+        <button class="chip" id="loop" type="button" aria-pressed="false"
+          title="Play the in/out range over and over (L). Set the range with [ and ], clear it with \">loop</button>
+        <button class="chip rec" id="record" type="button"
+          title="Play the range and file every frame as a take (R)">record</button>
+      </div>
+
+      <div class="group">
+        <button class="chip" id="grab" type="button" title="Write the live camera into the selected shot">grab shot</button>
+        <button class="chip" id="camera-mode" type="button" aria-pressed="false"
+          title="Drag the preview to orbit, shift-drag to pan, wheel to dolly. Click to hand the camera back to the scene.">camera: scene</button>
+        <button class="chip" id="marks" type="button" aria-pressed="false"
+          title="Show the mark handles. Drag one to move it in its .set file.">marks</button>
+        <button class="chip" id="ripple" type="button" aria-pressed="false"
+          title="Dragging a cue carries every later cue in the beat with it">ripple</button>
+        <button class="chip" id="guides-toggle" type="button" aria-pressed="false"
+          title="Thirds and a title-safe inset, over the frame">guides</button>
+      </div>
+
+      <div class="group">
+        <label for="map">map</label>
+        <select id="map"></select>
+        <select id="aspect" aria-label="frame aspect" title="The aspect the game is composed for. The camera takes its aspect from the frame it is given, so this decides what you are framing against."></select>
+      </div>
+
+    </div>
+
+    <div class="panes">
+      <section class="pane">
+        <h2>
+          Preview
+          <span class="why" role="img"
+            title="The real game, held at the playhead. Drag to orbit · shift-drag to pan · wheel to dolly · then press grab shot.">?</span>
+        </h2>
+        <div class="stage" id="stage">
+          <div class="frame-box" id="frame-box">
+            <iframe id="preview" title="Scene preview"></iframe>
+            <div class="guides" id="guides" hidden aria-hidden="true"></div>
+          </div>
+          <div class="compare" id="compare" hidden>
+            <div class="frames">
+              <img id="compare-b" alt="the take being compared against" />
+              <img id="compare-a" class="top" alt="the selected take" />
+              <div class="seam" id="compare-seam"></div>
+            </div>
+            <div class="bar">
+              <span class="tag" id="compare-a-tag"></span>
+              <input type="range" id="compare-wipe" min="0" max="100" value="50" aria-label="Wipe between takes" />
+              <span class="tag" id="compare-b-tag"></span>
+              <button class="chip" id="compare-close" type="button">close</button>
+            </div>
+          </div>
+          <div class="overlay" id="overlay">booting…</div>
+        </div>
+      </section>
+      <section class="pane">
+        <h2>
+          Cues
+          <span class="why" role="img"
+            title="One timeline over the whole scene, windowed on the playhead. Lanes run in parallel; drag a clip to move it, and past a divider to move it into the next beat. Double-click empty lane space to add a cue; delete removes the selected one. A ragged edge means the player decides when it ends.">?</span>
+          <span class="spacer"></span>
+          <button class="mini" id="zoom-out" type="button" title="Show more of the scene (−)">−</button>
+          <button class="mini wide" id="zoom-fit" type="button" title="Frame the current beat (0)">fit</button>
+          <button class="mini" id="zoom-in" type="button" title="Show less of the scene (+)">+</button>
+        </h2>
+        <div class="lanes" id="lanes"></div>
+      </section>
+    </div>
+
+    <div class="footbar">
+      <span class="status" id="status">loading…</span>
+      <span class="spacer"></span>
+      <span class="at" id="at-beat">—</span>
+      <span class="status" id="clock">—</span>
+    </div>
+  </main>
+
+  <aside class="inspector">
+    <div class="aside-head">
+      <strong id="inspector-title">Inspector</strong>
+      <div class="tabs">
+        <button class="chip" id="tab-form" type="button" aria-pressed="true">form</button>
+        <button class="chip" id="tab-shots" type="button" aria-pressed="false">shots</button>
+        <button class="chip" id="tab-takes" type="button" aria-pressed="false">takes</button>
+        <button class="chip" id="tab-source" type="button" aria-pressed="false">source</button>
+      </div>
+    </div>
+    <div class="form" id="form"></div>
+    <div class="sheet" id="shots" hidden></div>
+    <div class="takes" id="takes" hidden></div>
+    <textarea id="source" spellcheck="false" readonly aria-label="Scene source (read-only)" hidden></textarea>
+    <ul class="problems" id="problems"></ul>
+  </aside>
+</div>
+
+<!-- Absolute, not relative: served at a bare `/cutscene` with no trailing slash. -->
+<script type="module" src="/scene/scene-editor.ts"></script>
+</body>
+</html>

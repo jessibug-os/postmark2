@@ -1,0 +1,29 @@
+# id: post-office-a
+# family: post-office
+# weight: 18
+# unique: true
+# tier: 1
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+gggggggggggggggg
+# fixtures:
+# prop building post-office at 1.85 0 -2.5
+# mark office.approach at 1.95 0 6.54
+# mark office.threshold at 1.93 0 1.73 ground rigid
+# mark office.counter at 2.3 0 -3.58 ground rigid
+# mark office.ledger at 3.08 0 -3.3 ground rigid
+# mark office.doorway at 1.07 0 1.14 ground rigid
+# prop prop-1 bench at -4.7 0 3.74 ground rigid
