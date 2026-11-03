@@ -1,0 +1,1283 @@
+{
+  "reviewDate": "2026-10-25",
+  "files": [
+    {
+      "path": "src/main.ts",
+      "sha256": "340ac6837fc0071f1e404c409723c70886d212f1a8d1e0679ee5bd9200624d9c",
+      "lines": 39,
+      "symbols": []
+    },
+    {
+      "path": "src/game/Game.ts",
+      "sha256": "e0f3927b62762190ac5c721cd2c637e43e690688079a92b6db17041aa004b3cc",
+      "lines": 600,
+      "symbols": [
+        {
+          "line": 57,
+          "declaration": "export const FAVOR_WISHLISTS: Record<string, string[]> = {"
+        },
+        {
+          "line": 67,
+          "declaration": "export const DAILY_SURPRISES = ['orchard-apple', 'wild-chicory', 'stone', 'scrap-metal'];"
+        },
+        {
+          "line": 83,
+          "declaration": "export const TOOL_HOTKEYS: Array<[string, ToolId]> = ["
+        },
+        {
+          "line": 98,
+          "declaration": "export class Game {"
+        },
+        {
+          "line": 486,
+          "declaration": "export interface Game {"
+        }
+      ]
+    },
+    {
+      "path": "src/game/ARCHITECTURE.md",
+      "sha256": "92690bbaa238f4547307c06ab1912b3551ab3ffa73cf7b4345a27adb6f82594f",
+      "lines": 33,
+      "symbols": []
+    },
+    {
+      "path": "src/content/activePack.ts",
+      "sha256": "48cb58a628acad0cfcb172f945d2367fda8d4ffdf4c138309cc647caa9520602",
+      "lines": 118,
+      "symbols": [
+        {
+          "line": 32,
+          "declaration": "export const ACTIVE_CAPABILITIES = { fishing: false } as const;"
+        },
+        {
+          "line": 34,
+          "declaration": "export const ACTIVE_CAST: CastPack = KINDLY_FORWARD_CAST;"
+        },
+        {
+          "line": 43,
+          "declaration": "export const ACTIVE_GAME_OBJECTS: ReadonlyMap<string, GameObject> ="
+        },
+        {
+          "line": 47,
+          "declaration": "export function activeGameObject(id: string): GameObject | undefined {"
+        },
+        {
+          "line": 51,
+          "declaration": "export const ACTIVE_TASTES: Record<string, Tastes> = KINDLY_FORWARD_TASTES;"
+        },
+        {
+          "line": 53,
+          "declaration": "export const ACTIVE_QUESTS: QuestDef[] = KINDLY_FORWARD_QUESTS;"
+        },
+        {
+          "line": 55,
+          "declaration": "export const ACTIVE_HEART_SCENES: Record<string, { title: string; steps: SceneStep[] }[]> ="
+        },
+        {
+          "line": 58,
+          "declaration": "export const ACTIVE_KEEPSAKES: Record<string, string> = KINDLY_FORWARD_KEEPSAKES;"
+        },
+        {
+          "line": 61,
+          "declaration": "export function activeLetters(): DeadLetter[] {"
+        },
+        {
+          "line": 66,
+          "declaration": "export const ACTIVE_TITLE = KINDLY_FORWARD_TITLE;"
+        },
+        {
+          "line": 69,
+          "declaration": "export const ACTIVE_OPENING_NPC = 'albert';"
+        },
+        {
+          "line": 72,
+          "declaration": "export const ACTIVE_OPENING_ROLES = {"
+        },
+        {
+          "line": 77,
+          "declaration": "export interface PlotDef {"
+        },
+        {
+          "line": 108,
+          "declaration": "export const ACTIVE_PLOTS: readonly PlotDef[] = [];"
+        },
+        {
+          "line": 111,
+          "declaration": "export const ACTIVE_MAIL_KEEPER = 'albert';"
+        },
+        {
+          "line": 114,
+          "declaration": "export const ACTIVE_INDOOR_RESIDENCES: Record<string, string> = Object.fromEntries("
+        }
+      ]
+    },
+    {
+      "path": "src/content/types.ts",
+      "sha256": "c1f76a4e0132a9879e52e2eaf029e698ff1733f296aa54d072183f0c03a8d342",
+      "lines": 63,
+      "symbols": [
+        {
+          "line": 9,
+          "declaration": "export interface CastContext {"
+        },
+        {
+          "line": 15,
+          "declaration": "export interface CastMember {"
+        },
+        {
+          "line": 40,
+          "declaration": "export interface CastPack {"
+        },
+        {
+          "line": 52,
+          "declaration": "export interface IslandLayout {"
+        }
+      ]
+    },
+    {
+      "path": "src/world/mapConstants.ts",
+      "sha256": "527026750830b869435bdb23b29fb18d314864fccfc92069bc6c7a5826a0cec6",
+      "lines": 50,
+      "symbols": [
+        {
+          "line": 28,
+          "declaration": "export const ISLAND_MAP_ID = chosenMap();"
+        },
+        {
+          "line": 38,
+          "declaration": "export const ACTIVE_LAYOUT = buildTemplateLayout(templateOrDefault(ISLAND_MAP_ID));"
+        },
+        {
+          "line": 41,
+          "declaration": "export const ACTIVE_FIELD = ACTIVE_LAYOUT.field ?? null;"
+        },
+        {
+          "line": 42,
+          "declaration": "export const ACTIVE_CELLS = ACTIVE_LAYOUT.cells ?? null;"
+        },
+        {
+          "line": 45,
+          "declaration": "export const MAP = ACTIVE_LAYOUT.bounds;"
+        },
+        {
+          "line": 48,
+          "declaration": "export const PLAZA = ACTIVE_LAYOUT.plaza;"
+        },
+        {
+          "line": 50,
+          "declaration": "export const SPOTS = ACTIVE_LAYOUT.spots;"
+        }
+      ]
+    },
+    {
+      "path": "src/world/island/TemplateLibrary.ts",
+      "sha256": "6fd0865a6f150fc5b718ca37bdc3299d19490a1c0c8bb5ada72f00f3b9cf86ab",
+      "lines": 61,
+      "symbols": [
+        {
+          "line": 23,
+          "declaration": "export const TEMPLATES: readonly IslandTemplate[] = Object.entries(sources)"
+        },
+        {
+          "line": 44,
+          "declaration": "export const DEFAULT_TEMPLATE_ID = 'seed-80085';"
+        },
+        {
+          "line": 46,
+          "declaration": "export function template(id: string): IslandTemplate | null {"
+        },
+        {
+          "line": 57,
+          "declaration": "export function templateOrDefault(id: string = DEFAULT_TEMPLATE_ID): IslandTemplate {"
+        }
+      ]
+    },
+    {
+      "path": "src/world/island/generatedLayout.ts",
+      "sha256": "14a48b1ea56241a626f533b001fbb2983edd4d024101d77c1090868e1f7ba994",
+      "lines": 147,
+      "symbols": [
+        {
+          "line": 19,
+          "declaration": "export const DEFAULT_ISLAND_SEED = 0x53544d59;"
+        },
+        {
+          "line": 55,
+          "declaration": "export function buildTemplateLayout(template: IslandTemplate): IslandLayout {"
+        }
+      ]
+    },
+    {
+      "path": "src/world/Interior.ts",
+      "sha256": "83ad5f615035b9f858668f0566c39159912326c0d7b8ffbe728c0b5fa7fce867",
+      "lines": 1135,
+      "symbols": [
+        {
+          "line": 8,
+          "declaration": "export const WALLPAPERS: Array<{ id: string; name: string; make: () => THREE.Texture }> = ["
+        },
+        {
+          "line": 22,
+          "declaration": "export const FLOORS: Array<{ id: string; name: string; make: () => THREE.Texture }> = ["
+        },
+        {
+          "line": 44,
+          "declaration": "export interface InteriorHotspot {"
+        },
+        {
+          "line": 54,
+          "declaration": "export class Interior {"
+        },
+        {
+          "line": 391,
+          "declaration": "export function buildRuinedPostOfficeInterior(index: number): Interior {"
+        },
+        {
+          "line": 430,
+          "declaration": "export function buildEmporiumInterior(index: number): Interior {"
+        },
+        {
+          "line": 583,
+          "declaration": "export function setEmporiumStock(room: Interior, stock: readonly ItemDef[]): void {"
+        },
+        {
+          "line": 644,
+          "declaration": "export function buildArchiveInterior(index: number): Interior {"
+        },
+        {
+          "line": 864,
+          "declaration": "export function buildCottageInterior(owner: 'marigold' | 'buoy', index: number): Interior {"
+        },
+        {
+          "line": 1041,
+          "declaration": "export function buildPlayerHouseInterior("
+        }
+      ]
+    },
+    {
+      "path": "src/world/Weather.ts",
+      "sha256": "aa14d8fe01cf4fa320ec2984bc29d77c3bdddab6938ef6c7d61f8ac2e796c6a6",
+      "lines": 579,
+      "symbols": [
+        {
+          "line": 10,
+          "declaration": "export type WeatherKind = 'clear' | 'rain' | 'snow' | 'fog';"
+        },
+        {
+          "line": 12,
+          "declaration": "export interface PuddleReceiver {"
+        },
+        {
+          "line": 20,
+          "declaration": "export interface RunoffReceiver {"
+        },
+        {
+          "line": 53,
+          "declaration": "export class Weather {"
+        }
+      ]
+    },
+    {
+      "path": "src/world/objects/GameObjectFormat.ts",
+      "sha256": "b6faf48b9ccb499b7fac5f4079047ae1e57a4924ce471599f17c94882b0007b7",
+      "lines": 310,
+      "symbols": [
+        {
+          "line": 34,
+          "declaration": "export interface Vec3 { x: number; y: number; z: number }"
+        },
+        {
+          "line": 36,
+          "declaration": "export class GameObjectParseError extends Error {"
+        },
+        {
+          "line": 52,
+          "declaration": "export interface CollideComponent {"
+        },
+        {
+          "line": 60,
+          "declaration": "export interface SeatComponent {"
+        },
+        {
+          "line": 76,
+          "declaration": "export interface InteractComponent {"
+        },
+        {
+          "line": 87,
+          "declaration": "export interface ClearComponent {"
+        },
+        {
+          "line": 94,
+          "declaration": "export interface ApertureComponent {"
+        },
+        {
+          "line": 109,
+          "declaration": "export interface CommentLine {"
+        },
+        {
+          "line": 115,
+          "declaration": "export type ObjectComponent ="
+        },
+        {
+          "line": 123,
+          "declaration": "export interface GameObject {"
+        },
+        {
+          "line": 142,
+          "declaration": "export function parseGameObject(text: string, file = '<gameobj>'): GameObject {"
+        },
+        {
+          "line": 265,
+          "declaration": "export function formatGameObject(object: GameObject): string {"
+        },
+        {
+          "line": 303,
+          "declaration": "export function componentsOf<K extends ObjectComponent['kind']>("
+        }
+      ]
+    },
+    {
+      "path": "src/characters/NPC.ts",
+      "sha256": "553e246fb6042bff3b03049346be5acd85421a940ef1068407ffe9dc2b41803d",
+      "lines": 476,
+      "symbols": [
+        {
+          "line": 11,
+          "declaration": "export type NpcState = 'dormant' | 'active' | 'low-power';"
+        },
+        {
+          "line": 14,
+          "declaration": "export interface ScheduleBlock {"
+        },
+        {
+          "line": 25,
+          "declaration": "export interface NpcPoi {"
+        },
+        {
+          "line": 39,
+          "declaration": "export class NPC {"
+        }
+      ]
+    },
+    {
+      "path": "src/player/Input.ts",
+      "sha256": "ec447d7a59ac42d4ebed02edeee4ce683e2ba3e03f873ce944b9e704898c2b05",
+      "lines": 102,
+      "symbols": [
+        {
+          "line": 7,
+          "declaration": "export class Input {"
+        }
+      ]
+    },
+    {
+      "path": "src/core/events.ts",
+      "sha256": "0109be1bddd3e10bcc8449c2b9421207a3082f97e1c1c297f92ce5038ed320be",
+      "lines": 50,
+      "symbols": [
+        {
+          "line": 5,
+          "declaration": "export type EventMap = {"
+        },
+        {
+          "line": 29,
+          "declaration": "export class EventBus {"
+        },
+        {
+          "line": 50,
+          "declaration": "export const bus = new EventBus();"
+        }
+      ]
+    },
+    {
+      "path": "src/core/AudioSystem.ts",
+      "sha256": "52918ac12b1cd6f078499a7141adad2ed2ac371d36d13c29969cf5fefd327309",
+      "lines": 1493,
+      "symbols": [
+        {
+          "line": 40,
+          "declaration": "export const SFX_NAMES = ["
+        },
+        {
+          "line": 65,
+          "declaration": "export type SfxName = (typeof SFX_NAMES)[number];"
+        },
+        {
+          "line": 68,
+          "declaration": "export const STEP_SURFACES = ['grass', 'stone', 'wood'] as const;"
+        },
+        {
+          "line": 70,
+          "declaration": "export type ThemeName = string;"
+        },
+        {
+          "line": 424,
+          "declaration": "export const CUE_THEMES: ThemeName[] = [...Object.keys(THEMES), 'silence'];"
+        },
+        {
+          "line": 427,
+          "declaration": "export const CONCERT_COUNT = CONCERT_MOTIFS.length;"
+        },
+        {
+          "line": 438,
+          "declaration": "export function themePiece(name: ThemeName): Piece {"
+        },
+        {
+          "line": 462,
+          "declaration": "export class AudioSystem {"
+        },
+        {
+          "line": 1493,
+          "declaration": "export const audio = new AudioSystem();"
+        }
+      ]
+    },
+    {
+      "path": "src/core/AssetLoader.ts",
+      "sha256": "640c75fcc4b426f39b35b1e56918d2b3375fb3b64be873ecb1418c281e74e710",
+      "lines": 197,
+      "symbols": [
+        {
+          "line": 9,
+          "declaration": "export type AssetId ="
+        },
+        {
+          "line": 29,
+          "declaration": "export type AssetProgress = (loaded: number, total: number, id: AssetId) => void;"
+        },
+        {
+          "line": 35,
+          "declaration": "export class AssetRegistry {"
+        },
+        {
+          "line": 179,
+          "declaration": "export const assets = new AssetRegistry();"
+        }
+      ]
+    },
+    {
+      "path": "src/cutscene/scene/SceneDirector.ts",
+      "sha256": "fe64b9cb5df052afce2200639dc66ce6d948c71c97a7f25e5d59ff0024857082",
+      "lines": 484,
+      "symbols": [
+        {
+          "line": 19,
+          "declaration": "export interface SceneHost {"
+        },
+        {
+          "line": 89,
+          "declaration": "export interface SceneRunOptions {"
+        },
+        {
+          "line": 144,
+          "declaration": "export const SUBJECT_SAMPLES = [0.45, 0, -0.45];"
+        },
+        {
+          "line": 152,
+          "declaration": "export interface ScenePlayhead {"
+        },
+        {
+          "line": 159,
+          "declaration": "export class SceneDirector {"
+        }
+      ]
+    },
+    {
+      "path": "src/cutscene/scene/GameSceneHost.ts",
+      "sha256": "c80d73ada694ad098b8bdbb70e1e25ab55ff7b31503ec109622a1cdcce5b2e32",
+      "lines": 1242,
+      "symbols": [
+        {
+          "line": 37,
+          "declaration": "export interface StageActor {"
+        },
+        {
+          "line": 73,
+          "declaration": "export interface SceneWorld {"
+        },
+        {
+          "line": 170,
+          "declaration": "export class GameSceneHost implements SceneHost {"
+        }
+      ]
+    },
+    {
+      "path": "assets/CONVENTION.md",
+      "sha256": "c828154b7008715eed7dd58a09c69f5cffe1cd941f3f3459d0612dca4cd7b803",
+      "lines": 161,
+      "symbols": []
+    },
+    {
+      "path": "public/assets/manifest.json",
+      "sha256": "d44a0819aecb3b8250c63a4d0493a17d9ded516b26ac79e36ff3e47ee0590f6d",
+      "lines": 40,
+      "symbols": []
+    },
+    {
+      "path": "src/game/modules/GameLoop.ts",
+      "sha256": "a75e47a494df81e35119c7ff670021b265774d69ca10e3efe973b37d7d555efb",
+      "lines": 717,
+      "symbols": [
+        {
+          "line": 34,
+          "declaration": "export function configureLightingLayers(this: Game): void {"
+        },
+        {
+          "line": 55,
+          "declaration": "export function applySchedules(this: Game): void {"
+        },
+        {
+          "line": 69,
+          "declaration": "export function spawnNpcs(this: Game): void {"
+        },
+        {
+          "line": 129,
+          "declaration": "export function registerSpeakers(this: Game): void {"
+        },
+        {
+          "line": 148,
+          "declaration": "export function startNewGame(this: Game, slot: SaveSlotId = this.saveSlot): void {"
+        },
+        {
+          "line": 188,
+          "declaration": "export function startFromSave(this: Game, slot: SaveSlotId = this.saveSlot): void {"
+        },
+        {
+          "line": 203,
+          "declaration": "export function start(this: Game): void {"
+        },
+        {
+          "line": 207,
+          "declaration": "export function frame(this: Game): void {"
+        },
+        {
+          "line": 234,
+          "declaration": "export function fixedUpdate(this: Game, dt: number): void {"
+        },
+        {
+          "line": 384,
+          "declaration": "export function pressedConfirm(this: Game): boolean {"
+        },
+        {
+          "line": 392,
+          "declaration": "export function currentTheme(this: Game): ThemeName {"
+        },
+        {
+          "line": 406,
+          "declaration": "export function updatePlay(this: Game, dt: number): void {"
+        },
+        {
+          "line": 581,
+          "declaration": "export function updateResidences(this: Game): void {"
+        },
+        {
+          "line": 602,
+          "declaration": "export function updateNpcSocial(this: Game, dt: number): void {"
+        },
+        {
+          "line": 677,
+          "declaration": "export function endSocial(this: Game): void {"
+        },
+        {
+          "line": 687,
+          "declaration": "export function footSurface(this: Game): 'grass' | 'stone' | 'wood' {"
+        },
+        {
+          "line": 700,
+          "declaration": "export function afterModal(this: Game, dt: number): void {"
+        },
+        {
+          "line": 707,
+          "declaration": "export function emoteForLine(this: Game): void {"
+        }
+      ]
+    },
+    {
+      "path": "src/game/modules/InteractionController.ts",
+      "sha256": "279e314216fe0d723bee07e37294bad3b5c111cca64770c61bc88e2a1890fdc5",
+      "lines": 397,
+      "symbols": [
+        {
+          "line": 13,
+          "declaration": "export function updateInteractions(this: Game): void {"
+        },
+        {
+          "line": 167,
+          "declaration": "export function runPrimaryAction(this: Game, actions: Array<{ text: string; key: string; run: () => void }>): void {"
+        },
+        {
+          "line": 177,
+          "declaration": "export function getInterior(this: Game, id: string): Interior {"
+        },
+        {
+          "line": 194,
+          "declaration": "export function doorFade(this: Game, mid: () => void): void {"
+        },
+        {
+          "line": 214,
+          "declaration": "export function enterInterior(this: Game, id: string): void {"
+        },
+        {
+          "line": 259,
+          "declaration": "export function clearInteriorState(this: Game): void {"
+        },
+        {
+          "line": 279,
+          "declaration": "export function exitInterior(this: Game): void {"
+        },
+        {
+          "line": 290,
+          "declaration": "export function rebuildPlayerHouse(this: Game): void {"
+        },
+        {
+          "line": 308,
+          "declaration": "export function updateInteriorInteractions(this: Game): void {"
+        },
+        {
+          "line": 378,
+          "declaration": "export function showPrompt(this: Game, text: string): void {"
+        }
+      ]
+    },
+    {
+      "path": "src/game/modules/FixtureInteraction.ts",
+      "sha256": "c9beb98c55ae894f897f3d3a90f1a5b5503ca48d34f080673bc5e5097bf04890",
+      "lines": 195,
+      "symbols": [
+        {
+          "line": 68,
+          "declaration": "export function seatWorld(object: PlacedObject, seat: SeatComponent): {"
+        },
+        {
+          "line": 87,
+          "declaration": "export function standUp(this: Game): void {"
+        },
+        {
+          "line": 123,
+          "declaration": "export function fixtureActions(this: Game): Array<{ text: string; key: string; run: () => void }> {"
+        }
+      ]
+    },
+    {
+      "path": "src/game/modules/SocialController.ts",
+      "sha256": "773720fc0dc44642d498526e64535097877514eddd116921e60d99802be62fc3",
+      "lines": 397,
+      "symbols": [
+        {
+          "line": 14,
+          "declaration": "export function idleTalk(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 37,
+          "declaration": "export function giftFlow(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 78,
+          "declaration": "export function offerFavor(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 89,
+          "declaration": "export function talkTo(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 108,
+          "declaration": "export function talkSparks(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 187,
+          "declaration": "export function contextIdle(this: Game, npc: NPC): string[] {"
+        },
+        {
+          "line": 226,
+          "declaration": "export function playReactivation(this: Game, npc: NPC, wakeLines: string[], after?: () => void): void {"
+        },
+        {
+          "line": 258,
+          "declaration": "export function talkReggie(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 291,
+          "declaration": "export function talkCataloger(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 329,
+          "declaration": "export function donateSpecimens(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 373,
+          "declaration": "export function talkDormantVillager(this: Game, npc: NPC,"
+        }
+      ]
+    },
+    {
+      "path": "src/game/modules/CommerceController.ts",
+      "sha256": "350f6b1c9a9d46c4fa1c9e3e6c4bd62be025a2331e7cf7477520707fc158ec70",
+      "lines": 331,
+      "symbols": [
+        {
+          "line": 12,
+          "declaration": "export function checkMuseumWings(this: Game): void {"
+        },
+        {
+          "line": 28,
+          "declaration": "export function recordAchievement(this: Game, id: string, title: string, blurb: string): void {"
+        },
+        {
+          "line": 38,
+          "declaration": "export function shopTier(this: Game): number {"
+        },
+        {
+          "line": 44,
+          "declaration": "export function openWorkbench(this: Game): void {"
+        },
+        {
+          "line": 89,
+          "declaration": "export function openRenovationLedger(this: Game): void {"
+        },
+        {
+          "line": 127,
+          "declaration": "export function openStylePicker(this: Game, kind: 'wallpaper' | 'flooring'): void {"
+        },
+        {
+          "line": 151,
+          "declaration": "export function openConcertPlayer(this: Game): void {"
+        },
+        {
+          "line": 184,
+          "declaration": "export function browseShopItem(this: Game, itemId: string): void {"
+        },
+        {
+          "line": 213,
+          "declaration": "export function plotRequirement(this: Game, plotId: string): { text: string; mats: Array<[string, number]> } | null {"
+        },
+        {
+          "line": 236,
+          "declaration": "export function tryBuild(this: Game, plotId: string): void {"
+        },
+        {
+          "line": 302,
+          "declaration": "export function onQuestCompleted(this: Game, questId: string): void {"
+        },
+        {
+          "line": 322,
+          "declaration": "export function checkTownLivesProgress(this: Game): void {"
+        }
+      ]
+    },
+    {
+      "path": "src/game/modules/CalendarMailController.ts",
+      "sha256": "712b7b546637b4854b9f8ab36a45537aa17ef43bf365f5ad26ec97ed0b3a1b87",
+      "lines": 488,
+      "symbols": [
+        {
+          "line": 19,
+          "declaration": "export function applySeason(this: Game): void {"
+        },
+        {
+          "line": 40,
+          "declaration": "export function dayOfYear(this: Game): number {"
+        },
+        {
+          "line": 46,
+          "declaration": "export function checkFestival(this: Game): void {"
+        },
+        {
+          "line": 57,
+          "declaration": "export function startFestival(this: Game): void {"
+        },
+        {
+          "line": 85,
+          "declaration": "export function buildFestivalProps(this: Game, season: Season): void {"
+        },
+        {
+          "line": 110,
+          "declaration": "export function endFestival(this: Game): void {"
+        },
+        {
+          "line": 118,
+          "declaration": "export function updateFestival(this: Game, dt: number): void {"
+        },
+        {
+          "line": 148,
+          "declaration": "export function totalHearts(this: Game): number {"
+        },
+        {
+          "line": 154,
+          "declaration": "export function storyDone(this: Game): boolean {"
+        },
+        {
+          "line": 162,
+          "declaration": "export function letterAvailability(this: Game): LetterAvailability {"
+        },
+        {
+          "line": 174,
+          "declaration": "export function openMailSack(this: Game, npc: NPC): void {"
+        },
+        {
+          "line": 210,
+          "declaration": "export function letterTargetLabel(this: Game, l: DeadLetter): string {"
+        },
+        {
+          "line": 216,
+          "declaration": "export function letterTargetPos(this: Game, l: DeadLetter): { x: number; z: number } | null {"
+        },
+        {
+          "line": 222,
+          "declaration": "export async function deliverLetter(this: Game): Promise<void> {"
+        },
+        {
+          "line": 297,
+          "declaration": "export function beginDailyLoop(this: Game, day: string): void {"
+        },
+        {
+          "line": 318,
+          "declaration": "export function showDayCard(this: Game): void {"
+        },
+        {
+          "line": 384,
+          "declaration": "export function showTitleCard(this: Game, lines: string[]): void {"
+        },
+        {
+          "line": 420,
+          "declaration": "export function rollCredits(this: Game): Promise<void> {"
+        },
+        {
+          "line": 476,
+          "declaration": "export function startTalkless(this: Game, lines: string[]): void {"
+        },
+        {
+          "line": 480,
+          "declaration": "export function startTalk(this: Game, npc: NPC,"
+        }
+      ]
+    },
+    {
+      "path": "src/game/modules/PersistenceController.ts",
+      "sha256": "f6e363fae4008cd124b62904954722032c3c741aa19c54bb30d6b1e46048f515",
+      "lines": 94,
+      "symbols": [
+        {
+          "line": 10,
+          "declaration": "export function save(this: Game, auto: boolean): void {"
+        },
+        {
+          "line": 52,
+          "declaration": "export function restore(this: Game, data: SaveData): void {"
+        }
+      ]
+    },
+    {
+      "path": "src/systems/TimeSystem.ts",
+      "sha256": "2d395db40ebb6a2c9eaeb20e686046f2cbf75cce9af7afad52d82f9e3670b2b6",
+      "lines": 92,
+      "symbols": [
+        {
+          "line": 3,
+          "declaration": "export type DayPhase = 'dawn' | 'day' | 'dusk' | 'night';"
+        },
+        {
+          "line": 10,
+          "declaration": "export class TimeSystem {"
+        },
+        {
+          "line": 83,
+          "declaration": "export function daylightAt(hour: number): number {"
+        }
+      ]
+    },
+    {
+      "path": "src/systems/Calendar.ts",
+      "sha256": "18ddb10d5209a7d36e48ba1cd5b88a4df7c84125277fe2afdb6487618736efeb",
+      "lines": 104,
+      "symbols": [
+        {
+          "line": 7,
+          "declaration": "export type Season = 'spring' | 'summer' | 'autumn' | 'winter';"
+        },
+        {
+          "line": 9,
+          "declaration": "export const SEASONS: Season[] = ['spring', 'summer', 'autumn', 'winter'];"
+        },
+        {
+          "line": 11,
+          "declaration": "export const SEASON_LABEL: Record<Season, string> = {"
+        },
+        {
+          "line": 18,
+          "declaration": "export interface Festival {"
+        },
+        {
+          "line": 29,
+          "declaration": "export const FESTIVALS: Festival[] = ["
+        },
+        {
+          "line": 37,
+          "declaration": "export const BIRTHDAYS: Record<string, { month: number; day: number }> = {"
+        },
+        {
+          "line": 48,
+          "declaration": "export class Calendar {"
+        }
+      ]
+    },
+    {
+      "path": "src/systems/Inventory.ts",
+      "sha256": "25fdd44f28a87a95bdd5f211f5798ca8375604090f0af41eb2e9306cd815539b",
+      "lines": 142,
+      "symbols": [
+        {
+          "line": 4,
+          "declaration": "export const INVENTORY_SLOTS = 20;"
+        },
+        {
+          "line": 5,
+          "declaration": "export const LETTER_ITEM_PREFIX = 'dead-letter:';"
+        },
+        {
+          "line": 7,
+          "declaration": "export function letterItemId(letterId: string): string {"
+        },
+        {
+          "line": 11,
+          "declaration": "export function letterIdFromItem(itemId: string): string | null {"
+        },
+        {
+          "line": 15,
+          "declaration": "export interface Stack {"
+        },
+        {
+          "line": 24,
+          "declaration": "export class Inventory {"
+        }
+      ]
+    },
+    {
+      "path": "src/systems/FurnitureSystem.ts",
+      "sha256": "9ae0d404629d774c4336d9c64807b0cd67fc98aa22405ca16a5a3b96d925933c",
+      "lines": 330,
+      "symbols": [
+        {
+          "line": 15,
+          "declaration": "export interface PlacedFurniture {"
+        },
+        {
+          "line": 32,
+          "declaration": "export class FurnitureSystem {"
+        }
+      ]
+    },
+    {
+      "path": "src/systems/Friendship.ts",
+      "sha256": "b9d16baecfeae6d4d5fc6a4dc8fe2c455753bad76214e0f2a1d988792604d86c",
+      "lines": 153,
+      "symbols": [
+        {
+          "line": 13,
+          "declaration": "export interface FriendState {"
+        },
+        {
+          "line": 25,
+          "declaration": "export const MAX_POINTS = 250;"
+        },
+        {
+          "line": 26,
+          "declaration": "export const HEART_SIZE = 50;"
+        },
+        {
+          "line": 27,
+          "declaration": "export const SCENE_AT_HEARTS = [1, 3, 5];"
+        },
+        {
+          "line": 29,
+          "declaration": "export interface Tastes {"
+        },
+        {
+          "line": 36,
+          "declaration": "export const TASTES: Record<string, Tastes> = ACTIVE_TASTES;"
+        },
+        {
+          "line": 38,
+          "declaration": "export type GiftVerdict = 'loved' | 'liked' | 'disliked' | 'neutral';"
+        },
+        {
+          "line": 40,
+          "declaration": "export function giftVerdict(npcId: string, itemId: string, category: string): GiftVerdict {"
+        },
+        {
+          "line": 58,
+          "declaration": "export class Friendship {"
+        }
+      ]
+    },
+    {
+      "path": "src/systems/MailSystem.ts",
+      "sha256": "3636988a99c23826b0d2fd5775e51fb20238af69ffe0d8e50adbe62de4086a64",
+      "lines": 186,
+      "symbols": [
+        {
+          "line": 13,
+          "declaration": "export interface MailSaveData {"
+        },
+        {
+          "line": 18,
+          "declaration": "export interface LetterAvailability {"
+        },
+        {
+          "line": 24,
+          "declaration": "export type ClaimLetterResult ="
+        },
+        {
+          "line": 28,
+          "declaration": "export type HandoffCheck ="
+        },
+        {
+          "line": 32,
+          "declaration": "export class MailSystem {"
+        }
+      ]
+    },
+    {
+      "path": "src/systems/QuestSystem.ts",
+      "sha256": "51467d27bd27aaa638b58b50dfcecb0e6c771a59dc3c0e657981dbd341bf16e7",
+      "lines": 82,
+      "symbols": [
+        {
+          "line": 10,
+          "declaration": "export interface QuestDef {"
+        },
+        {
+          "line": 17,
+          "declaration": "export class QuestSystem {"
+        }
+      ]
+    },
+    {
+      "path": "src/systems/SaveSystem.ts",
+      "sha256": "cef021afc2c951017f9f6befb2d8349b626a3e8f1f0c4f2f21f77c297955b657",
+      "lines": 435,
+      "symbols": [
+        {
+          "line": 6,
+          "declaration": "export const SAVE_VERSION = 3 as const;"
+        },
+        {
+          "line": 7,
+          "declaration": "export const DEFAULT_SAVE_ISLAND_SEED = 0x53544d59;"
+        },
+        {
+          "line": 8,
+          "declaration": "export const SAVE_SLOTS = [1, 2, 3] as const;"
+        },
+        {
+          "line": 9,
+          "declaration": "export type SaveSlotId = (typeof SAVE_SLOTS)[number];"
+        },
+        {
+          "line": 17,
+          "declaration": "export interface SaveStorage {"
+        },
+        {
+          "line": 55,
+          "declaration": "export interface IslandSaveData {"
+        },
+        {
+          "line": 75,
+          "declaration": "export interface SaveDataV1 extends SaveDataBase {"
+        },
+        {
+          "line": 80,
+          "declaration": "export interface SaveData extends SaveDataBase {"
+        },
+        {
+          "line": 96,
+          "declaration": "export interface SaveSlotSummary {"
+        },
+        {
+          "line": 123,
+          "declaration": "export function slotKey(slot: SaveSlotId): string {"
+        },
+        {
+          "line": 131,
+          "declaration": "export function activeSaveSlot(storage?: SaveStorage): SaveSlotId {"
+        },
+        {
+          "line": 136,
+          "declaration": "export function selectSaveSlot(slot: SaveSlotId, storage?: SaveStorage): void {"
+        },
+        {
+          "line": 226,
+          "declaration": "export function newSaveData(playerName: string, now = Date.now()): SaveData {"
+        },
+        {
+          "line": 311,
+          "declaration": "export const LEGACY_SAVE_MESSAGE = 'This save is from an earlier version of the game and can\u2019t be loaded.';"
+        },
+        {
+          "line": 313,
+          "declaration": "export class LegacySaveVersionError extends Error {"
+        },
+        {
+          "line": 321,
+          "declaration": "export function decodeSave(raw: string, now = Date.now()): SaveData {"
+        },
+        {
+          "line": 357,
+          "declaration": "export function loadSave(slot = activeSaveSlot(), storage?: SaveStorage): SaveData | null {"
+        },
+        {
+          "line": 378,
+          "declaration": "export function activeIslandSave(storage?: SaveStorage): IslandSaveData | null {"
+        },
+        {
+          "line": 382,
+          "declaration": "export function writeSave(data: SaveData, auto = false, slot = activeSaveSlot(), storage?: SaveStorage): void {"
+        },
+        {
+          "line": 394,
+          "declaration": "export function deleteSave(slot = activeSaveSlot(), storage?: SaveStorage): void {"
+        },
+        {
+          "line": 401,
+          "declaration": "export function hasSave(slot = activeSaveSlot(), storage?: SaveStorage): boolean {"
+        },
+        {
+          "line": 406,
+          "declaration": "export function listSaveSlots(storage?: SaveStorage): SaveSlotSummary[] {"
+        }
+      ]
+    },
+    {
+      "path": "src/content/kindly-forward/cast.ts",
+      "sha256": "670ecf8ef84a0727c0f9e944a13c3871fe659e76ef70d42168cdbdf44d67d1d4",
+      "lines": 142,
+      "symbols": [
+        {
+          "line": 6,
+          "declaration": "export const KINDLY_FORWARD_CAST_IDS = {"
+        },
+        {
+          "line": 22,
+          "declaration": "export const KINDLY_FORWARD_CHARACTER_ASSETS = {"
+        },
+        {
+          "line": 39,
+          "declaration": "export const KINDLY_FORWARD_CAST: CastPack = {"
+        },
+        {
+          "line": 140,
+          "declaration": "export const KINDLY_FORWARD_TASTES = Object.fromEntries("
+        }
+      ]
+    },
+    {
+      "path": "src/content/kindly-forward/runtime.ts",
+      "sha256": "addc32ea5d689274b6c46fd05c96c3cb2aa1b831b2156c03ca23ac9adddb2dfb",
+      "lines": 104,
+      "symbols": [
+        {
+          "line": 27,
+          "declaration": "export const KINDLY_FORWARD_RESIDENT_IDS: readonly string[] ="
+        },
+        {
+          "line": 30,
+          "declaration": "export function residentContent(id: string): ResidentContent | undefined {"
+        },
+        {
+          "line": 35,
+          "declaration": "export const KINDLY_FORWARD_DAILY_DIALOGUE: Record<string, readonly (readonly string[])[]> ="
+        },
+        {
+          "line": 52,
+          "declaration": "export const KINDLY_FORWARD_QUESTS: QuestDef[] = KINDLY_FORWARD_RESIDENT_CONTENT.map((r) => ({"
+        },
+        {
+          "line": 59,
+          "declaration": "export const KINDLY_FORWARD_LETTERS: DeadLetter[] = KINDLY_FORWARD_RESIDENT_CONTENT.map((r) => ({"
+        },
+        {
+          "line": 84,
+          "declaration": "export const KINDLY_FORWARD_HEART_SCENES: Record<string, { title: string; steps: SceneStep[] }[]> ="
+        },
+        {
+          "line": 104,
+          "declaration": "export const KINDLY_FORWARD_KEEPSAKES: Record<string, string> = {};"
+        }
+      ]
+    },
+    {
+      "path": "src/content/kindly-forward/residentContent.ts",
+      "sha256": "c97023f2721702f9bf4b1249dd6bfc0bcb31a0c539de4995a66ccc2dfcdbbb1b",
+      "lines": 328,
+      "symbols": [
+        {
+          "line": 1,
+          "declaration": "export interface ResidentLetter {"
+        },
+        {
+          "line": 9,
+          "declaration": "export interface ResidentQuest {"
+        },
+        {
+          "line": 17,
+          "declaration": "export interface ResidentContent {"
+        },
+        {
+          "line": 36,
+          "declaration": "export const KINDLY_FORWARD_RESIDENT_CONTENT: readonly ResidentContent[] = ["
+        },
+        {
+          "line": 319,
+          "declaration": "export const KINDLY_FORWARD_RELATIONSHIPS = ["
+        }
+      ]
+    },
+    {
+      "path": "src/content/kindly-forward/storySpine.ts",
+      "sha256": "ddef95422cf4a1dde499f5e6cb3cda4ec15e0df9ce6873b97bd48d566ce2b1b3",
+      "lines": 68,
+      "symbols": [
+        {
+          "line": 17,
+          "declaration": "export const KINDLY_FORWARD_TITLE = {"
+        },
+        {
+          "line": 23,
+          "declaration": "export const KINDLY_FORWARD_STORY_SPINE = {"
+        }
+      ]
+    },
+    {
+      "path": "src/ui/ShopUI.ts",
+      "sha256": "1ec3f3e17088c7aa6f32d55997940611963b613a96090ede60603fd04c8b0124",
+      "lines": 236,
+      "symbols": [
+        {
+          "line": 14,
+          "declaration": "export class ShopUI {"
+        }
+      ]
+    },
+    {
+      "path": "src/ui/LedgerUI.ts",
+      "sha256": "c1263634d9600a8b191a57ab1a7386c5567a39a8e38149bcb39204c9e0fbaa97",
+      "lines": 137,
+      "symbols": [
+        {
+          "line": 20,
+          "declaration": "export class LedgerUI {"
+        }
+      ]
+    },
+    {
+      "path": "src/ui/PauseMenu.ts",
+      "sha256": "8ee45b2804ba9b31a30acbc8268e78efc314f9fe78cf15403226161c412e7ca2",
+      "lines": 124,
+      "symbols": [
+        {
+          "line": 9,
+          "declaration": "export class PauseMenu {"
+        }
+      ]
+    }
+  ]
+}

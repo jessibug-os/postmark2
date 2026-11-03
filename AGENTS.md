@@ -1,0 +1,1 @@
+Never leave comments. Use functional over class-based React. Never write tests unless asked to. Changes should be focused and direct and never extend to things we might not necessarily build. Keep It Simple Stupid.

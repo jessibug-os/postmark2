@@ -15,9 +15,7 @@
  * to carry to them.
  */
 export const KINDLY_FORWARD_TITLE = {
-  overline: 'ST. MYSTERE AND THE',
-  name: 'KINDLY FORWARD',
-  tagline: 'an island of unfinished business',
+  name: 'COPPER COVE',
 } as const;
 
 export const KINDLY_FORWARD_STORY_SPINE = {

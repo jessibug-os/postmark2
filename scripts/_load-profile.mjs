@@ -1,0 +1,34 @@
+import { chromium } from 'playwright-core';
+const app = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=metal','--enable-gpu'] });
+const page = await app.newPage({ viewport: { width: 1280, height: 720 } });
+const reqs = [];
+page.on('requestfinished', async (r) => {
+  const t = r.timing(); const s = await r.sizes().catch(() => ({ responseBodySize: 0 }));
+  reqs.push({ url: r.url().replace('http://localhost:5173', ''), start: t.startTime, end: t.responseEnd, bytes: s.responseBodySize });
+});
+await page.addInitScript(() => {
+  window.__marks = [];
+  const mark = (n) => window.__marks.push([n, performance.now()]);
+  window.__mark = mark;
+  let frames = 0;
+  const raf = () => { frames++; if (frames < 400) requestAnimationFrame(raf); else mark('400 frames'); };
+  requestAnimationFrame(raf);
+  new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__marks.push(['longtask ' + Math.round(e.duration) + 'ms', e.startTime]); }).observe({ type: 'longtask', buffered: true });
+});
+const t0 = Date.now();
+await page.goto('http://localhost:5173/', { waitUntil: 'load' });
+console.log('load event', Date.now() - t0);
+await page.waitForFunction(() => !!document.querySelector('#app canvas'), null, { timeout: 120000 });
+console.log('canvas present', Date.now() - t0);
+await page.waitForTimeout(8000);
+const marks = await page.evaluate(() => window.__marks);
+const nav = await page.evaluate(() => JSON.stringify(performance.getEntriesByType('navigation')[0].toJSON()));
+console.log(marks.map(([n, t]) => `${Math.round(t)}\t${n}`).join('\n'));
+const res = await page.evaluate(() => performance.getEntriesByType('resource').map(e => [e.name.replace(location.origin,''), Math.round(e.startTime), Math.round(e.responseEnd), e.initiatorType]));
+console.log('resource count', res.length);
+const js = res.filter(r => /\.(ts|js|mjs)|node_modules|@vite/.test(r[0]));
+console.log('js modules', js.length, 'last module end', Math.max(...js.map(r => r[2])));
+const glb = res.filter(r => /\.glb/.test(r[0]));
+console.log('glb', glb.length, 'first start', Math.min(...glb.map(r=>r[1])), 'last end', Math.max(...glb.map(r => r[2])));
+console.log(res.sort((a,b)=>b[2]-a[2]).slice(0,15).map(r=>r.join('\t')).join('\n'));
+await app.close();

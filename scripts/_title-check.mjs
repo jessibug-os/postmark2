@@ -1,0 +1,12 @@
+import { chromium } from 'playwright-core';
+const app = await chromium.launch({ channel: 'chrome', headless: true });
+const page = await app.newPage({ viewport: { width: 1280, height: 800 } });
+const errors = [];
+page.on('pageerror', (e) => errors.push(String(e)));
+await page.goto('http://localhost:5173/');
+await page.waitForFunction(() => window.__postmark?.game?.title, null, { timeout: 60000 }).catch(() => {});
+await page.waitForTimeout(2500);
+console.log('tab:', await page.title());
+await page.screenshot({ path: '/private/tmp/claude-501/-Users-jessicasines-src-postmark2/0799ced3-75dd-479b-9d31-e19d8d9d3943/scratchpad/title-renamed.png' });
+console.log('ERRORS', errors.length ? errors : 'none');
+await app.close();

@@ -68,7 +68,7 @@ export const DAILY_SURPRISES = ['orchard-apple', 'wild-chicory', 'stone', 'scrap
 import { NameInput } from '../ui/NameInput';
 import { PauseMenu } from '../ui/PauseMenu';
 import { ShopUI } from '../ui/ShopUI';
-import { TitleScreen } from '../ui/TitleScreen';
+import { mountTitleScreen, type TitleScreenHandle } from '../ui/TitleScreen';
 import { Ambience } from '../world/Ambience';
 import { CameraRig } from '../world/CameraRig';
 import { SubjectProtection } from '../world/SubjectProtection';
@@ -134,7 +134,7 @@ export class Game {
   acreView: AcreDebugLayer;
   gridView: GridDebugLayer;
   curveView: CurveDebugLayer;
-  title: TitleScreen | null = null;
+  title: TitleScreenHandle | null = null;
   intro: OpeningPlayer;
   prompt: HTMLDivElement;
 
@@ -336,10 +336,12 @@ export class Game {
 
     // --- Title screen over the live town scene.
     audio.setTheme('title');
-    this.title = new TitleScreen(container, {
+    this.title = mountTitleScreen(container, {
       slots: listSaveSlots(),
       onContinue: (slot) => this.startFromSave(slot),
       onNewGame: (slot) => this.startNewGame(slot),
+      musicOn: audio.musicEnabled,
+      sfxOn: audio.sfxEnabled,
       musicToggle: () => {
         audio.setMusicEnabled(!audio.musicEnabled);
         return audio.musicEnabled;
