@@ -2,7 +2,7 @@ import { PALETTE_CSS } from '../../art/palette';
 import { BODIES, OPTIONAL_SLOTS_V2, SLOTS_V2, type BodyId, type SlotV2 } from './contract';
 import { hexToRgb } from './facePaint';
 import { itemById, type ClothingItem } from './items';
-import { DEFAULT_RECIPE, DEFAULT_SKIN, normalizeRecipe, type Channel, type FaceRecipe, type Slot } from './recipe';
+import { DEFAULT_SKIN, type FaceRecipe } from './recipe';
 
 export interface OutfitEntry {
   item: string;
@@ -23,11 +23,21 @@ export interface CharacterRecipeV2 {
 export const DEFAULT_RECIPE_V2: CharacterRecipeV2 = {
   kit: 2,
   body: 'adult',
-  height: DEFAULT_RECIPE.height,
+  height: 1,
   skin: DEFAULT_SKIN,
-  hair: { style: DEFAULT_RECIPE.parts.hair, color: PALETTE_CSS.h201a14 },
-  eyes: DEFAULT_RECIPE.face.iris,
-  face: { ...DEFAULT_RECIPE.face },
+  hair: { style: 'long', color: PALETTE_CSS.h201a14 },
+  eyes: '#0e131c',
+  face: {
+    iris: '#0e131c',
+    brow: '#2e241a',
+    blush: '#e06642',
+    squint: 1,
+    lashes: true,
+    freckles: false,
+    age: false,
+    glasses: false,
+    moustache: false,
+  },
   outfit: {
     hair: null,
     hat: { item: 'headband', variant: 'rust' },
@@ -40,7 +50,20 @@ export const DEFAULT_RECIPE_V2: CharacterRecipeV2 = {
   },
 };
 
-const V1_SLOT: Record<Exclude<Slot, 'hair'>, { slot: SlotV2; channel: Channel }> = {
+type V1Slot = 'hat' | 'top' | 'bottom' | 'shoes' | 'bag' | 'apron';
+
+interface RecipeV1 {
+  height?: number;
+  parts?: Partial<Record<V1Slot | 'hair', string | null>>;
+  colors?: Partial<Record<string, string>>;
+  face?: Partial<FaceRecipe>;
+}
+
+const V1_PARTS: Record<V1Slot | 'hair', string | null> = {
+  hair: 'long', hat: 'headband', top: 'long-coat', bottom: 'skirt', shoes: 'tall-boots', bag: 'satchel', apron: null,
+};
+
+const V1_SLOT: Record<V1Slot, { slot: SlotV2; channel: string }> = {
   hat: { slot: 'hat', channel: 'hat' },
   top: { slot: 'top', channel: 'top' },
   bottom: { slot: 'bottom', channel: 'bottom' },
@@ -49,7 +72,7 @@ const V1_SLOT: Record<Exclude<Slot, 'hair'>, { slot: SlotV2; channel: Channel }>
   apron: { slot: 'outer', channel: 'accent' },
 };
 
-function nearestVariant(item: ClothingItem, hex: string | undefined): string {
+export function nearestVariant(item: ClothingItem, hex: string | undefined): string {
   if (!hex) return item.variants[0].id;
   const [r, g, b] = hexToRgb(hex);
   let best = item.variants[0];
@@ -66,20 +89,22 @@ function nearestVariant(item: ClothingItem, hex: string | undefined): string {
   return best.id;
 }
 
-function upgradeV1(input: unknown): CharacterRecipeV2 {
-  const v1 = normalizeRecipe(input);
+function upgradeV1(v1: RecipeV1): CharacterRecipeV2 {
+  const parts = { ...V1_PARTS, ...(v1.parts ?? {}) };
+  const colors = v1.colors ?? {};
+  const face = { ...DEFAULT_RECIPE_V2.face, ...(v1.face ?? {}) };
   const outfit: CharacterRecipeV2['outfit'] = Object.fromEntries(SLOTS_V2.map((slot) => [slot, null]));
-  for (const [from, { slot, channel }] of Object.entries(V1_SLOT) as [Exclude<Slot, 'hair'>, (typeof V1_SLOT)[Exclude<Slot, 'hair'>]][]) {
-    const style = v1.parts[from];
+  for (const [from, { slot, channel }] of Object.entries(V1_SLOT) as [V1Slot, (typeof V1_SLOT)[V1Slot]][]) {
+    const style = parts[from];
     const item = style ? itemById(style) : undefined;
-    if (item?.slot === slot) outfit[slot] = { item: item.id, variant: nearestVariant(item, v1.colors[channel]) };
+    if (item?.slot === slot) outfit[slot] = { item: item.id, variant: nearestVariant(item, colors[channel]) };
   }
   return normalizeV2({
     height: v1.height,
-    skin: v1.colors.skin,
-    hair: { style: v1.parts.hair, color: v1.colors.hair ?? DEFAULT_RECIPE_V2.hair.color },
-    eyes: v1.face.iris,
-    face: v1.face,
+    skin: colors.skin,
+    hair: { style: parts.hair, color: colors.hair ?? DEFAULT_RECIPE_V2.hair.color },
+    eyes: face.iris,
+    face,
     outfit,
   });
 }
@@ -117,7 +142,7 @@ function normalizeV2(raw: Partial<CharacterRecipeV2>): CharacterRecipeV2 {
 
 export function upgradeRecipe(input: unknown): CharacterRecipeV2 {
   const raw = (input && typeof input === 'object' ? input : {}) as { kit?: unknown };
-  if (raw.kit === 1) return upgradeV1(raw);
+  if (raw.kit === 1) return upgradeV1(raw as RecipeV1);
   return normalizeV2(raw as Partial<CharacterRecipeV2>);
 }
 

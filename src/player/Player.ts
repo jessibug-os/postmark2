@@ -4,7 +4,8 @@ import { makeRetroMaterial } from '../core/RetroMaterial';
 import { SkeletalAnimator } from '../characters/SkeletalAnimator';
 import { EmoteBubble, type EmoteKind } from '../characters/EmoteBubble';
 import { createPostmasterRig, type PostmasterRigParts } from '../characters/PostmasterRig';
-import { DEFAULT_RECIPE, type CharacterRecipe } from '../characters/chargen/recipe';
+import { itemById } from '../characters/chargen/items';
+import { DEFAULT_RECIPE_V2, nearestVariant, type CharacterRecipeV2 } from '../characters/chargen/recipeV2';
 import { makeBlobShadow } from '../characters/blobShadow';
 import { makeItemSprite } from '../characters/iconSprite';
 import { heightAt, type TownMap } from '../world/TownMap';
@@ -82,7 +83,7 @@ export class Player {
   interior: { floorY: number; collide: (pos: THREE.Vector3) => void } | null = null;
 
   private parts: PostmasterRigParts;
-  look: CharacterRecipe = DEFAULT_RECIPE;
+  look: CharacterRecipeV2 = DEFAULT_RECIPE_V2;
   private animator: SkeletalAnimator;
 
   /**
@@ -276,14 +277,17 @@ export class Player {
     }
   }
 
-  setLook(recipe: CharacterRecipe): void {
+  setLook(recipe: CharacterRecipeV2): void {
     this.look = recipe;
     this.parts.character.apply(recipe);
   }
 
   setCoatColor(color: number): void {
-    const top = `#${color.toString(16).padStart(6, '0')}`;
-    this.setLook({ ...this.look, colors: { ...this.look.colors, top } });
+    const top = this.look.outfit.top;
+    const item = top ? itemById(top.item) : undefined;
+    if (!item) return;
+    const variant = nearestVariant(item, `#${color.toString(16).padStart(6, '0')}`);
+    this.setLook({ ...this.look, outfit: { ...this.look.outfit, top: { item: item.id, variant } } });
   }
 
   emote(kind: EmoteKind, seconds?: number): void {
