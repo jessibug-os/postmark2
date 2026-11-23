@@ -1,0 +1,15 @@
+{
+  "id": "sundress",
+  "name": "Sundress",
+  "slot": "top",
+  "fit": "onepiece",
+  "parts": [
+    "sundress"
+  ],
+  "variants": [
+    {"id": "red", "colors": {"primary": "hf0f4ec", "secondary": "hd83c3c", "accent": "ha8302f"}},
+    {"id": "blue", "colors": {"primary": "hf0f4ec", "secondary": "h5c74b4", "accent": "h314858"}},
+    {"id": "sage", "colors": {"primary": "hf2ead6", "secondary": "h93a583", "accent": "h5a6b3f"}},
+    {"id": "butter", "colors": {"primary": "hf6e2b4", "secondary": "hc9a227", "accent": "hb8442f"}}
+  ]
+}
