@@ -3,7 +3,7 @@ import { PALETTE_CSS } from '../../art/palette';
 import { assets, type AssetId } from '../../core/AssetLoader';
 import type { CastMember, CastPack } from '../types';
 import { recipeAssets } from '../../characters/chargen/createCharacter';
-import { normalizeRecipe } from '../../characters/chargen/recipe';
+import { upgradeRecipe } from '../../characters/chargen/recipeV2';
 
 export const KINDLY_FORWARD_CAST_IDS = {
   albert: 'albert',
@@ -40,7 +40,7 @@ export const KINDLY_FORWARD_CHARACTER_ASSETS = {
  */
 const RECIPES = Object.fromEntries(
   Object.entries(import.meta.glob('./recipes/*.json', { eager: true, import: 'default' }))
-    .map(([path, recipe]) => [path.slice('./recipes/'.length, -'.json'.length), normalizeRecipe(recipe)]),
+    .map(([path, recipe]) => [path.slice('./recipes/'.length, -'.json'.length), upgradeRecipe(recipe)]),
 );
 
 export const castRecipe = (id: string) => RECIPES[id] ?? null;

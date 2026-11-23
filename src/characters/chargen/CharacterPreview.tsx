@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { createCharacter, type Character } from './createCharacter';
-import type { CharacterRecipe } from './recipe';
+import type { CharacterRecipeV2 } from './recipeV2';
 
 const CLIPS = ['idle', 'walk', 'run_lower', 'seated_idle'] as const;
 const CLIP_LABELS: Record<(typeof CLIPS)[number], string> = {
   idle: 'Idle', walk: 'Walk', run_lower: 'Run', seated_idle: 'Sit',
 };
 
-export function CharacterPreview({ recipe }: { recipe: CharacterRecipe }) {
+export function CharacterPreview({ recipe }: { recipe: CharacterRecipeV2 }) {
   const host = useRef<HTMLDivElement>(null);
   const character = useRef<Character | null>(null);
   const play = useRef<(name: string) => void>(() => {});

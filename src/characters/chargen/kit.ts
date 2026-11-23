@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import { assets } from '../../core/AssetLoader';
-import { SLOTS, type Channel, type Slot } from './recipe';
 import { hexToRgb, type RGB } from './facePaint';
 
 export const KIT_ASSET = 'chargen-kit';
 
 type Rect = [number, number, number, number];
+
+export type Channel = 'skin' | 'hair' | 'top' | 'bottom' | 'legs' | 'shoes' | 'hat' | 'accent';
 
 interface PixelRect {
   channel: Channel;
@@ -17,7 +18,7 @@ interface PixelRect {
 }
 
 export interface Kit {
-  options: Record<Slot, string[]>;
+  hairStyles: string[];
   size: number;
   atlas: ImageData;
   regions: PixelRect[];
@@ -50,17 +51,16 @@ export function kit(): Kit {
   const extras = template.userData as { kit_rects: string; kit_tints: string; kit_atlas: number };
   const rects = JSON.parse(extras.kit_rects) as Record<string, Rect>;
   const tints = JSON.parse(extras.kit_tints) as Record<string, Channel>;
-  const options = Object.fromEntries(SLOTS.map((slot) => [slot, [] as string[]])) as Record<Slot, string[]>;
+  const hairStyles: string[] = [];
   let image: CanvasImageSource | null = null;
   template.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
-    const slot = object.userData.kit_slot as Slot | 'body';
     if (object.userData.atlas !== 'head') {
       image ??= ((object.material as THREE.MeshLambertMaterial).map?.image as CanvasImageSource) ?? null;
     }
-    if (slot === 'body') return;
+    if (object.userData.kit_slot !== 'hair') return;
     for (const part of String(object.userData.kit_part).split(',')) {
-      if (!options[slot].includes(part)) options[slot].push(part);
+      if (!hairStyles.includes(part)) hairStyles.push(part);
     }
   });
   if (!image) throw new Error('chargen kit has no body atlas');
@@ -80,7 +80,7 @@ export function kit(): Kit {
     };
     return { ...rect, channel, dominant: dominantColor(atlas.data, size, rect) };
   });
-  cached = { options, size, atlas, regions, clips: assets.animations(KIT_ASSET) };
+  cached = { hairStyles, size, atlas, regions, clips: assets.animations(KIT_ASSET) };
   return cached;
 }
 

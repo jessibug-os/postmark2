@@ -1,19 +1,22 @@
 import { useState, type ReactNode } from 'react';
 import { CharacterPreview } from './CharacterPreview';
+import { BODIES, OPTIONAL_SLOTS_V2, type SlotV2 } from './contract';
+import { ITEMS, itemById } from './items';
 import { kit } from './kit';
-import { CHANNEL_SWATCHES, IRIS_SWATCHES, HAIR_SWATCHES, randomRecipe } from './options';
-import { OPTIONAL_SLOTS, type Channel, type CharacterRecipe, type FaceRecipe, type Slot } from './recipe';
+import { HAIR_SWATCHES, IRIS_SWATCHES, SKIN_SWATCHES, randomRecipe } from './options';
+import type { FaceRecipe } from './recipe';
+import type { CharacterRecipeV2 } from './recipeV2';
 
 const TABS = ['Body', 'Face', 'Hair', 'Clothes'] as const;
 type Tab = (typeof TABS)[number];
 
-const CLOTHES: Array<{ slot: Slot; label: string; channel: Channel | null }> = [
-  { slot: 'hat', label: 'Hat', channel: 'hat' },
-  { slot: 'top', label: 'Top', channel: 'top' },
-  { slot: 'bottom', label: 'Bottom', channel: 'bottom' },
-  { slot: 'shoes', label: 'Shoes', channel: 'shoes' },
-  { slot: 'apron', label: 'Apron', channel: null },
-  { slot: 'bag', label: 'Bag', channel: null },
+const CLOTHES: Array<{ slot: SlotV2; label: string }> = [
+  { slot: 'hat', label: 'Hat' },
+  { slot: 'top', label: 'Top' },
+  { slot: 'bottom', label: 'Bottom' },
+  { slot: 'shoes', label: 'Shoes' },
+  { slot: 'outer', label: 'Apron' },
+  { slot: 'bag', label: 'Bag' },
 ];
 
 const FACE_TOGGLES: Array<{ key: keyof FaceRecipe; label: string }> = [
@@ -26,10 +29,9 @@ const FACE_TOGGLES: Array<{ key: keyof FaceRecipe; label: string }> = [
 
 const label = (id: string): string => id.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase());
 
-function Swatches({ colors, value, onPick }: { colors: string[]; value: string | undefined; onPick: (hex: string | undefined) => void }) {
+function Swatches({ colors, value, onPick }: { colors: string[]; value: string; onPick: (hex: string) => void }) {
   return (
     <div className="cc-swatches">
-      <button className="cc-swatch cc-swatch-original" aria-pressed={value === undefined} title="As painted" onClick={() => onPick(undefined)} />
       {colors.map((hex) => (
         <button key={hex} className="cc-swatch" style={{ background: hex }} aria-pressed={value === hex} title={hex} onClick={() => onPick(hex)} />
       ))}
@@ -37,12 +39,12 @@ function Swatches({ colors, value, onPick }: { colors: string[]; value: string |
   );
 }
 
-function Choices({ options, value, optional, onPick }: { options: string[]; value: string | null; optional: boolean; onPick: (id: string | null) => void }) {
+function Choices({ options, value, optional, onPick }: { options: Array<{ id: string; name: string }>; value: string | null; optional: boolean; onPick: (id: string | null) => void }) {
   return (
     <div className="cc-choices">
       {optional && <button aria-pressed={value === null} onClick={() => onPick(null)}>None</button>}
-      {options.map((id) => (
-        <button key={id} aria-pressed={value === id} onClick={() => onPick(id)}>{label(id)}</button>
+      {options.map(({ id, name }) => (
+        <button key={id} aria-pressed={value === id} onClick={() => onPick(id)}>{name}</button>
       ))}
     </div>
   );
@@ -58,20 +60,19 @@ function Row({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export function CreatorPanel({ recipe, onChange, children }: {
-  recipe: CharacterRecipe;
-  onChange: (recipe: CharacterRecipe) => void;
+  recipe: CharacterRecipeV2;
+  onChange: (recipe: CharacterRecipeV2) => void;
   children?: ReactNode;
 }) {
   const [tab, setTab] = useState<Tab>('Body');
-  const { options } = kit();
-  const setPart = (slot: Slot, id: string | null): void => onChange({ ...recipe, parts: { ...recipe.parts, [slot]: id } });
-  const setColor = (channel: Channel, hex: string | undefined): void => {
-    const colors = { ...recipe.colors };
-    if (hex) colors[channel] = hex;
-    else delete colors[channel];
-    onChange({ ...recipe, colors });
-  };
+  const { hairStyles } = kit();
   const setFace = (face: Partial<FaceRecipe>): void => onChange({ ...recipe, face: { ...recipe.face, ...face } });
+  const setItem = (slot: SlotV2, id: string | null): void => {
+    const item = id ? itemById(id) : undefined;
+    onChange({ ...recipe, outfit: { ...recipe.outfit, [slot]: item ? { item: item.id, variant: item.variants[0].id } : null } });
+  };
+  const setVariant = (slot: SlotV2, item: string, variant: string): void =>
+    onChange({ ...recipe, outfit: { ...recipe.outfit, [slot]: { item, variant } } });
 
   return (
     <div className="cc-creator">
@@ -85,35 +86,33 @@ export function CreatorPanel({ recipe, onChange, children }: {
         <div className="cc-tab-body">
           {tab === 'Body' && (
             <>
+              <Row title="Body">
+                <div className="cc-choices">
+                  {BODIES.map((body) => (
+                    <button key={body} disabled={body !== 'adult'} aria-pressed={recipe.body === body} onClick={() => onChange({ ...recipe, body })}>
+                      {body === 'adult' ? label(body) : `${label(body)} · soon`}
+                    </button>
+                  ))}
+                </div>
+              </Row>
               <Row title="Skin">
-                <Swatches colors={CHANNEL_SWATCHES.skin} value={recipe.colors.skin} onPick={(hex) => setColor('skin', hex)} />
+                <Swatches colors={SKIN_SWATCHES} value={recipe.skin} onPick={(skin) => onChange({ ...recipe, skin })} />
               </Row>
               <Row title={`Height · ${Math.round(recipe.height * 100)}%`}>
                 <input type="range" min={0.85} max={1.12} step={0.01} value={recipe.height} onChange={(e) => onChange({ ...recipe, height: Number(e.target.value) })} />
-              </Row>
-              <Row title="Legs">
-                <Swatches colors={CHANNEL_SWATCHES.legs} value={recipe.colors.legs} onPick={(hex) => setColor('legs', hex)} />
               </Row>
             </>
           )}
           {tab === 'Face' && (
             <>
               <Row title="Eyes">
-                <div className="cc-swatches">
-                  {IRIS_SWATCHES.map((hex) => (
-                    <button key={hex} className="cc-swatch" style={{ background: hex }} aria-pressed={recipe.face.iris === hex} onClick={() => setFace({ iris: hex })} />
-                  ))}
-                </div>
+                <Swatches colors={IRIS_SWATCHES} value={recipe.eyes} onPick={(eyes) => onChange({ ...recipe, eyes })} />
               </Row>
               <Row title="Eye shape">
                 <input type="range" min={0.8} max={1.05} step={0.01} value={recipe.face.squint} onChange={(e) => setFace({ squint: Number(e.target.value) })} />
               </Row>
               <Row title="Brows">
-                <div className="cc-swatches">
-                  {HAIR_SWATCHES.map((hex) => (
-                    <button key={hex} className="cc-swatch" style={{ background: hex }} aria-pressed={recipe.face.brow === hex} onClick={() => setFace({ brow: hex })} />
-                  ))}
-                </div>
+                <Swatches colors={HAIR_SWATCHES} value={recipe.face.brow} onPick={(brow) => setFace({ brow })} />
               </Row>
               <Row title="Details">
                 <div className="cc-choices">
@@ -127,30 +126,29 @@ export function CreatorPanel({ recipe, onChange, children }: {
           {tab === 'Hair' && (
             <>
               <Row title="Style">
-                <Choices options={options.hair} value={recipe.parts.hair} optional onPick={(id) => setPart('hair', id)} />
+                <Choices options={hairStyles.map((id) => ({ id, name: label(id) }))} value={recipe.hair.style} optional onPick={(style) => onChange({ ...recipe, hair: { ...recipe.hair, style } })} />
               </Row>
               <Row title="Colour">
-                <Swatches colors={CHANNEL_SWATCHES.hair} value={recipe.colors.hair} onPick={(hex) => setColor('hair', hex)} />
+                <Swatches colors={HAIR_SWATCHES} value={recipe.hair.color} onPick={(color) => onChange({ ...recipe, hair: { ...recipe.hair, color } })} />
               </Row>
             </>
           )}
-          {tab === 'Clothes' && (
-            <>
-              {CLOTHES.map(({ slot, label: text, channel }) => (
-                <Row key={slot} title={text}>
-                  <Choices options={options[slot]} value={recipe.parts[slot]} optional={OPTIONAL_SLOTS.includes(slot)} onPick={(id) => setPart(slot, id)} />
-                  {channel && recipe.parts[slot] && (
-                    <Swatches colors={CHANNEL_SWATCHES[channel]} value={recipe.colors[channel]} onPick={(hex) => setColor(channel, hex)} />
-                  )}
-                </Row>
-              ))}
-              {(recipe.parts.apron || recipe.parts.top) && (
-                <Row title="Collar & apron">
-                  <Swatches colors={CHANNEL_SWATCHES.accent} value={recipe.colors.accent} onPick={(hex) => setColor('accent', hex)} />
-                </Row>
-              )}
-            </>
-          )}
+          {tab === 'Clothes' && CLOTHES.map(({ slot, label: text }) => {
+            const entry = recipe.outfit[slot] ?? null;
+            const item = entry ? itemById(entry.item) : undefined;
+            return (
+              <Row key={slot} title={text}>
+                <Choices options={ITEMS.filter((i) => i.slot === slot)} value={entry?.item ?? null} optional={OPTIONAL_SLOTS_V2.includes(slot)} onPick={(id) => setItem(slot, id)} />
+                {item && (
+                  <div className="cc-swatches">
+                    {item.variants.map((variant) => (
+                      <button key={variant.id} className="cc-swatch" style={{ background: variant.colors.primary }} aria-pressed={entry?.variant === variant.id} title={label(variant.id)} onClick={() => setVariant(slot, item.id, variant.id)} />
+                    ))}
+                  </div>
+                )}
+              </Row>
+            );
+          })}
         </div>
         <footer className="cc-footer">
           <button onClick={() => onChange(randomRecipe())}>Surprise me</button>
@@ -177,12 +175,12 @@ export const CREATOR_CSS = `
 .cc-row input[type=range] { width: 100%; accent-color: #9a7f4e; }
 .cc-creator button { font: inherit; font-size: 14px; color: #e8dfc8; background: #3a332b; border: 1px solid #6a5a40; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
 .cc-creator button:hover { border-color: #c9a96a; }
+.cc-creator button:disabled { opacity: .45; cursor: default; border-color: #6a5a40; }
 .cc-creator button[aria-pressed=true] { background: #9a7f4e; color: #1e1914; border-color: #e0c890; }
 .cc-choices { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
 .cc-swatches { display: flex; flex-wrap: wrap; gap: 4px; }
 .cc-creator .cc-swatch { width: 24px; height: 24px; padding: 0; border-radius: 50%; border: 2px solid rgba(0,0,0,.35); }
 .cc-creator .cc-swatch[aria-pressed=true] { border-color: #f4e2b0; box-shadow: 0 0 0 2px #9a7f4e; background-clip: padding-box; }
-.cc-creator .cc-swatch-original { background: repeating-linear-gradient(45deg, #6a5a40 0 4px, #3a332b 4px 8px); }
 @media (max-width: 760px) { .cc-creator { grid-template-columns: 1fr; grid-template-rows: 45vh 1fr; } .cc-controls { border-left: 0; border-top: 2px solid #9a7f4e; } }
 `;
 
