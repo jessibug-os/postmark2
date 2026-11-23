@@ -1,7 +1,6 @@
 import type { BrowStyle, EyeStyle, MouthStyle, NoseStyle } from './face/types';
 
 export interface FaceRecipe {
-  iris: string;
   brow: string;
   blush: string;
   squint: number;

@@ -7,6 +7,8 @@ import { DEFAULT_SKIN, type FaceRecipe } from './recipe';
 export interface OutfitEntry {
   item: string;
   variant: string;
+  color?: string;
+  secondary?: string;
 }
 
 export interface CharacterRecipeV2 {
@@ -28,7 +30,6 @@ export const DEFAULT_RECIPE_V2: CharacterRecipeV2 = {
   hair: { style: 'long', color: PALETTE_CSS.h201a14 },
   eyes: '#0e131c',
   face: {
-    iris: '#0e131c',
     brow: '#2e241a',
     blush: '#e06642',
     squint: 1,
@@ -56,7 +57,7 @@ interface RecipeV1 {
   height?: number;
   parts?: Partial<Record<V1Slot | 'hair', string | null>>;
   colors?: Partial<Record<string, string>>;
-  face?: Partial<FaceRecipe>;
+  face?: Partial<FaceRecipe> & { iris?: string };
 }
 
 const V1_PARTS: Record<V1Slot | 'hair', string | null> = {
@@ -72,9 +73,17 @@ const V1_SLOT: Record<V1Slot, { slot: SlotV2; channel: string }> = {
   apron: { slot: 'outer', channel: 'accent' },
 };
 
-export function nearestVariant(item: ClothingItem, hex: string | undefined): string {
-  if (!hex) return item.variants[0].id;
-  const [r, g, b] = hexToRgb(hex);
+const HEX = /^#[0-9a-f]{6}$/i;
+
+function hex(value: unknown, fallback: string): string;
+function hex(value: unknown, fallback?: string): string | undefined;
+function hex(value: unknown, fallback?: string): string | undefined {
+  return typeof value === 'string' && HEX.test(value) ? value : fallback;
+}
+
+function nearestVariant(item: ClothingItem, color: string | undefined): string {
+  if (!color) return item.variants[0].id;
+  const [r, g, b] = hexToRgb(color);
   let best = item.variants[0];
   let bestDistance = Infinity;
   for (const variant of item.variants) {
@@ -91,19 +100,24 @@ export function nearestVariant(item: ClothingItem, hex: string | undefined): str
 
 function upgradeV1(v1: RecipeV1): CharacterRecipeV2 {
   const parts = { ...V1_PARTS, ...(v1.parts ?? {}) };
-  const colors = v1.colors ?? {};
-  const face = { ...DEFAULT_RECIPE_V2.face, ...(v1.face ?? {}) };
+  const colors = v1.colors && typeof v1.colors === 'object' ? v1.colors : {};
+  const face = v1.face && typeof v1.face === 'object' ? v1.face : {};
   const outfit: CharacterRecipeV2['outfit'] = Object.fromEntries(SLOTS_V2.map((slot) => [slot, null]));
   for (const [from, { slot, channel }] of Object.entries(V1_SLOT) as [V1Slot, (typeof V1_SLOT)[V1Slot]][]) {
     const style = parts[from];
     const item = style ? itemById(style) : undefined;
-    if (item?.slot === slot) outfit[slot] = { item: item.id, variant: nearestVariant(item, colors[channel]) };
+    if (item?.slot !== slot) continue;
+    const color = hex(colors[channel]);
+    const variant = nearestVariant(item, color);
+    const exact = item.variants.find((v) => v.id === variant)?.colors.primary?.toLowerCase() === color?.toLowerCase();
+    outfit[slot] = { item: item.id, variant, ...(color && !exact ? { color } : {}) };
   }
+  const legs = hex(colors.legs);
+  if (legs && outfit.bottom) outfit.bottom.secondary = legs;
   return normalizeV2({
     height: v1.height,
     skin: colors.skin,
     hair: { style: parts.hair, color: colors.hair ?? DEFAULT_RECIPE_V2.hair.color },
-    eyes: face.iris,
     face,
     outfit,
   });
@@ -114,11 +128,22 @@ function normalizeEntry(slot: SlotV2, entry: unknown): OutfitEntry | null {
   const item = typeof raw.item === 'string' ? itemById(raw.item) : undefined;
   if (!item || item.slot !== slot) return null;
   const variant = item.variants.find((v) => v.id === raw.variant) ?? item.variants[0];
-  return { item: item.id, variant: variant.id };
+  const color = hex(raw.color);
+  const secondary = hex(raw.secondary);
+  return { item: item.id, variant: variant.id, ...(color ? { color } : {}), ...(secondary ? { secondary } : {}) };
 }
 
-function normalizeV2(raw: Partial<CharacterRecipeV2>): CharacterRecipeV2 {
+function normalizeV2(raw: Omit<Partial<CharacterRecipeV2>, 'face'> & { face?: RecipeV1['face'] }): CharacterRecipeV2 {
   const defaults = DEFAULT_RECIPE_V2;
+  const rawFace = raw.face && typeof raw.face === 'object' ? raw.face : {};
+  const face = {
+    ...defaults.face,
+    ...rawFace,
+    brow: hex(rawFace.brow, defaults.face.brow),
+    blush: hex(rawFace.blush, defaults.face.blush),
+    squint: typeof rawFace.squint === 'number' ? rawFace.squint : defaults.face.squint,
+  };
+  delete face.iris;
   const rawOutfit = raw.outfit && typeof raw.outfit === 'object' ? raw.outfit : defaults.outfit;
   const outfit: CharacterRecipeV2['outfit'] = Object.fromEntries(SLOTS_V2.map((slot) => {
     const entry = normalizeEntry(slot, rawOutfit[slot]);
@@ -129,13 +154,13 @@ function normalizeV2(raw: Partial<CharacterRecipeV2>): CharacterRecipeV2 {
     kit: 2,
     body: BODIES.includes(raw.body as BodyId) ? (raw.body as BodyId) : defaults.body,
     height: typeof raw.height === 'number' ? raw.height : defaults.height,
-    skin: typeof raw.skin === 'string' ? raw.skin : defaults.skin,
+    skin: hex(raw.skin, defaults.skin),
     hair: {
       style: typeof hair.style === 'string' || hair.style === null ? hair.style : defaults.hair.style,
-      color: typeof hair.color === 'string' ? hair.color : defaults.hair.color,
+      color: hex(hair.color, defaults.hair.color),
     },
-    eyes: typeof raw.eyes === 'string' ? raw.eyes : defaults.eyes,
-    face: { ...defaults.face, ...(raw.face ?? {}) },
+    eyes: hex(raw.eyes, hex(rawFace.iris, defaults.eyes)),
+    face,
     outfit,
   };
 }

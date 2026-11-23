@@ -92,9 +92,15 @@ export function CharacterPreview({ recipe, expression = 'idle', talking = false 
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
+      renderer.domElement.removeEventListener('pointerdown', down);
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
+      mixer.stopAllAction();
+      made.dispose();
+      ground.geometry.dispose();
+      ground.material.dispose();
       renderer.dispose();
+      renderer.forceContextLoss();
       renderer.domElement.remove();
       character.current = null;
     };

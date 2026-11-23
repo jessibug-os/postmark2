@@ -77,8 +77,8 @@ export function CreatorPanel({ recipe, onChange, children }: {
   const [tab, setTab] = useState<Tab>('Body');
   const [expression, setExpression] = useState<Expression>('idle');
   const [talking, setTalking] = useState(false);
-  const spec = faceSpecFrom(recipe.face);
-  const { hairStyles } = kit();
+  const spec = faceSpecFrom(recipe.face, recipe.eyes);
+  const { hairStyles, tinted } = kit();
   const setFace = (face: Partial<FaceRecipe>): void => onChange({ ...recipe, face: { ...recipe.face, ...face } });
   const setItem = (slot: SlotV2, id: string | null): void => {
     const item = id ? itemById(id) : undefined;
@@ -165,10 +165,10 @@ export function CreatorPanel({ recipe, onChange, children }: {
             return (
               <Row key={slot} title={text}>
                 <Choices options={ITEMS.filter((i) => i.slot === slot)} value={entry?.item ?? null} optional={OPTIONAL_SLOTS_V2.includes(slot)} onPick={(id) => setItem(slot, id)} />
-                {item && (
+                {item && item.parts.some((part) => tinted.has(part)) && (
                   <div className="cc-swatches">
                     {item.variants.map((variant) => (
-                      <button key={variant.id} className="cc-swatch" style={{ background: variant.colors.primary }} aria-pressed={entry?.variant === variant.id} title={label(variant.id)} onClick={() => setVariant(slot, item.id, variant.id)} />
+                      <button key={variant.id} className="cc-swatch" style={{ background: variant.colors.primary }} aria-pressed={entry?.variant === variant.id && !entry.color} title={label(variant.id)} onClick={() => setVariant(slot, item.id, variant.id)} />
                     ))}
                   </div>
                 )}

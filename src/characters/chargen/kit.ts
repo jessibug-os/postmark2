@@ -10,6 +10,7 @@ const CHANNEL_INDEX: Record<MaskChannel, number> = { primary: 0, secondary: 1, a
 
 export interface Kit {
   hairStyles: string[];
+  tinted: Set<string>;
   body: THREE.MeshLambertMaterial;
   mask: THREE.Texture;
   grey: number;
@@ -27,6 +28,7 @@ export function kit(): Kit {
   const paint = JSON.parse(extras.kit_tint_defaults) as Record<string, string>;
   const defaults: Array<string | undefined> = new Array(TINT_SLOTS).fill(undefined);
   const hairStyles: string[] = [];
+  const tinted = new Set<string>();
   const found: { body?: THREE.MeshLambertMaterial; mask?: THREE.Texture | null } = {};
   template.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
@@ -39,7 +41,10 @@ export function kit(): Kit {
     found.body ??= material;
     const rect = String(object.userData.uv_rect);
     const group = TINT_GROUPS.indexOf(object.userData.kit_tint as TintGroup);
-    if (group >= 0 && tints[rect]) defaults[group * 3 + CHANNEL_INDEX[tints[rect]]] ??= paint[rect];
+    if (group >= 0 && tints[rect]) {
+      defaults[group * 3 + CHANNEL_INDEX[tints[rect]]] ??= paint[rect];
+      for (const part of String(object.userData.kit_part).split(',')) tinted.add(part);
+    }
     if (object.userData.kit_slot !== 'hair') return;
     for (const part of String(object.userData.kit_part).split(',')) {
       if (!hairStyles.includes(part)) hairStyles.push(part);
@@ -49,6 +54,6 @@ export function kit(): Kit {
   if (!body || !mask) throw new Error('chargen kit has no body atlas or colour mask');
   mask.colorSpace = THREE.NoColorSpace;
   mask.needsUpdate = true;
-  cached = { hairStyles, body, mask, grey: extras.kit_mask_grey, defaults, clips: assets.animations(KIT_ASSET) };
+  cached = { hairStyles, tinted, body, mask, grey: extras.kit_mask_grey, defaults, clips: assets.animations(KIT_ASSET) };
   return cached;
 }

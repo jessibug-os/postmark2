@@ -19,6 +19,7 @@ export const NOSE_STYLES = ['button', 'none'] as const;
 export type NoseStyle = (typeof NOSE_STYLES)[number];
 
 export interface FaceSpec extends FaceRecipe {
+  iris: string;
   eyeStyle: EyeStyle;
   browStyle: BrowStyle;
   mouthStyle: MouthStyle;
@@ -27,6 +28,7 @@ export interface FaceSpec extends FaceRecipe {
 
 export const DEFAULT_FACE_SPEC: FaceSpec = {
   ...DEFAULT_RECIPE_V2.face,
+  iris: DEFAULT_RECIPE_V2.eyes,
   eyeStyle: 'round',
   browStyle: 'soft',
   mouthStyle: 'smile',
@@ -37,11 +39,12 @@ function pick<T extends string>(options: readonly T[], value: unknown, fallback:
   return options.includes(value as T) ? (value as T) : fallback;
 }
 
-export function faceSpecFrom(recipe: FaceRecipe): FaceSpec {
+export function faceSpecFrom(recipe: FaceRecipe, eyes: string): FaceSpec {
   const raw = recipe as FaceRecipe & Partial<FaceSpec>;
   return {
     ...DEFAULT_FACE_SPEC,
     ...recipe,
+    iris: eyes,
     eyeStyle: pick(EYE_STYLES, raw.eyeStyle, DEFAULT_FACE_SPEC.eyeStyle),
     browStyle: pick(BROW_STYLES, raw.browStyle, DEFAULT_FACE_SPEC.browStyle),
     mouthStyle: pick(MOUTH_STYLES, raw.mouthStyle, DEFAULT_FACE_SPEC.mouthStyle),
