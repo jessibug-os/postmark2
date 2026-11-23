@@ -37,7 +37,7 @@ if (loaded.status === 'error') throw new Error(loaded.reason);
 const services = openHarborServices(bootstrapContext(), storage, loaded.save ? undefined : {
   seed: 42, layoutVersion: 1, name: 'Robin', arrival: { placeId: 'town', x: -30, z: 26, yaw: 0 },
 });
-await assets.preload(['postmaster', 'post-office', 'bench', 'lantern-post']);
+await assets.preload(['postmaster', 'chargen-kit', 'post-office', 'bench', 'lantern-post']);
 // Explicit draft-only massing. This is not the release Harbor object library.
 const town = new TownMap(LEGACY_WORLD_CONTENT);
 for (const [id, label] of [['bakery.stairs', 'Upstairs room'], ['cafe.door', 'Café · draft entrance']]) {

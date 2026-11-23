@@ -33,7 +33,7 @@ const safe = { placeId: 'cafe', ...CAFE_ANCHORS.find(a => a.id === 'cafe.safe')!
 const services = openHarborServices(bootstrapContext(), storage, loaded.save ? undefined
   : { seed: 42, layoutVersion: 1, name: 'Robin', arrival: safe });
 const juneAsset = HARBOR_RESIDENTS.find(resident => resident.id === 'june')!.assetId as AssetId;
-await assets.preload(['postmaster', juneAsset]);
+await assets.preload(['postmaster', 'chargen-kit', juneAsset]);
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x242b30);
 const room = buildHarborCafe(0);
 const staff = new HarborCafeStaff(room, assets.model(juneAsset), assets.animations(juneAsset));

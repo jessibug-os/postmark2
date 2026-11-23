@@ -1,6 +1,7 @@
 import * as GameLoopMethods from './modules/GameLoop';
 import * as InteractionControllerMethods from './modules/InteractionController';
 import * as FixtureInteractionMethods from './modules/FixtureInteraction';
+import * as BoatControllerMethods from './modules/BoatController';
 import * as CommerceControllerMethods from './modules/CommerceController';
 import * as ActivityControllerMethods from './modules/ActivityController';
 import * as SceneDirectorMethods from './modules/SceneDirector';
@@ -37,7 +38,6 @@ import { ItemDrops } from '../systems/ItemDrops';
 import { QuestSystem } from '../systems/QuestSystem';
 import {
   activeSaveSlot,
-  listSaveSlots,
   type SaveData,
   type SaveSlotId,
 } from '../systems/SaveSystem';
@@ -47,6 +47,7 @@ import { AcreDebugLayer } from '../dev/AcreDebugLayer';
 import { GridDebugLayer } from '../dev/GridDebugLayer';
 import { CurveDebugLayer } from '../dev/CurveDebugLayer';
 import { registerDevCommands } from '../dev/registerDevCommands';
+import { createEditor, type Editor } from '../editor/EditorMode';
 import { DevConsole } from '../ui/DevConsole';
 import { HUD } from '../ui/HUD';
 import { InventoryUI } from '../ui/InventoryUI';
@@ -68,7 +69,9 @@ export const DAILY_SURPRISES = ['orchard-apple', 'wild-chicory', 'stone', 'scrap
 import { NameInput } from '../ui/NameInput';
 import { PauseMenu } from '../ui/PauseMenu';
 import { ShopUI } from '../ui/ShopUI';
-import { mountTitleScreen, type TitleScreenHandle } from '../ui/TitleScreen';
+import { BoomboxUI } from '../ui/BoomboxUI';
+import { boombox } from '../core/Boombox';
+import type { TitleScreenHandle } from '../ui/TitleScreen';
 import { Ambience } from '../world/Ambience';
 import { CameraRig } from '../world/CameraRig';
 import { SubjectProtection } from '../world/SubjectProtection';
@@ -128,9 +131,11 @@ export class Game {
   inventoryUI: InventoryUI;
   shopUI: ShopUI;
   museumUI: MuseumUI;
+  boomboxUI: BoomboxUI;
   pauseMenu: PauseMenu;
   nameInput: NameInput;
   devConsole: DevConsole;
+  editor: Editor | null = null;
   acreView: AcreDebugLayer;
   gridView: GridDebugLayer;
   curveView: CurveDebugLayer;
@@ -297,6 +302,10 @@ export class Game {
     this.ledgerUI = new LedgerUI(container, this.friendship);
     this.shopUI = new ShopUI(container, this.inventory);
     this.museumUI = new MuseumUI(container);
+    this.boomboxUI = new BoomboxUI(container, this.input);
+    this.boomboxUI.onPutAway = (placed) => {
+      if (this.furniture.pickup(placed) && boombox.source === placed) boombox.stop();
+    };
     this.nameInput = new NameInput(container);
     this.pauseMenu = new PauseMenu(container, {
       onSave: () => this.save(false),
@@ -322,6 +331,7 @@ export class Game {
     this.scene.add(this.curveView.group);
     this.devConsole = new DevConsole(container, this.input);
     registerDevCommands(this);
+    if (import.meta.env.DEV) this.editor = createEditor(this, container);
 
     this.intro = new OpeningPlayer(container, this.dialogue, this.nameInput);
     // Kraft pill with wax-seal key badges ("[E]" renders as a red seal).
@@ -334,20 +344,7 @@ export class Game {
     container.appendChild(this.prompt);
     this.hud.setVisible(false);
 
-    // --- Title screen over the live town scene.
     audio.setTheme('title');
-    this.title = mountTitleScreen(container, {
-      slots: listSaveSlots(),
-      onContinue: (slot) => this.startFromSave(slot),
-      onNewGame: (slot) => this.startNewGame(slot),
-      musicOn: audio.musicEnabled,
-      sfxOn: audio.sfxEnabled,
-      musicToggle: () => {
-        audio.setMusicEnabled(!audio.musicEnabled);
-        return audio.musicEnabled;
-      },
-      sfxToggle: () => (audio.sfxEnabled = !audio.sfxEnabled),
-    });
     this.rig.snapTo(new THREE.Vector3(-4, 0, 6));
 
     window.addEventListener('resize', () => {
@@ -509,6 +506,11 @@ export interface Game {
   fixtureActions(): Array<{ text: string; key: string; run: () => void }>;
   /** Leave the seat the player is on, stepping clear of it. */
   standUp(): void;
+  boating(): boolean;
+  boatReturn(): THREE.Vector3 | null;
+  boatCameraTarget(): THREE.Vector3 | null;
+  boatActions(): Array<{ text: string; key: string; run: () => void }>;
+  updateBoat(dt: number): void;
   runPrimaryAction(actions: Array<{ text: string; key: string; run: () => void }>): void;
   getInterior(id: string): Interior;
   doorFade(mid: () => void): void;
@@ -599,4 +601,4 @@ export interface Game {
   restore(data: SaveData): void;
 }
 
-Object.assign(Game.prototype, GameLoopMethods, InteractionControllerMethods, FixtureInteractionMethods, CommerceControllerMethods, ActivityControllerMethods, SceneDirectorMethods, SocialControllerMethods, CalendarMailControllerMethods, PersistenceControllerMethods);
+Object.assign(Game.prototype, GameLoopMethods, InteractionControllerMethods, FixtureInteractionMethods, BoatControllerMethods, CommerceControllerMethods, ActivityControllerMethods, SceneDirectorMethods, SocialControllerMethods, CalendarMailControllerMethods, PersistenceControllerMethods);

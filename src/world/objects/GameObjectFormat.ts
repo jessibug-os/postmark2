@@ -83,6 +83,14 @@ export interface InteractComponent {
   line: number;
 }
 
+export interface DeckComponent {
+  kind: 'deck';
+  halfX: number;
+  halfZ: number;
+  open: boolean;
+  line: number;
+}
+
 /** Metres of world scatter kept clear around this object. */
 export interface ClearComponent {
   kind: 'clear';
@@ -117,6 +125,7 @@ export type ObjectComponent =
   | SeatComponent
   | InteractComponent
   | ClearComponent
+  | DeckComponent
   | ApertureComponent
   | CommentLine;
 
@@ -220,6 +229,15 @@ export function parseGameObject(text: string, file = '<gameobj>'): GameObject {
           kind: 'clear', radius: number(tokens.shift(), 'clear radius', file, at), line: at,
         });
         break;
+      case 'deck':
+        components.push({
+          kind: 'deck',
+          halfX: number(tokens.shift(), 'deck half width', file, at),
+          halfZ: number(tokens.shift(), 'deck half length', file, at),
+          open: tokens[0] === 'open',
+          line: at,
+        });
+        break;
       case 'aperture':
         components.push({
           kind: 'aperture',
@@ -287,6 +305,9 @@ export function formatGameObject(object: GameObject): string {
         break;
       case 'clear':
         out.push(`clear ${component.radius}`);
+        break;
+      case 'deck':
+        out.push(`deck ${component.halfX} ${component.halfZ}${component.open ? ' open' : ''}`);
         break;
       case 'aperture':
         out.push(`aperture ${component.axis.x} ${component.axis.y} ${component.axis.z}`);

@@ -1,36 +1,59 @@
-import { Game } from './game/Game';
-import { assets } from './core/AssetLoader';
-import { previewRequest, ScenePreview } from './cutscene/preview/ScenePreview';
-import { sceneSource } from './cutscene/scene/SceneLibrary';
+import { audio } from './core/AudioSystem';
+import { listSaveSlots } from './systems/SaveSystem';
+import { mountTitleScreen } from './ui/TitleScreen';
+import type { Game as GameType } from './game/Game';
 
 const container = document.getElementById('app')!;
+let game: GameType | null = null;
+const title = mountTitleScreen(container, {
+  slots: listSaveSlots(),
+  onContinue: (slot) => game?.startFromSave(slot),
+  onNewGame: (slot) => {
+    if (!game) return;
+    const current = game;
+    void import('./characters/chargen/chooseLook').then(({ chooseLook }) => chooseLook(container, current.player.look))
+      .then((look) => {
+        current.player.setLook(look);
+        current.startNewGame(slot);
+      });
+  },
+  musicOn: audio.musicEnabled,
+  sfxOn: audio.sfxEnabled,
+  musicToggle: () => {
+    audio.setMusicEnabled(!audio.musicEnabled);
+    return audio.musicEnabled;
+  },
+  sfxToggle: () => (audio.sfxEnabled = !audio.sfxEnabled),
+});
+await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve)));
+
+const [{ Game }, { assets }, { previewRequest, ScenePreview }, { sceneSource }] = await Promise.all([
+  import('./game/Game'),
+  import('./core/AssetLoader'),
+  import('./cutscene/preview/ScenePreview'),
+  import('./cutscene/scene/SceneLibrary'),
+]);
 await assets.preload([
   'bench', 'benchTimber', 'sparks', 'orchardTree',
-  'postmaster', 'albert', 'mira', 'rowan', 'liliane',
+  'postmaster', 'chargen-kit', 'albert', 'mira', 'rowan', 'liliane',
   'amina', 'niko', 'maeve', 'vittorio', 'ferry-recruit', 'keeper',
   'bunny', 'staff', 'flower-pot',
-  // Opening sets. The post office and its lanterns are placed by the town
-  // builder at world construction, so they must be resolved before the Game
-  // constructor runs, not lazily when the cutscene starts.
-  'ferry', 'post-office', 'lantern-post', 'ferry-passenger',
+  'ferry', 'post-office', 'lantern-post', 'ferry-passenger', 'dock', 'dock-square', 'dock-step', 'boat',
 ]);
-// Debug hook for probe scripts; harmless in production.
-const game = new Game(container);
+game = new Game(container);
+game.title = title;
+const canvas = game.renderer.domElement;
+canvas.style.opacity = '0';
+canvas.style.transition = 'opacity 0.8s';
 game.start();
+game.editor?.resume();
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  canvas.style.opacity = '1';
+  title.ready();
+}));
 
-/**
- * Scene-preview mode.
- *
- * `?scene=<id>&beat=<id>` boots the real game into an authored `.scene` held at
- * a beat, which is what the `/cutscene` editor puts in its iframe. The branch
- * lives here rather than in `Game.ts`: the preview is not a game state, it is a
- * different way of entering the one that already exists.
- */
 const preview = previewRequest();
 if (preview) {
-  // From the bundle, not the dev-server API: the file ships with the build and
-  // Vite reloads this module when it changes, so the fetch was ~400ms of round
-  // trip to learn something already in memory.
   const text = sceneSource(preview.scene);
   if (text === null) throw new Error(`no scene "${preview.scene}"`);
   const session = new ScenePreview(game, container, text, preview);

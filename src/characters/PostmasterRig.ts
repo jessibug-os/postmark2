@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { assets } from '../core/AssetLoader';
-import { applyVertexSnap } from '../core/RetroMaterial';
+import { createCharacter, type Character } from './chargen/createCharacter';
+import type { CharacterRecipe } from './chargen/recipe';
 
 /**
  * Adapter from the authored `postmaster` GLB to the joint names `Player`
@@ -20,8 +20,7 @@ import { applyVertexSnap } from '../core/RetroMaterial';
 export interface PostmasterRigParts {
   root: THREE.Group;
   clips: THREE.AnimationClip[];
-  /** Cloned off the shared atlas material so tinting never bleeds onto the cast. */
-  coatMats: THREE.MeshLambertMaterial[];
+  character: Character;
   body: THREE.Object3D;
   armL: THREE.Object3D;
   armR: THREE.Object3D;
@@ -35,44 +34,15 @@ export interface PostmasterRigParts {
   commitPose(): void;
 }
 
-/**
- * The coat tint multiplies the baked atlas, so it may only touch the garment
- * meshes. The rig ships one material for the whole body — tinting it directly
- * would recolour hair, skin and boots along with the coat.
- */
-const COAT_MESHES = new Set(['coat', 'dress', 'collar']);
-
 function requireNode(root: THREE.Object3D, name: string): THREE.Object3D {
   const node = root.getObjectByName(name);
   if (!node) throw new Error(`postmaster rig is missing required joint "${name}"`);
   return node;
 }
 
-export function createPostmasterRig(): PostmasterRigParts {
-  const root = assets.model('postmaster');
-  const clips = assets.animations('postmaster');
-
-  // SkeletonUtils.clone shares materials with every other clone of the asset,
-  // so the tint target has to be this instance's own copy.
-  const coatMats: THREE.MeshLambertMaterial[] = [];
-  const cloned = new Map<THREE.Material, THREE.MeshLambertMaterial>();
-  root.traverse((object) => {
-    if (!(object instanceof THREE.Mesh) || !COAT_MESHES.has(object.name)) return;
-    const source = object.material as THREE.Material;
-    let copy = cloned.get(source);
-    if (!copy) {
-      // `Material.clone()` copies neither `onBeforeCompile` nor
-      // `customProgramCacheKey` — they are not in three's `copy()` list. A bare
-      // clone therefore loses the retro vertex patch and falls back to the
-      // default cache key, so the garment renders unwarped while every other
-      // mesh is curvature-warped in the vertex shader, and visibly detaches
-      // from the body. Re-apply the patch to put the clone back in the pipeline.
-      copy = applyVertexSnap((source as THREE.MeshLambertMaterial).clone());
-      cloned.set(source, copy);
-      coatMats.push(copy);
-    }
-    object.material = copy;
-  });
+export function createPostmasterRig(recipe: CharacterRecipe): PostmasterRigParts {
+  const character = createCharacter(recipe);
+  const { root, clips } = character;
 
   /**
    * Posed joints are exposed as detached proxies whose rest is identity, not as
@@ -113,7 +83,7 @@ export function createPostmasterRig(): PostmasterRigParts {
   return {
     root,
     clips,
-    coatMats,
+    character,
     body: posable('core_spine'),
     armL: posable('core_upper_arm_l'),
     armR: posable('core_upper_arm_r'),

@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { PALETTE_CSS } from '../../art/palette';
 import { assets, type AssetId } from '../../core/AssetLoader';
-import type { CastPack } from '../types';
+import type { CastMember, CastPack } from '../types';
+import { recipeAssets } from '../../characters/chargen/createCharacter';
+import { normalizeRecipe } from '../../characters/chargen/recipe';
 
 export const KINDLY_FORWARD_CAST_IDS = {
   albert: 'albert',
@@ -36,8 +38,20 @@ export const KINDLY_FORWARD_CHARACTER_ASSETS = {
  * Authored-asset production pack for W4/W6 authoring. Locations use the current
  * redressed island until W3 supplies final generated-island anchors.
  */
+const RECIPES = Object.fromEntries(
+  Object.entries(import.meta.glob('./recipes/*.json', { eager: true, import: 'default' }))
+    .map(([path, recipe]) => [path.slice('./recipes/'.length, -'.json'.length), normalizeRecipe(recipe)]),
+);
+
+export const castRecipe = (id: string) => RECIPES[id] ?? null;
+
+const withRecipe = (member: CastMember): CastMember => {
+  const recipe = castRecipe(member.id);
+  return recipe ? { ...member, ...recipeAssets(recipe) } : member;
+};
+
 export const KINDLY_FORWARD_CAST: CastPack = {
-  members: [
+  members: ([
     {
       id: 'albert', displayName: 'ALBERT', ...KINDLY_FORWARD_CHARACTER_ASSETS.albert, home: at(-4.5, 2.5),
       homePlot: 'post-office', wanderRadius: 2.5, bubbleHeight: 2.8, quirk: 'scribble',
@@ -134,7 +148,7 @@ export const KINDLY_FORWARD_CAST: CastPack = {
         { from: 18, to: 22, x: plaza.x, z: plaza.z - 2, radius: 4, emote: 'happy' },
       ],
     },
-  ],
+  ] satisfies CastMember[]).map(withRecipe),
 };
 
 export const KINDLY_FORWARD_TASTES = Object.fromEntries(

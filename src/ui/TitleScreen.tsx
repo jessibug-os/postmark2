@@ -31,6 +31,8 @@ export interface TitleScreenHandle {
   readonly isOpen: boolean;
   /** Feed one frame of input. */
   update(input: Input, dt: number): void;
+  /** The world behind the title is built; let the player in. */
+  ready(): void;
   /** Take the title screen off the page for good (scene-preview mode). */
   dismiss(): void;
 }
@@ -54,9 +56,10 @@ export function mountTitleScreen(container: HTMLElement, opts: TitleScreenOption
     host.remove();
   };
 
-  root.render(
+  const render = (ready: boolean): void => root.render(
     <TitleScreen
       {...opts}
+      ready={ready}
       onFrame={(fn) => {
         listener = fn;
         return () => {
@@ -69,6 +72,7 @@ export function mountTitleScreen(container: HTMLElement, opts: TitleScreenOption
       }}
     />,
   );
+  render(false);
 
   return {
     get isOpen() {
@@ -76,6 +80,9 @@ export function mountTitleScreen(container: HTMLElement, opts: TitleScreenOption
     },
     update(input) {
       if (open) listener?.(input);
+    },
+    ready() {
+      if (open) render(true);
     },
     dismiss() {
       open = false;
@@ -88,11 +95,12 @@ type MenuEntry = { label: string; action: () => void };
 type View = { kind: 'main' } | { kind: 'replace' } | { kind: 'confirm'; slot: SaveSlotSummary };
 
 interface TitleScreenProps extends TitleScreenOptions {
+  ready: boolean;
   onFrame: (fn: FrameListener) => () => void;
   onClosed: () => void;
 }
 
-function TitleScreen({ onFrame, onClosed, ...opts }: TitleScreenProps) {
+function TitleScreen({ ready, onFrame, onClosed, ...opts }: TitleScreenProps) {
   const [phase, setPhase] = useState<'press' | 'menu' | 'closed'>('press');
   const [view, setView] = useState<View>({ kind: 'main' });
   const [selected, setSelected] = useState(0);
@@ -100,7 +108,7 @@ function TitleScreen({ onFrame, onClosed, ...opts }: TitleScreenProps) {
   const [sfxOn, setSfxOn] = useState(opts.sfxOn);
 
   const openMenu = (): void => {
-    if (phase !== 'press') return;
+    if (phase !== 'press' || !ready) return;
     audio.unlock();
     audio.sfx('confirm');
     setPhase('menu');
@@ -163,7 +171,7 @@ function TitleScreen({ onFrame, onClosed, ...opts }: TitleScreenProps) {
         </div>
       </div>
 
-      {phase === 'press' && <div style={styles.press}>· press any key or tap ·</div>}
+      {phase === 'press' && ready && <div style={styles.press}>· press any key or tap ·</div>}
 
       {phase !== 'press' && (
         <div className="pm-panel" style={styles.menu}>

@@ -37,17 +37,26 @@ export function updateInteractions(this: Game): void {
       }
       return;
     }
+    if (this.boating()) {
+      const boatActions = this.boatActions();
+      if (boatActions.length) this.runPrimaryAction(boatActions);
+      else this.showPrompt('W/S throttle · A/D steer');
+      return;
+    }
     const actions: Array<{ text: string; key: string; run: () => void }> = [];
+    actions.push(...this.boatActions());
     // Placed objects first: while seated the only offer is standing up, and a
     // player who cannot stand because a villager wandered past is stuck.
     actions.push(...this.fixtureActions());
     const nearbyFurniture = this.furniture.nearest(pos);
     if (nearbyFurniture) {
-      actions.push({
-        text: `[E] Put away ${item(nearbyFurniture.itemId).name}`,
-        key: 'KeyE',
-        run: () => this.furniture.pickup(nearbyFurniture),
-      });
+      actions.push(nearbyFurniture.itemId === 'furn-boombox'
+        ? { text: '[E] Play boombox', key: 'KeyE', run: () => this.boomboxUI.open(nearbyFurniture) }
+        : {
+            text: `[E] Put away ${item(nearbyFurniture.itemId).name}`,
+            key: 'KeyE',
+            run: () => this.furniture.pickup(nearbyFurniture),
+          });
     }
 
     let nearestNpc: NPC | null = null;
@@ -170,7 +179,8 @@ export function runPrimaryAction(this: Game, actions: Array<{ text: string; key:
       return;
     }
     const primary = actions[0];
-    this.showPrompt(primary.text.replace(/^\[\w+\]\s*/, ''));
+    if (primary.text) this.showPrompt(primary.text.replace(/^\[\w+\]\s*/, ''));
+    else this.prompt.style.display = 'none';
     if (this.input.wasPressed('KeyE')) primary.run();
   }
 
@@ -328,11 +338,13 @@ export function updateInteriorInteractions(this: Game): void {
     actions.push(...this.fixtureActions());
     const nearbyFurniture = this.furniture.nearest(pos);
     if (nearbyFurniture) {
-      actions.push({
-        text: `[E] Put away ${item(nearbyFurniture.itemId).name}`,
-        key: 'KeyE',
-        run: () => this.furniture.pickup(nearbyFurniture),
-      });
+      actions.push(nearbyFurniture.itemId === 'furn-boombox'
+        ? { text: '[E] Play boombox', key: 'KeyE', run: () => this.boomboxUI.open(nearbyFurniture) }
+        : {
+            text: `[E] Put away ${item(nearbyFurniture.itemId).name}`,
+            key: 'KeyE',
+            run: () => this.furniture.pickup(nearbyFurniture),
+          });
     }
     // Hotspots are tight fixtures you are physically standing at; the occupant's
     // conversation radius is broad enough to swallow every one of them (REGGIE

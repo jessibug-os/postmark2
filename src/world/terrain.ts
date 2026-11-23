@@ -10,17 +10,18 @@ import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
  */
 
 import { ACTIVE_FIELD, ACTIVE_LAYOUT, MAP } from './mapConstants';
+import { deckTopAt } from './decks';
 import {
   RIVER_WATERLINE, SEA_LEVEL,
   borderWalls, coastDistance, pieceWalls, riverBankDistance, sampleIsland, sampleIslandSurface,
 } from './island/IslandRuntime';
-import { ACRE_SIZE, acreCentre } from './island/AcreLibrary';
+import { ACRE_SIZE, TIER_HEIGHT, acreCentre } from './island/AcreLibrary';
 import { pieceMask } from './island/PieceMask';
 import type { IslandMap } from './island/IslandMap';
 import { CELL_COLS, CELL_ROWS, CELL_SIZE } from './island/IslandCellGrid';
 import { wetnessField } from './weather/WetnessState';
 import { snowField } from './weather/SnowState';
-import { SNOW_LEVELS, WETNESS_LEVELS } from './weather/levels';
+import { SNOW_LEVELS } from './weather/levels';
 
 /**
  * Texels per world unit in the ground sheet.
@@ -74,7 +75,7 @@ export function heightAt(x: number, z: number): number {
   // generated map, where it stamped a flat 11x3.4 patch of wrong ground into
   // the town. Island bridges are per-acre; when they are wired they belong in
   // the field, not in front of it.
-  return terrainHeight(x, z);
+  return deckTopAt(x, z) ?? terrainHeight(x, z);
 }
 
 // --- ground mesh -----------------------------------------------------------
@@ -102,6 +103,14 @@ export function buildGroundGeometry(
   const uvs: number[] = [];
   /** One quad per authored cell; every height discontinuity is a mesh edge. */
   const epsilon = 1e-5;
+  const heights = new Map<number, Map<number, number>>();
+  const cachedHeight = (sx: number, sz: number): number => {
+    let row = heights.get(sx);
+    if (!row) heights.set(sx, row = new Map());
+    let h = row.get(sz);
+    if (h === undefined) row.set(sz, h = height(sx, sz));
+    return h;
+  };
   const vertex = (
     acreCol: number,
     acreRow: number,
@@ -115,7 +124,7 @@ export function buildGroundGeometry(
     const wz = c.z - ACRE_SIZE / 2 + v * ACRE_SIZE;
     const sx = c.x - ACRE_SIZE / 2 + sampleU * ACRE_SIZE;
     const sz = c.z - ACRE_SIZE / 2 + sampleV * ACRE_SIZE;
-    return [wx - GROUND_CX, -(wz - GROUND_CZ), height(sx, sz),
+    return [wx - GROUND_CX, -(wz - GROUND_CZ), cachedHeight(sx, sz),
       (wx - MAP.minX) / GROUND_W, 1 - (wz - MAP.minZ) / GROUND_D];
   };
   const emit = (v: readonly number[]): void => {
@@ -570,7 +579,6 @@ function paintIslandGround(): THREE.CanvasTexture {
   // lighting and water depth; the placed acre decides whether dry ground is
   // grass, dirt or sand — and `coverageField` decides where it stops saying so.
   const sandCover = new Float32Array(w * h);
-  const dirtCover = new Float32Array(w * h);
   /** Signed distance to the bank curve: + into the channel, - onto dry ground. */
   const bankDist = new Float32Array(w * h);
   const mouthSand = new Float32Array(w * h);
@@ -581,6 +589,9 @@ function paintIslandGround(): THREE.CanvasTexture {
     ? coverageField(island, (t) => t === 'sand' || t === 'ocean')
     : null;
   const dirtField = island ? coverageField(island, (t) => t === 'dirt') : null;
+  const wobble = (x: number, z: number, seed: number): number =>
+    (edgeNoise(x + seed, z - seed, 1.6) - 0.5
+      + (edgeNoise(x * 2 + seed, z * 2 - seed, 0.6) - 0.5) * 0.5) * EDGE_WOBBLE;
 
   for (let py = 0; py < h; py++) {
     for (let px = 0; px < w; px++) {
@@ -594,7 +605,11 @@ function paintIslandGround(): THREE.CanvasTexture {
       const s = sampleIslandSurface(island, x, z, terrain);
       height[i] = s.height;
       if (s.water !== null) { hasWater[i] = 1; water[i] = s.water; }
-      tier[i] = ACTIVE_FIELD?.tierAt(x, z) ?? 0;
+      const acre = ACTIVE_FIELD?.acreAt(x, z);
+      const region = acre?.regionTier;
+      tier[i] = acre && region !== undefined
+        && Math.abs(s.height - TIER_HEIGHT[region]) < Math.abs(s.height - TIER_HEIGHT[acre.tier])
+        ? region : acre?.tier ?? 0;
       if (island) bankDist[i] = riverBankDistance(island, x, z);
       if (tier[i] === 0 && bankDist[i] > -2.5) {
         const t = Math.max(0, Math.min(1, coastDistance(island, x, z) / 5));
@@ -603,11 +618,7 @@ function paintIslandGround(): THREE.CanvasTexture {
       if (sandField && dirtField) {
         // One threshold per material, each jittered by its own noise so the two
         // boundaries do not wander in lockstep and betray the shared field.
-        const wobble = (seed: number): number =>
-          (edgeNoise(x + seed, z - seed, 1.6) - 0.5
-            + (edgeNoise(x * 2 + seed, z * 2 - seed, 0.6) - 0.5) * 0.5) * EDGE_WOBBLE;
-        sandCover[i] = coverageAt(sandField, island, x, z) + wobble(0);
-        dirtCover[i] = coverageAt(dirtField, island, x, z) + wobble(37);
+        sandCover[i] = coverageAt(sandField, island, x, z) + wobble(x, z, 0);
       }
     }
   }
@@ -827,7 +838,10 @@ const BANK_FEATHER = 0.5;
       }
       // Bare earth reads as the ground beneath the grass rather than as a
       // separate material, so it takes the same tier shading the grass does.
-      if (dirtCover[i] > 0.5) {
+      const x = MAP.minX + (px + 0.5) / GROUND_TEXELS_PER_UNIT;
+      const z = MAP.minZ + (py + 0.5) / GROUND_TEXELS_PER_UNIT;
+      if (island && dirtField
+        && Math.fround(coverageAt(dirtField, island, x, z) + wobble(x, z, 37)) > 0.5) {
         put(i, PALETTE_HEX.h5c4a38, 1 + tier[i] * 0.12);
         continue;
       }
@@ -879,7 +893,6 @@ export const groundUniforms = {
   uWetnessTexel: { value: new THREE.Vector2(1 / wetnessField.cols, 1 / wetnessField.rows) },
   /** Render steps per field. See `weather/levels.ts` — the fields stay smooth. */
   uSnowLevels: { value: SNOW_LEVELS },
-  uWetLevels: { value: WETNESS_LEVELS },
 };
 
 const DETAIL_SIZE = 256;
@@ -983,7 +996,6 @@ export function applyGroundDetail(mat: THREE.MeshLambertMaterial): void {
     shader.uniforms.uWetnessMap = groundUniforms.uWetnessMap;
     shader.uniforms.uWetnessTexel = groundUniforms.uWetnessTexel;
     shader.uniforms.uSnowLevels = groundUniforms.uSnowLevels;
-    shader.uniforms.uWetLevels = groundUniforms.uWetLevels;
     shader.fragmentShader = shader.fragmentShader
       .replace(
         'void main() {',
@@ -994,7 +1006,6 @@ export function applyGroundDetail(mat: THREE.MeshLambertMaterial): void {
          uniform sampler2D uWetnessMap;
          uniform vec2 uWetnessTexel;
          uniform float uSnowLevels;
-         uniform float uWetLevels;
          void main() {
            float groundWetness = 0.0;
            float groundWetnessDarken = 1.0;
@@ -1018,38 +1029,24 @@ export function applyGroundDetail(mat: THREE.MeshLambertMaterial): void {
            // Drive this from moisture itself, not the colour classifier above:
            // season/night tinting can move sand and grass outside those colour
            // thresholds and used to leave them with only a token 16% change.
-           // Keep most of each gameplay cell exact, blending only within 12%
-           // of an edge so local patches read without a debug-checker seam.
-           // Both fields are read at the cell centre with no neighbour
-           // blending, then snapped to a fixed number of levels. The cells
-           // keep their continuous percentage; only the draw is stepped, so
-           // the island terraces into flat layers the way Minecraft snow
-           // does. Neighbours that round to the same level merge into one
-           // terrace, so the hard edges that remain are real level changes
-           // rather than a checkerboard.
-           vec2 wetCentre = ( floor( vMapUv / uWetnessTexel ) + 0.5 ) * uWetnessTexel;
-           vec4 moisture = texture2D( uWetnessMap, wetCentre );
-           float cellWetness = moisture.r;
-           // Preserve barely-wet ground, then open the contrast quickly enough
-           // that a soaked cell reads beside a sheltered one through rain fog.
-           // Quantise after that curve, not before it, so the steps land
-           // evenly apart on screen instead of bunching where it is flat.
-           float visibleWetness = smoothstep( 0.05, 0.85, cellWetness );
-           visibleWetness = floor( visibleWetness * uWetLevels + 0.5 ) / uWetLevels;
+           vec2 wetCell = vMapUv / uWetnessTexel;
+           vec2 wetOffset = fract( wetCell ) - 0.5;
+           vec2 wetBlend = sign( wetOffset ) * 0.5 * smoothstep( 0.1, 0.5, abs( wetOffset ) );
+           vec4 moisture = texture2D( uWetnessMap, ( floor( wetCell ) + 0.5 + wetBlend ) * uWetnessTexel );
+           float visibleWetness = smoothstep( 0.05, 0.85, moisture.r );
            groundWetness = visibleWetness;
            groundWetnessDarken = 1.0 - visibleWetness * 0.62;
            // Only authored hydrology lows carry the G-channel pooling flag.
            // A sparse detail threshold gives soaked ground restrained broken
            // highlights instead of coating the whole island in plastic shine.
            float poolEligible = moisture.g * ( 1.0 - smoothstep( 0.45, 0.85, moisture.b ) );
-           // Glint belongs to the top level only; a second gradient crossing
-           // the levels would put back the gradual look they replace.
-           groundWetnessGlint = step( 1.0 - 0.5 / uWetLevels, visibleWetness )
+           groundWetnessGlint = smoothstep( 0.8, 0.95, visibleWetness )
              * poolEligible * smoothstep( 0.68, 0.9, dt.b );
            // Winter: lay snow over everything that isn't water, in whole
            // levels. Depth is already the field's own value, so it rounds
            // directly rather than through a response curve.
-           float snowLevel = floor( texture2D( uSnowMap, wetCentre ).r * uSnowLevels + 0.5 )
+           vec2 snowCentre = ( floor( vMapUv / uWetnessTexel ) + 0.5 ) * uWetnessTexel;
+           float snowLevel = floor( texture2D( uSnowMap, snowCentre ).r * uSnowLevels + 0.5 )
              / uSnowLevels;
            if ( uSnow > 0.001 && snowLevel > 0.0 ) {
              // GLSL leaves smoothstep undefined when edge0 >= edge1. The old

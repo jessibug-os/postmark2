@@ -28,7 +28,7 @@ const existing = new HarborSaveCodec(previewStorage, validHarborState).load(boot
 if (existing.status === 'error') throw new Error(existing.reason);
 const services = openHarborServices(bootstrapContext(), previewStorage, existing.save ? undefined
   : { seed: 42, layoutVersion: 1, name: 'Robin', arrival: starterRoomSpawn() });
-await assets.preload(['postmaster']);
+await assets.preload(['postmaster', 'chargen-kit']);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x242b30);
 const lighting = new DayNight(scene);

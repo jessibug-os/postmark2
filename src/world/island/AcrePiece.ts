@@ -153,7 +153,7 @@ export interface AcreFixture {
    * instead of riding a slope — the distinction `post-office.set` drew with a
    * set-level `# ground: conform` and four marks overridden to `rigid`.
    */
-  ground: 'conform' | 'rigid';
+  ground: 'conform' | 'rigid' | 'sea';
 }
 
 export interface AcrePiece {

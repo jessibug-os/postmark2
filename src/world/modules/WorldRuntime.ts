@@ -9,6 +9,7 @@ import {
 } from '../water/WaterTextures';
 import { FALL_TILE_V } from './WorldFoundation';
 import type { IslandFieldQuery } from '../island/IslandRuntime';
+import { canCross, deckTopAt, footingAt } from '../decks';
 
 const DAY_GLASS = new THREE.Color(PALETTE_HEX.ha8bcc8);
 const NIGHT_GLASS = new THREE.Color(PALETTE_HEX.hffc470);
@@ -85,12 +86,15 @@ export function resolveIslandMovement(
   radius: number,
   previous: THREE.Vector3,
 ): void {
+  const from = footingAt(previous.x, previous.z);
+  const walkable = (x: number, z: number): boolean =>
+    (deckTopAt(x, z) !== null || field.walkableAt(x, z)) && canCross(from, footingAt(x, z));
   const standable = (x: number, z: number): boolean =>
-    field.walkableAt(x, z)
-    && field.walkableAt(x + radius, z)
-    && field.walkableAt(x - radius, z)
-    && field.walkableAt(x, z + radius)
-    && field.walkableAt(x, z - radius);
+    walkable(x, z)
+    && walkable(x + radius, z)
+    && walkable(x - radius, z)
+    && walkable(x, z + radius)
+    && walkable(x, z - radius);
 
   if (!standable(pos.x, pos.z)) {
     // Resolve only along axes the actor actually attempted. The old recovery
@@ -225,7 +229,7 @@ export function update(this: TownMap, dtSeconds: number, hour: number, daylight:
     // Anything registered as afloat. The world tick owns this rather than the
     // cutscene stage, so a boat still moves in the live game, in a scene
     // preview, and on the title diorama — all three step the map.
-    updateBuoyancy(now / 1000);
+    updateBuoyancy();
 
     // Clouds drift east and wrap.
     for (const cloud of this.clouds) {

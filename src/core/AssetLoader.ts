@@ -10,8 +10,8 @@ export type AssetId =
   | 'bench' | 'benchTimber' | 'sparks' | 'orchardTree'
   | 'postmaster' | 'albert' | 'mira' | 'rowan' | 'liliane'
   | 'amina' | 'niko' | 'maeve' | 'vittorio' | 'ferry-recruit'
-  | 'ferry' | 'post-office' | 'lantern-post' | 'ferry-passenger'
-  | 'keeper' | 'bunny' | 'staff' | 'flower-pot';
+  | 'ferry' | 'post-office' | 'lantern-post' | 'ferry-passenger' | 'dock' | 'dock-square' | 'dock-step' | 'boat'
+  | 'keeper' | 'bunny' | 'staff' | 'flower-pot' | 'chargen-kit';
 
 interface ModelEntry {
   type: 'model';
@@ -191,7 +191,7 @@ if (hot) {
     for (const id of [
       'postmaster', 'albert', 'mira', 'rowan', 'liliane',
       'amina', 'niko', 'maeve', 'vittorio', 'ferry-recruit',
-      'bunny', 'staff', 'flower-pot',
+      'bunny', 'staff', 'flower-pot', 'chargen-kit',
     ] as AssetId[]) void assets.reload(id);
   });
 }

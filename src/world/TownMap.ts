@@ -2,6 +2,8 @@ import * as WorldFoundationMethods from './modules/WorldFoundation';
 import * as TownBuilderMethods from './modules/TownBuilder';
 import * as FixtureBuilderMethods from './modules/FixtureBuilder';
 import type { GameObject } from './objects/GameObjectFormat';
+import type { PlacedFixture } from './island/AcreFixtures';
+import type { Deck } from './decks';
 import * as BuildingBuilderMethods from './modules/BuildingBuilder';
 import * as WorldRuntimeMethods from './modules/WorldRuntime';
 import { PALETTE_HEX } from '../art/palette';
@@ -168,6 +170,11 @@ export interface PlacedObject {
   /** `Object3D.rotation.y`, radians. */
   yaw: number;
   object: THREE.Object3D;
+  acre: { col: number; row: number };
+  piece: string;
+  fixture: string;
+  colliders: Collider[];
+  decks: Deck[];
 }
 
 export interface Collider {
@@ -372,6 +379,9 @@ export interface TownMap {
   buildPlots(): void;
   /** Props from every `unique` acre's fixtures. See `FixtureBuilder`. */
   buildAcreFixtures(): void;
+  spawnFixture(placed: PlacedFixture): PlacedObject | null;
+  despawnFixture(object: PlacedObject): void;
+  respawnFixture(object: PlacedObject): void;
   validatePlotSite(x: number, z: number): boolean;
   raiseScaffold(id: string): void;
   doorWorld(id: string): { x: number; z: number } | null;

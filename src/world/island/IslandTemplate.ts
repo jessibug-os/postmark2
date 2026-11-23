@@ -380,7 +380,8 @@ export function templateToIsland(template: IslandTemplate): TemplateIsland {
     acres.push(acreOf(piece, col, row, (dir) => pieceAt(col + DELTAS[dir][0], row + DELTAS[dir][1])));
   }
 
-  const byKey = new Map(acres.map((acre) => [acre.row * GRID_COLS + acre.col, acre]));
+  const byKey: Array<Acre | undefined> = [];
+  for (const acre of acres) byKey[acre.row * GRID_COLS + acre.col] = acre;
   const land = acres.filter((acre) => acre.kind !== 'ocean');
   const middle = land[Math.floor(land.length / 2)] ?? { col: 8, row: 6 };
   const centre = { col: middle.col, row: middle.row };
@@ -399,7 +400,7 @@ export function templateToIsland(template: IslandTemplate): TemplateIsland {
     acreSize: ACRE_SIZE,
     bounds: WORLD_BOUNDS,
     acres,
-    at: (col, row) => byKey.get(row * GRID_COLS + col) ?? null,
+    at: (col, row) => byKey[row * GRID_COLS + col] ?? null,
     anchors: {
       dock: anchorAt(acres, 'dock') ?? centre,
       postOffice: anchorAt(acres, 'post-office') ?? centre,

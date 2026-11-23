@@ -1,5 +1,6 @@
 import { updateCoastalOcean } from '../../world/water/CoastalOcean';
 import type { Game } from '../Game';
+import { boombox } from '../../core/Boombox';
 import { PALETTE_HEX } from '../../art/palette';
 import * as THREE from 'three';
 import { wetnessField } from '../../world/weather/WetnessState';
@@ -217,6 +218,14 @@ export function frame(this: Game): void {
     tickRetroTime(this.clockThree.elapsedTime);
     this.input.pollGamepad();
     this.simulationAccumulator += frameSeconds;
+
+    if (this.editor?.active) {
+      this.simulationAccumulator = 0;
+      this.editor.update();
+      this.input.clearFrame();
+      this.pipeline.render(this.scene, this.editor.camera);
+      return;
+    }
 
     while (this.simulationAccumulator >= FIXED_STEP_SECONDS) {
       this.fixedUpdate(FIXED_STEP_SECONDS);
@@ -456,6 +465,12 @@ export function updatePlay(this: Game, dt: number): void {
     }
     this.drops.update(dt, playerPos);
     this.furniture.updateGhost(playerPos, this.player.object.rotation.y);
+    const playingFrom = boombox.source;
+    if (playingFrom && !this.furniture.placed.includes(playingFrom)) boombox.stop();
+    else if (playingFrom) {
+      const sameSpace = (playingFrom.y !== undefined) === (this.furniture.indoor !== null);
+      boombox.setDistance(sameSpace ? Math.hypot(playingFrom.x - playerPos.x, playingFrom.z - playerPos.z) : Infinity);
+    }
 
     // The acre view is an outdoor overlay on the island's own ground; an
     // interior is a different scene and it has nothing to say there.
@@ -473,6 +488,7 @@ export function updatePlay(this: Game, dt: number): void {
     if (this.inventoryUI.update(this.input)) return this.afterModal(dt);
     if (this.shopUI.update(this.input)) return this.afterModal(dt);
     if (this.museumUI.update(this.input, this.museumDonations)) return this.afterModal(dt);
+    if (this.boomboxUI.update(this.input)) return this.afterModal(dt);
     if (this.ledgerUI.update(this.input)) return this.afterModal(dt);
 
     if (this.dialogue.isOpen) {
@@ -511,8 +527,9 @@ export function updatePlay(this: Game, dt: number): void {
     }
 
     // --- tool hotkeys (equip the best owned variant of each base tool)
+    const boating = this.boating();
     for (const [code, tool] of TOOL_HOTKEYS) {
-      if (this.input.wasPressed(code)) {
+      if (!boating && this.input.wasPressed(code)) {
         const upgrade = TOOL_UPGRADES[tool]?.to;
         const owned = upgrade && this.inventory.has(upgrade) ? upgrade : this.inventory.has(tool) ? tool : null;
         if (owned) {
@@ -526,7 +543,7 @@ export function updatePlay(this: Game, dt: number): void {
     }
 
     // --- movement & world sim
-    if(this.input.wasPressed('KeyV')){
+    if(!boating && this.input.wasPressed('KeyV')){
       if(this.diving.toggle(this.player.position)){
         audio.sfx('dive');
         this.player.swimming=this.diving.swimming;
@@ -538,6 +555,7 @@ export function updatePlay(this: Game, dt: number): void {
     // wait reads as fishing (cleared automatically on reel/cancel → idle).
     this.player.setFishingHold(!this.currentInterior && this.fishing.isCasting);
     this.player.update(this.input, dt);
+    this.updateBoat(dt);
     if (this.player.stepped) {
       const p = this.player.position;
       const localWetness = this.currentInterior ? 0 : wetnessField.atWorld(p.x, p.z);
@@ -556,7 +574,7 @@ export function updatePlay(this: Game, dt: number): void {
       }
     }
     this.rig.idleDrift = true;
-    this.rig.update(playerPos, dt);
+    this.rig.update(this.boatCameraTarget() ?? playerPos, dt);
 
     // --- context interactions
     this.updateInteractions();

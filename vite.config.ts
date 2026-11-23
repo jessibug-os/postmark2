@@ -1,10 +1,12 @@
 import { defineConfig, type Plugin } from 'vite';
 import { basename, dirname, extname, join, resolve } from 'node:path';
+import { spawn } from 'node:child_process';
 import { mkdirSync, readdirSync, readFileSync, rmdirSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { formatAcre, parseAcre } from './src/world/island/AcreFormat';
 import { formatScene, parseScene } from './src/cutscene/scene/SceneFormat';
 import { formatSet, parseSet } from './src/cutscene/set/SetFormat';
 import { performanceClipNames, roleOf, type ClipRole } from './src/characters/clipVocabulary';
+import { formatRecipe, normalizeRecipe } from './src/characters/chargen/recipe';
 
 /**
  * Serve the wiki at a bare `/wiki` in dev and preview. The page itself lives
@@ -13,7 +15,7 @@ import { performanceClipNames, roleOf, type ClipRole } from './src/characters/cl
  */
 function wikiRoute(): Plugin {
   const rewrite = (req: { url?: string }): void => {
-    for (const base of ['/admin', '/wiki', '/review', '/characters', '/island-contract', '/story', '/verbs', '/weather', '/models', '/audio', '/acre', '/island', '/scene', '/water', '/grass', '/sky']) {
+    for (const base of ['/admin', '/wiki', '/review', '/characters', '/island-contract', '/story', '/verbs', '/weather', '/models', '/audio', '/acre', '/island', '/scene', '/water', '/grass', '/sky', '/chargen']) {
       if (req.url === base || (req.url && req.url.startsWith(base + '?'))) {
         req.url = base + '/index.html' + req.url.slice(base.length);
         return;
@@ -215,6 +217,72 @@ function modelCatalog(): Plugin {
   };
 }
 
+const BOOMBOX_DIR = resolve(process.cwd(), 'public/boombox');
+const BOOMBOX_LIBRARY = join(BOOMBOX_DIR, 'library.json');
+const YOUTUBE_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be']);
+
+function boomboxApi(): Plugin {
+  const ROUTE = '/api/boombox';
+  const library = (): Array<{ id: string; title: string; duration: number; file: string }> => {
+    try {
+      return JSON.parse(readFileSync(BOOMBOX_LIBRARY, 'utf8'));
+    } catch {
+      return [];
+    }
+  };
+  return {
+    name: 'postmark-boombox-api',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if ((req.url ?? '').split('?')[0] !== ROUTE) return next();
+        const send = (code: number, body: unknown): void => {
+          res.statusCode = code;
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-store');
+          res.end(JSON.stringify(body));
+        };
+        if (req.method === 'GET') return send(200, library());
+        if (req.method !== 'POST') return send(405, { error: 'GET or POST' });
+        let body = '';
+        req.on('data', (chunk) => { body += chunk; });
+        req.on('end', () => {
+          let link: URL;
+          try {
+            link = new URL(String((JSON.parse(body) as { url?: string }).url ?? '').trim());
+          } catch {
+            return send(400, { error: 'That is not a link.' });
+          }
+          if (!YOUTUBE_HOSTS.has(link.hostname)) return send(400, { error: 'Only YouTube links.' });
+          mkdirSync(BOOMBOX_DIR, { recursive: true });
+          const child = spawn('yt-dlp', [
+            '-x', '--audio-format', 'mp3', '--no-playlist', '--max-filesize', '50M',
+            '--no-simulate', '-j', '--no-progress',
+            '-o', join(BOOMBOX_DIR, '%(id)s.%(ext)s'), '--', link.toString(),
+          ]);
+          let out = '';
+          let err = '';
+          child.stdout.on('data', (chunk) => { out += chunk; });
+          child.stderr.on('data', (chunk) => { err += chunk; });
+          child.on('error', (error) => send(500, { error: `yt-dlp: ${error.message}` }));
+          child.on('close', (code) => {
+            if (code !== 0) return send(500, { error: err.trim().split('\n').pop() || `yt-dlp exited ${code}` });
+            try {
+              const info = JSON.parse(out.trim().split('\n').pop() ?? '') as { id: string; title: string; duration?: number };
+              const track = { id: info.id, title: info.title, duration: info.duration ?? 0, file: `${info.id}.mp3` };
+              const tracks = library().filter((t) => t.id !== track.id);
+              tracks.push(track);
+              writeFileSync(BOOMBOX_LIBRARY, JSON.stringify(tracks, null, 2));
+              send(200, track);
+            } catch (error) {
+              send(500, { error: String((error as Error).message ?? error) });
+            }
+          });
+        });
+      });
+    },
+  };
+}
+
 const PIECE_DIR = resolve(process.cwd(), 'src/world/island/pieces');
 
 /**
@@ -231,6 +299,7 @@ const PIECE_DIR = resolve(process.cwd(), 'src/world/island/pieces');
  */
 function acrePiecesApi(): Plugin {
   const ROUTE = '/acre/pieces';
+  const quiet = new Set<string>();
   const pieceFile = (id: string, group?: string): string => {
     if (!/^[a-z0-9-]+$/i.test(id)) throw new Error(`"${id}" is not a legal piece id`);
     if (group !== undefined && group !== 'unsorted') {
@@ -279,6 +348,11 @@ function acrePiecesApi(): Plugin {
 
   return {
     name: 'postmark-acre-pieces-api',
+    handleHotUpdate(ctx) {
+      if (!quiet.delete(ctx.file)) return;
+      for (const module of ctx.modules) ctx.server.moduleGraph.invalidateModule(module);
+      return [];
+    },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = (req.url ?? '').split('?')[0];
@@ -304,7 +378,7 @@ function acrePiecesApi(): Plugin {
             req.on('data', (chunk) => { body += chunk; });
             req.on('end', () => {
               try {
-                const payload = JSON.parse(body) as { text?: string; group?: string };
+                const payload = JSON.parse(body) as { text?: string; group?: string; quiet?: boolean };
                 const existing = findFile(id);
                 const text = payload.text
                   ?? (existing ? readFileSync(resolve(PIECE_DIR, existing), 'utf8') : '');
@@ -313,6 +387,8 @@ function acrePiecesApi(): Plugin {
                 const canonical = formatAcre(piece);
                 const target = pieceFile(id, payload.group);
                 mkdirSync(dirname(target), { recursive: true });
+                const previous = existing ? readFileSync(resolve(PIECE_DIR, existing), 'utf8') : null;
+                if (payload.quiet && previous !== canonical) quiet.add(target);
                 writeFileSync(target, canonical);
                 // A move is a write to the new path and an unlink of the old, so
                 // a failed write leaves the piece where it was rather than
@@ -772,10 +848,62 @@ function cutsceneTakesApi(): Plugin {
   };
 }
 
+const RECIPE_DIR = resolve(process.cwd(), 'src/content/kindly-forward/recipes');
+
+function chargenRecipesApi(): Plugin {
+  const ROUTE = '/chargen/recipes';
+  const recipeFile = (id: string): string => {
+    if (!/^[a-z0-9-]+$/.test(id)) throw new Error(`"${id}" is not a legal recipe id`);
+    return resolve(RECIPE_DIR, `${id}.json`);
+  };
+  return {
+    name: 'postmark-chargen-recipes-api',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = (req.url ?? '').split('?')[0];
+        if (url !== ROUTE && !url.startsWith(ROUTE + '/')) return next();
+        const id = url === ROUTE ? '' : decodeURIComponent(url.slice(ROUTE.length + 1));
+        const send = (code: number, body: unknown): void => {
+          res.statusCode = code;
+          res.setHeader('Content-Type', 'application/json');
+          res.setHeader('Cache-Control', 'no-store');
+          res.end(JSON.stringify(body));
+        };
+        try {
+          if (req.method === 'GET' && id === '') {
+            let names: string[] = [];
+            try { names = readdirSync(RECIPE_DIR).filter((name) => extname(name) === '.json').sort(); } catch { names = []; }
+            return send(200, names.map((name) => ({
+              id: basename(name, '.json'),
+              recipe: JSON.parse(readFileSync(resolve(RECIPE_DIR, name), 'utf8')),
+            })));
+          }
+          if (req.method === 'PUT' && id) {
+            let body = '';
+            req.on('data', (chunk) => { body += chunk; });
+            req.on('end', () => {
+              try {
+                const canonical = formatRecipe(normalizeRecipe(JSON.parse(body)));
+                mkdirSync(RECIPE_DIR, { recursive: true });
+                writeFileSync(recipeFile(id), canonical);
+                send(200, { id });
+              } catch (error) { send(400, { error: String((error as Error).message ?? error) }); }
+            });
+            return;
+          }
+          return send(405, { error: `${req.method} not allowed on ${url}` });
+        } catch (error) {
+          return send(400, { error: String((error as Error).message ?? error) });
+        }
+      });
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
     wikiRoute(), modelCatalog(), acrePiecesApi(), islandTemplatesApi(),
-    cutsceneScenesApi(), cutsceneSetsApi(), cutsceneTakesApi(), authoredAssetReload(),
+    cutsceneScenesApi(), cutsceneSetsApi(), cutsceneTakesApi(), authoredAssetReload(), boomboxApi(), chargenRecipesApi(),
   ],
   server: {
     port: 5173,
@@ -800,6 +928,7 @@ export default defineConfig({
         water: 'water/index.html',
         grass: 'grass/index.html',
         sky: 'sky/index.html',
+        chargen: 'chargen/index.html',
       },
     },
   },

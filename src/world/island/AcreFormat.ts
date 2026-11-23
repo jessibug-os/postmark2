@@ -68,7 +68,7 @@ function parseFixture(body: string, file: string, line: number): AcreFixture {
   }
 
   let turn = 0;
-  let ground: 'conform' | 'rigid' = 'conform';
+  let ground: AcreFixture['ground'] = 'conform';
   while (tokens.length > 0) {
     const word = tokens.shift();
     if (word === 'turn') {
@@ -76,8 +76,8 @@ function parseFixture(body: string, file: string, line: number): AcreFixture {
       if (!Number.isFinite(turn)) throw new AcreParseError(file, line, `${kind} "${id}" has a malformed turn`);
     } else if (word === 'ground') {
       const mode = tokens.shift();
-      if (mode !== 'conform' && mode !== 'rigid') {
-        throw new AcreParseError(file, line, `${kind} "${id}": ground is "conform" or "rigid", got "${mode ?? ''}"`);
+      if (mode !== 'conform' && mode !== 'rigid' && mode !== 'sea') {
+        throw new AcreParseError(file, line, `${kind} "${id}": ground is "conform", "rigid" or "sea", got "${mode ?? ''}"`);
       }
       ground = mode;
     } else {

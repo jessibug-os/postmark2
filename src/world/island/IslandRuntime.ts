@@ -560,6 +560,7 @@ interface CoastGrid {
 }
 
 const COAST_GRIDS = new WeakMap<IslandMap, CoastGrid>();
+let lastCoast: { island: IslandMap; grid: CoastGrid } | null = null;
 
 // --- the coast's three boundaries ------------------------------------------
 /**
@@ -642,8 +643,9 @@ function coastWarpAt(x: number, z: number, salt: number): number {
 }
 
 function coastGrid(island: IslandMap): CoastGrid {
+  if (lastCoast?.island === island) return lastCoast.grid;
   const cached = COAST_GRIDS.get(island);
-  if (cached) return cached;
+  if (cached) return (lastCoast = { island, grid: cached }).grid;
   const w = GRID_COLS * ACRE_SIZE + 1;
   const h = GRID_ROWS * ACRE_SIZE + 1;
   const data = new Float32Array(w * h);
@@ -731,6 +733,7 @@ function coastGrid(island: IslandMap): CoastGrid {
 
   const grid: CoastGrid = { w, h, data, warp };
   COAST_GRIDS.set(island, grid);
+  lastCoast = { island, grid };
   return grid;
 }
 
@@ -803,6 +806,7 @@ interface RiverGrid {
 }
 
 const RIVER_GRIDS = new WeakMap<IslandMap, RiverGrid>();
+let lastRiver: { island: IslandMap; grid: RiverGrid } | null = null;
 
 /**
  * Distance to the river bank, on the same one-unit lattice as the coast field.
@@ -819,8 +823,9 @@ const RIVER_GRIDS = new WeakMap<IslandMap, RiverGrid>();
  * bank-outward-positive and the sign is flipped to give "how far inside".
  */
 function riverGrid(island: IslandMap): RiverGrid {
+  if (lastRiver?.island === island) return lastRiver.grid;
   const cached = RIVER_GRIDS.get(island);
-  if (cached) return cached;
+  if (cached) return (lastRiver = { island, grid: cached }).grid;
   const w = GRID_COLS * ACRE_SIZE * RIVER_GRID_SCALE + 1;
   const h = GRID_ROWS * ACRE_SIZE * RIVER_GRID_SCALE + 1;
   const data = new Float32Array(w * h).fill(-RIVER_BAND);
@@ -880,6 +885,7 @@ function riverGrid(island: IslandMap): RiverGrid {
 
   const grid: RiverGrid = { w, h, data };
   RIVER_GRIDS.set(island, grid);
+  lastRiver = { island, grid };
   return grid;
 }
 
@@ -1468,9 +1474,12 @@ function sculptedElevation(island: IslandMap, acre: Acre, u: number, v: number):
     || (a.regionTier !== undefined && a.regionTier !== a.tier));
   // A corner sample includes a diagonal acre as well as its two neighbours.
   // All four pieces must opt into the same interpolation at that junction.
-  const cols = [0, ...(u < 1/16 ? [-1] : u > 15/16 ? [1] : [])];
-  const rows = [0, ...(v < 1/16 ? [-1] : v > 15/16 ? [1] : [])];
-  if (!cols.some(dc => rows.some(dr => shaped(island.at(acre.col+dc, acre.row+dr))))) return null;
+  const dc = u < 1/16 ? -1 : u > 15/16 ? 1 : 0;
+  const dr = v < 1/16 ? -1 : v > 15/16 ? 1 : 0;
+  if (!shaped(island.at(acre.col, acre.row))
+    && !(dc && shaped(island.at(acre.col + dc, acre.row)))
+    && !(dr && shaped(island.at(acre.col, acre.row + dr)))
+    && !(dc && dr && shaped(island.at(acre.col + dc, acre.row + dr)))) return null;
   const gx = u * PIECE_SIZE - .5, gz = v * PIECE_SIZE - .5;
   const ix = Math.floor(gx), iz = Math.floor(gz);
   const at = (x: number, z: number): CliffSample => {

@@ -1,11 +1,12 @@
 import * as THREE from 'three';
-import type { TownMap } from '../TownMap';
+import type { Collider, PlacedObject, TownMap } from '../TownMap';
 import { assets } from '../../core/AssetLoader';
 import { ACTIVE_LAYOUT } from '../mapConstants';
 import { heightAt } from '../terrain';
-import { islandFixtures } from '../island/AcreFixtures';
+import { islandFixtures, type PlacedFixture } from '../island/AcreFixtures';
 import { activeGameObject } from '../../content/activePack';
 import { componentsOf } from '../objects/GameObjectFormat';
+import { addDeck, type Deck } from '../decks';
 
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -33,58 +34,73 @@ export function buildAcreFixtures(this: TownMap): void {
 
   const group = new THREE.Group();
   group.name = 'acre-fixtures';
-  this.placedObjects.length = 0;
-  for (const placed of islandFixtures(island, heightAt)) {
-    if (placed.kind !== 'prop' || !placed.object) continue;
-    const definition = activeGameObject(placed.object);
-    if (!definition) {
-      console.warn(
-        `[fixtures] acre (${placed.acre.col},${placed.acre.row}) prop "${placed.id}" `
-        + `names object type "${placed.object}", which this content pack does not define`,
-      );
-      continue;
-    }
-    const id = assets.idForFile(definition.model);
-    if (!id) {
-      // Named but not loadable: the file is on disk and `/acre` will happily
-      // offer it, but the runtime only preloads what its own manifest lists.
-      // Reported rather than thrown — one unbuildable prop should not cost the
-      // whole island — and named, because "nothing appeared" is the symptom
-      // that sent someone looking for this code in the first place.
-      console.warn(
-        `[fixtures] acre (${placed.acre.col},${placed.acre.row}) prop "${placed.id}" is a `
-        + `"${placed.object}", whose model "${definition.model}" is not in the runtime `
-        + 'asset manifest',
-      );
-      continue;
-    }
-    const model = assets.model(id);
-    // Named by acre *and* fixture. A fixture id is only unique within its own
-    // piece — marks are global and enforced, props are not — so two acres each
-    // carrying a `prop-1` are perfectly legal and did both land here under one
-    // name. The acre makes the handle unambiguous without making ids global,
-    // which they have no reason to be.
-    model.name = `acre-fixture-${placed.acre.col}-${placed.acre.row}-${placed.id}`;
-    model.position.copy(placed.position);
-    model.rotation.y = placed.yaw;
-    group.add(model);
-    this.placedObjects.push({
-      id: `${placed.acre.col}-${placed.acre.row}-${placed.id}`,
-      type: placed.object,
-      definition,
-      position: placed.position.clone(),
-      yaw: placed.yaw,
-      object: model,
-    });
-
-    // Collision comes from the object type, not from the instance: what a
-    // bench blocks is a property of benches. Circles are traced in the object's
-    // own frame, so each turns with the instance that placed it.
-    for (const circle of componentsOf(definition, 'collide')) {
-      const spun = new THREE.Vector3(circle.at.x, 0, circle.at.z)
-        .applyAxisAngle(UP, placed.yaw);
-      this.addCollider(placed.position.x + spun.x, placed.position.z + spun.z, circle.radius);
-    }
-  }
   this.group.add(group);
+  this.placedObjects.length = 0;
+  for (const placed of islandFixtures(island, heightAt)) this.spawnFixture(placed);
+}
+
+export function spawnFixture(this: TownMap, placed: PlacedFixture): PlacedObject | null {
+  if (placed.kind !== 'prop' || !placed.object) return null;
+  const definition = activeGameObject(placed.object);
+  if (!definition) {
+    console.warn(
+      `[fixtures] acre (${placed.acre.col},${placed.acre.row}) prop "${placed.id}" `
+      + `names object type "${placed.object}", which this content pack does not define`,
+    );
+    return null;
+  }
+  const id = assets.idForFile(definition.model);
+  if (!id) {
+    console.warn(
+      `[fixtures] acre (${placed.acre.col},${placed.acre.row}) prop "${placed.id}" is a `
+      + `"${placed.object}", whose model "${definition.model}" is not in the runtime `
+      + 'asset manifest',
+    );
+    return null;
+  }
+  const model = assets.model(id);
+  model.name = `acre-fixture-${placed.acre.col}-${placed.acre.row}-${placed.id}`;
+  model.position.copy(placed.position);
+  model.rotation.y = placed.yaw;
+  this.group.getObjectByName('acre-fixtures')?.add(model);
+  const colliders: Collider[] = [];
+  const decks: Deck[] = componentsOf(definition, 'deck').map((deck) => addDeck({
+    x: placed.position.x, z: placed.position.z, yaw: placed.yaw,
+    halfX: deck.halfX, halfZ: deck.halfZ, top: placed.position.y, open: deck.open,
+  }));
+  const object: PlacedObject = {
+    id: `${placed.acre.col}-${placed.acre.row}-${placed.id}`,
+    type: placed.object,
+    definition,
+    position: placed.position.clone(),
+    yaw: placed.yaw,
+    object: model,
+    acre: placed.acre,
+    piece: placed.piece ?? '',
+    fixture: placed.id,
+    colliders,
+    decks,
+  };
+  this.placedObjects.push(object);
+  for (const circle of componentsOf(definition, 'collide')) {
+    const spun = new THREE.Vector3(circle.at.x, 0, circle.at.z)
+      .applyAxisAngle(UP, placed.yaw);
+    colliders.push(this.addCollider(placed.position.x + spun.x, placed.position.z + spun.z, circle.radius));
+  }
+  return object;
+}
+
+export function despawnFixture(this: TownMap, object: PlacedObject): void {
+  object.object.removeFromParent();
+  for (const collider of object.colliders) this.removeCollider(collider);
+  for (const deck of object.decks) deck.active = false;
+  const index = this.placedObjects.indexOf(object);
+  if (index >= 0) this.placedObjects.splice(index, 1);
+}
+
+export function respawnFixture(this: TownMap, object: PlacedObject): void {
+  this.group.getObjectByName('acre-fixtures')?.add(object.object);
+  for (const collider of object.colliders) collider.active = true;
+  for (const deck of object.decks) deck.active = true;
+  if (!this.placedObjects.includes(object)) this.placedObjects.push(object);
 }

@@ -1,0 +1,6 @@
+# object: dock-square
+# name: Timber pier landing
+# model: dock-square.glb
+# note: Origin is the centre of the deck's top surface.
+
+deck 1.5 1.5

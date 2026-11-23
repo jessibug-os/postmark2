@@ -17,6 +17,7 @@
     "url": "/assets/orchard-tree.glb"
   },
   "postmaster": { "type": "model", "url": "/assets/postmaster-v29.glb" },
+  "chargen-kit": { "type": "model", "url": "/assets/chargen-kit.glb" },
   "keeper": { "type": "model", "url": "/assets/keeper-v01.glb" },
   "albert": { "type": "model", "url": "/assets/albert-v15.glb" },
   "mira": { "type": "model", "url": "/assets/mira-v14.glb" },
@@ -33,6 +34,10 @@
   "ferry": { "type": "model", "url": "/assets/ferry.glb" },
   "post-office": { "type": "model", "url": "/assets/post-office.glb" },
   "lantern-post": { "type": "model", "url": "/assets/lantern-post.glb" },
+  "dock": { "type": "model", "url": "/assets/dock.glb" },
+  "dock-square": { "type": "model", "url": "/assets/dock-square.glb" },
+  "dock-step": { "type": "model", "url": "/assets/dock-step.glb" },
+  "boat": { "type": "model", "url": "/assets/boat.glb" },
   "ferry-passenger": { "type": "model", "url": "/assets/ferry-passenger.glb" },
   "bunny": { "type": "model", "url": "/assets/equipment/bunny.glb" },
   "staff": { "type": "model", "url": "/assets/equipment/staff.glb" },

@@ -583,8 +583,7 @@ export class AudioSystem {
   setMusicEnabled(on: boolean): void {
     this.musicEnabled = on;
     if (this.musicBus && this.musicSendBus && this.ctx) {
-      // Re-enabling while dialogue is open must come back ducked, not to full.
-      const level = on ? (this.ducked ? 0.34 : 0.8) : 0;
+      const level = this.musicLevel();
       this.musicBus.gain.setTargetAtTime(level, this.ctx.currentTime, 0.3);
       this.musicSendBus.gain.setTargetAtTime(level, this.ctx.currentTime, 0.3);
     }
@@ -798,14 +797,34 @@ export class AudioSystem {
    * stop mid-phrase without disturbing anything else.
    */
   private ducked = false;
+  private silenced = false;
+  private musicLevel(): number {
+    if (!this.musicEnabled || this.silenced) return 0;
+    return this.ducked ? 0.34 : 0.8;
+  }
   setDucked(on: boolean): void {
     if (this.ducked === on) return;
     this.ducked = on;
     if (!this.ctx || !this.musicBus || !this.musicSendBus || !this.musicEnabled) return;
     const t = this.ctx.currentTime;
-    const level = on ? 0.34 : 0.8;
+    const level = this.musicLevel();
     this.musicBus.gain.setTargetAtTime(level, t, on ? 0.12 : 0.5);
     this.musicSendBus.gain.setTargetAtTime(level, t, on ? 0.12 : 0.5);
+  }
+  setSilenced(on: boolean): void {
+    if (this.silenced === on) return;
+    this.silenced = on;
+    if (!this.ctx || !this.musicBus || !this.musicSendBus) return;
+    const t = this.ctx.currentTime;
+    const level = this.musicLevel();
+    this.musicBus.gain.setTargetAtTime(level, t, 0.6);
+    this.musicSendBus.gain.setTargetAtTime(level, t, 0.6);
+  }
+  get context(): AudioContext | null {
+    return this.ctx;
+  }
+  get output(): GainNode | null {
+    return this.master;
   }
 
   // -------------------------------------------------------------- ambience
@@ -928,6 +947,36 @@ export class AudioSystem {
       noise.connect(noiseGain).connect(filter);
       noise.start();
       this.beds.set(name, { pitched, filter, filterBase: 420, gain, peak: 0.5 });
+      return;
+    }
+
+    if (name === 'outboard') {
+      filter.frequency.value = 950;
+      const body = ctx.createGain();
+      body.gain.value = 0.26;
+      body.connect(filter);
+      for (const [type, base] of [['square', 62], ['sawtooth', 124.8]] as const) {
+        const osc = ctx.createOscillator();
+        osc.type = type;
+        osc.frequency.value = base;
+        osc.connect(body);
+        osc.start();
+        pitched.push({ node: osc, base });
+      }
+      const putt = ctx.createOscillator();
+      putt.type = 'square';
+      putt.frequency.value = 13;
+      const depth = ctx.createGain();
+      depth.gain.value = 0.2;
+      putt.connect(depth).connect(body.gain);
+      putt.start();
+      pitched.push({ node: putt, base: 13 });
+      const noise = this.noiseSource();
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.value = 0.1;
+      noise.connect(noiseGain).connect(filter);
+      noise.start();
+      this.beds.set(name, { pitched, filter, filterBase: 950, gain, peak: 0.34 });
       return;
     }
 

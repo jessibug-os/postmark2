@@ -10,6 +10,9 @@ import { SHORE_CYCLE as C } from './ShoreCycle';
 import { RIVER_MOUTH_RUN, RIVER_MOUTH_END, riverMouthHeight } from './RiverMouth';
 import { channelFlow } from './ChannelFlow';
 import { TILE_U, TILE_V, FLOW_CYCLE } from './WaterTextures';
+import { WAKE_SAMPLES, wakeCentre, wakeTrail } from './BoatWake';
+import { RING_FADE_FAR, RING_FADE_NEAR, RING_GLSL, RING_SPACING, RING_YIELD_FAR, RING_YIELD_NEAR } from './Swell';
+import { offshoreField, offshoreUv } from './OffshoreField';
 
 interface OceanUniforms {
   coastTime: { value: number };
@@ -19,7 +22,22 @@ interface OceanUniforms {
   coastCrest: { value: THREE.Texture };
   coastFresh: { value: THREE.Color };
   coastCurrent: { value: THREE.Texture | null };
+  wakeTrail: { value: THREE.Vector4[] };
+  wakeCentre: { value: THREE.Vector2 };
+  offshoreMap: { value: THREE.Texture };
+  offshoreUv: { value: THREE.Vector4 };
 }
+
+const WAKE_NOISE = /* glsl */ `
+float wakeHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float wakeNoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(wakeHash(i), wakeHash(i + vec2(1.0, 0.0)), f.x),
+    mix(wakeHash(i + vec2(0.0, 1.0)), wakeHash(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+`;
 
 const FRAGMENT = /* glsl */ `
   float phase = fract(coastTime / ${C.seconds} + sin(vCoastWorld.x * .045 + vCoastWorld.z * .027) * .18
@@ -41,7 +59,8 @@ const FRAGMENT = /* glsl */ `
   float aa = max(fwidth(d) * 1.2, .025);
   float coverage = 1.0 - smoothstep(front - aa, front + aa, d);
   float depth = max(0.0, -vCoast.y);
-  float deep = smoothstep(0.0, 1.6, depth);
+  float ringD = ringDistance(vCoastWorld.xz);
+  float deep = max(smoothstep(0.0, 1.6, depth), 1.0 - smoothstep(-9.0, -6.0, ringD));
   vec3 water = diffuse * mix(1.05, .72, deep);
   float freshDepth = clamp(depth / .62, 0.0, 1.0);
   vec2 currentUV = vCoastWorld.xz / vec2(${TILE_U}, ${TILE_V.toFixed(1)});
@@ -84,6 +103,49 @@ const FRAGMENT = /* glsl */ `
   float waterAlpha = mix(mix(.24, .94, deep), mix(.28, .62, freshDepth), shelter) * coverage;
   waterAlpha = max(waterAlpha, foam);
   water = mix(water, coastFoam, foam);
+
+  vec2 ringGrad = vec2(dFdx(ringD) * py.y - dFdy(ringD) * px.y,
+    dFdy(ringD) * px.x - dFdx(ringD) * py.x) / (abs(det) < .000001 ? .000001 : det);
+  float ringReach = length(ringGrad);
+  float ringPos = (${C.low} - ringD) / ${RING_SPACING} + phase;
+  float ringBack = fract(ringPos) * ${RING_SPACING} / clamp(ringReach, .25, 1.0);
+  float ringFar = smoothstep(${RING_FADE_FAR}, ${RING_FADE_NEAR}, ringD);
+  float ringWidth = mix(.3, .55, ringFar);
+  float ringSheet = texture2D(coastCrest, vec2(vCoastWorld.x * .15 + vCoastWorld.z * .12, clamp(ringBack / ringWidth, 0.0, 1.0))).a;
+  float ringBreak = smoothstep(.38, .52, wakeNoise(vCoastWorld.xz * .3 + floor(ringPos) * 13.7));
+  float ringClean = 1.0 - smoothstep(.3, .7, fwidth(ringD) / ringWidth);
+  float ring = ringSheet * (1.0 - smoothstep(ringWidth * .9, ringWidth, ringBack))
+    * ringFar * (1.0 - smoothstep(${RING_YIELD_FAR}, ${RING_YIELD_NEAR}, vCoast.x)) * smoothstep(.12, .5, ringReach)
+    * ringBreak * ringClean * .45;
+  water = mix(water, coastFoam, ring);
+  waterAlpha = max(waterAlpha, ring * coverage);
+
+  float wakeH = 0.0;
+  vec2 wakeG = vec2(0.0);
+  float wakeChurn = 0.0;
+  if (distance(vCoastWorld.xz, wakeCentre) < 28.0) {
+    for (int i = 0; i < ${WAKE_SAMPLES}; i++) {
+      vec4 s = wakeTrail[i];
+      float wakeAge = coastTime - s.z;
+      if (wakeAge < 0.0 || wakeAge > 3.4) continue;
+      vec2 off = vCoastWorld.xz - s.xy;
+      float r = length(off) + .0001;
+      float ring = r - wakeAge * 1.6 - .5;
+      float env = exp(-ring * ring * 2.2) * exp(-wakeAge * 1.05) * s.w * .3;
+      wakeH += sin(ring * 8.0) * env;
+      wakeG += off / r * cos(ring * 8.0) * env;
+      float width = .45 + wakeAge * .55;
+      wakeChurn += smoothstep(.3, 1.0, s.w) * exp(-r * r / (width * width)) * exp(-wakeAge * 1.5);
+    }
+  }
+  float slope = clamp(dot(wakeG, vec2(-.45, -.9)), -1.0, 1.0);
+  water *= 1.0 + slope * .32 + clamp(wakeH, -1.0, 1.0) * .1;
+  water = mix(water, coastFoam, smoothstep(.25, .7, wakeH) * .45);
+  float breakup = .3 + wakeNoise(vCoastWorld.xz * 2.3 + coastTime * vec2(.35, -.25)) * .7
+    + wakeNoise(vCoastWorld.xz * 5.3 - coastTime * vec2(.2, .45)) * .4;
+  float churn = smoothstep(.15, .75, wakeChurn * breakup);
+  water = mix(water, coastFoam, churn * .85);
+  waterAlpha = max(waterAlpha, churn * coverage);
 
   // Time since the most recent retreat crossed this point. Invert smoothstep
   // to obtain that moment; wet sand persists through the quiet part of the cycle.
@@ -134,10 +196,9 @@ export function buildCoastalOcean(
       currents.push(0, 0);
     }
   }
-  const sampleCache = new Map<string, [number, number, number, number]>();
-  const sample = (x: number, z: number): [number, number, number, number] => {
-    const key = `${x.toFixed(5)},${z.toFixed(5)}`;
-    const cached = sampleCache.get(key);
+  const sampleCache: Array<[number, number, number, number] | undefined> = new Array(p.count);
+  const sample = (j: number, x: number, z: number): [number, number, number, number] => {
+    const cached = sampleCache[j];
     if (cached) return cached;
     const d = coastDistance(island, x, z);
     const acre = island.at(Math.floor((x - island.bounds.minX) / ACRE_SIZE), Math.floor((z - island.bounds.minZ) / ACRE_SIZE));
@@ -147,14 +208,14 @@ export function buildCoastalOcean(
       ? sampleIslandSurface(island, x, z).water ?? (TIER_HEIGHT[0] - .95 * .35) : SEA_LEVEL;
     const level = bank > -2.5 ? riverMouthHeight(riverLevel, SEA_LEVEL, d) : SEA_LEVEL;
     const value: [number, number, number, number] = [d, beach, bank, level];
-    sampleCache.set(key, value);
+    sampleCache[j] = value;
     return value;
   };
   for (let i = 0; i < n; i += 3) {
     const tri = [0, 1, 2].map(k => {
       const j = index ? index.getX(i + k) : i + k;
       const x = p.getX(j) + ground.position.x, z = -p.getY(j) + ground.position.z;
-      const h = p.getZ(j), [d, beach, bank, level] = sample(x, z);
+      const h = p.getZ(j), [d, beach, bank, level] = sample(j, x, z);
       return { x, z, h, d, beach, bank, distance: d, level };
     });
     const cx = tri.reduce((a,v)=>a+v.x,0)/3, cz = tri.reduce((a,v)=>a+v.z,0)/3;
@@ -204,6 +265,10 @@ export function buildCoastalOcean(
     coastCrest: {value: texture},
     coastFresh: {value: freshMaterial.color},
     coastCurrent: {value: freshMaterial.map},
+    wakeTrail: { value: wakeTrail },
+    wakeCentre: { value: wakeCentre },
+    offshoreMap: { value: offshoreField(island).texture },
+    offshoreUv: { value: offshoreUv(offshoreField(island)) },
   };
   material.userData.coastalOcean = uniforms;
   const baseCompile = material.onBeforeCompile, baseKey = material.customProgramCacheKey();
@@ -212,10 +277,10 @@ export function buildCoastalOcean(
     Object.assign(shader.uniforms, uniforms);
     shader.vertexShader = 'attribute vec2 current; varying vec2 vCurrent; attribute vec2 estuary; varying vec2 vEstuary; attribute vec3 coast; varying vec3 vCoast; varying vec3 vCoastWorld;\n' + shader.vertexShader
       .replace('#include <begin_vertex>', '#include <begin_vertex>\nvCurrent = current; vEstuary = estuary; vCoast = coast; vCoastWorld = (modelMatrix * vec4(position,1.0)).xyz;');
-    shader.fragmentShader = 'uniform vec3 coastFresh; uniform sampler2D coastCurrent; varying vec2 vCurrent; varying vec2 vEstuary; varying vec3 vCoast; varying vec3 vCoastWorld;\nuniform float coastTime; uniform vec3 coastFoam; uniform vec3 coastMoon; uniform float coastMoonlight; uniform sampler2D coastCrest;\n'
+    shader.fragmentShader = 'uniform vec3 coastFresh; uniform sampler2D coastCurrent; varying vec2 vCurrent; varying vec2 vEstuary; varying vec3 vCoast; varying vec3 vCoastWorld;\nuniform vec4 wakeTrail[' + WAKE_SAMPLES + ']; uniform vec2 wakeCentre;\n' + WAKE_NOISE + RING_GLSL + 'uniform float coastTime; uniform vec3 coastFoam; uniform vec3 coastMoon; uniform float coastMoonlight; uniform sampler2D coastCrest;\n'
       + shader.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\n' + FRAGMENT);
   };
-  material.customProgramCacheKey = () => `${baseKey}-coastal-ocean-v5`;
+  material.customProgramCacheKey = () => `${baseKey}-coastal-ocean-v13`;
   material.needsUpdate = true;
   const mesh = new THREE.Mesh(geometry, material);
   mesh.name = 'island-ocean';

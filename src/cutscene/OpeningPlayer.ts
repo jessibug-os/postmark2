@@ -185,7 +185,7 @@ export class OpeningPlayer {
     // after the opening, and the first thing the player is asked to do is start
     // clearing it. See `StrandedLetters` for why this stays where the lantern
     // trail did not.
-    const berth = placements.get('ferry')?.markWorld('dock.wake') ?? player.position.clone();
+    const berth = islandMarks.get('dock.berth')?.position.clone() ?? player.position.clone();
     const inland = approachRoute(berth, islandMarks.get('spring.approach')?.position ?? berth);
     if (inland) strandLetters(scene, inland);
 

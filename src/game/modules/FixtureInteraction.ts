@@ -161,11 +161,12 @@ export function fixtureActions(this: Game): Array<{ text: string; key: string; r
       // The format refuses an `interact sit` naming a seat that does not exist,
       // so this cannot be missing on a file that parsed.
       if (!seat) continue;
+      const { position, facing } = seatWorld(object, seat);
+      if ((pos.x - position.x) * Math.sin(facing) + (pos.z - position.z) * Math.cos(facing) <= 0) continue;
       actions.push({
-        text: `[E] ${interact.prompt ?? 'Sit'}`,
+        text: '',
         key: 'KeyE',
         run: () => {
-          const { position, facing } = seatWorld(object, seat);
           const span = this.player.animation.performanceLength(SEAT_CLIPS.enter);
           if (!this.player.sitAt(position, facing, SEAT_CLIPS.hold, SEAT_CLIPS.enter)) {
             // A character whose packet has no seated clip. Said out loud,

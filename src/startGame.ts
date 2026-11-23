@@ -6,7 +6,7 @@ import { sceneSource } from './cutscene/scene/SceneLibrary';
 const container = document.getElementById('app')!;
 await assets.preload([
   'bench', 'benchTimber', 'sparks', 'orchardTree',
-  'postmaster', 'albert', 'mira', 'rowan', 'liliane',
+  'postmaster', 'chargen-kit', 'albert', 'mira', 'rowan', 'liliane',
   'amina', 'niko', 'maeve', 'vittorio', 'ferry-recruit', 'keeper',
   'bunny', 'staff', 'flower-pot',
   // Opening sets. The post office and its lanterns are placed by the town

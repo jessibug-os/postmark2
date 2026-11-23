@@ -351,7 +351,7 @@ export function buildFerrySet(scene: THREE.Object3D, island?: IslandMap): FerryS
   scene.add(group);
   // A boat on water moves. Registered after the group is placed and parented,
   // because `float` captures the rest pose it works from.
-  float(group, { rise: 0.055, roll: 0.013, period: 4.9, phase: 0.4 });
+  float(group, { length: 8, beam: 3 });
 
   return {
     group,

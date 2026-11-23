@@ -17,10 +17,11 @@ export function save(this: Game, auto: boolean): void {
       playedSeconds: Math.floor(this.playedSeconds),
       player: {
         // If saving from indoors, persist the outdoor return point.
-        x: this.currentInterior ? this.interiorReturn.x : this.player.position.x,
-        z: this.currentInterior ? this.interiorReturn.z : this.player.position.z,
+        x: this.currentInterior ? this.interiorReturn.x : (this.boatReturn() ?? this.player.position).x,
+        z: this.currentInterior ? this.interiorReturn.z : (this.boatReturn() ?? this.player.position).z,
         coatItemId: this.equippedCoat,
         equippedTool: this.player.equippedTool,
+        look: this.player.look,
       },
       inventory: this.inventory.serialize(),
       museum: [...this.museumDonations],
@@ -77,8 +78,12 @@ export function restore(this: Game, data: SaveData): void {
 
     this.player.position.set(data.player.x, heightAt(data.player.x, data.player.z), data.player.z);
     this.equippedCoat = data.player.coatItemId;
-    const coat = ITEMS[this.equippedCoat];
-    if (coat?.clothingColor) this.player.setCoatColor(coat.clothingColor);
+    if (data.player.look) {
+      this.player.setLook(data.player.look);
+    } else {
+      const coat = ITEMS[this.equippedCoat];
+      if (coat?.clothingColor) this.player.setCoatColor(coat.clothingColor);
+    }
     if (data.player.equippedTool && this.inventory.has(data.player.equippedTool)) {
       this.player.equip(data.player.equippedTool as ToolId);
     }

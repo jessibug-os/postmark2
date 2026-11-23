@@ -54,12 +54,30 @@ async function findPath(page) {
       cz: Math.min(rows - 1, Math.max(0, Math.round((z - bounds.minZ) / STEP))),
     });
     const toWorld = (cx, cz) => ({ x: bounds.minX + cx * STEP, z: bounds.minZ + cz * STEP });
+    const decks = (game.map?.placedObjects ?? []).flatMap((o) => o.decks ?? []).filter((d) => d.active);
+    const deckAt = (x, z) => decks.filter((d) => {
+      const dx = x - d.x, dz = z - d.z, c = Math.cos(d.yaw), s = Math.sin(d.yaw);
+      return Math.abs(dx * c - dz * s) <= d.halfX && Math.abs(dx * s + dz * c) <= d.halfZ;
+    }).sort((a, b) => b.top - a.top)[0] ?? null;
+    const onDeck = (x, z) => deckAt(x, z) !== null;
+    const footing = (x, z) => { const d = deckAt(x, z); return !d ? 'ground' : d.open ? 'step' : 'deck'; };
+    const crossable = (a, b) => {
+      const n = Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / 0.1);
+      let current = footing(a.x, a.z);
+      for (let i = 1; i <= n; i++) {
+        const next = footing(a.x + (b.x - a.x) * i / n, a.z + (b.z - a.z) * i / n);
+        if (current !== next && current !== 'step' && next !== 'step') return false;
+        current = next;
+      }
+      return true;
+    };
+    const walkable = (x, z) => onDeck(x, z) || field.walkableAt(x, z);
     const standable = (x, z, r) =>
-      field.walkableAt(x, z)
-      && field.walkableAt(x + r, z)
-      && field.walkableAt(x - r, z)
-      && field.walkableAt(x, z + r)
-      && field.walkableAt(x, z - r);
+      walkable(x, z)
+      && walkable(x + r, z)
+      && walkable(x - r, z)
+      && walkable(x, z + r)
+      && walkable(x, z - r);
     // Props and buildings push the player out of a radius the walkability mask
     // knows nothing about (`TownMap.collide`), so they block the path too.
     const solids = (game.map?.colliders ?? []).filter((c) => c.active);
@@ -102,6 +120,7 @@ async function findPath(page) {
           if (nx < 0 || nz < 0 || nx >= cols || nz >= rows) continue;
           const next = nz * cols + nx;
           if (previous[next] !== -1 || !walkable[next]) continue;
+          if (!crossable(toWorld(cx, cz), toWorld(nx, nz))) continue;
           previous[next] = current;
           queue.push(next);
         }

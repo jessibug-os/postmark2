@@ -17,6 +17,7 @@ import * as THREE from 'three';
 import { ACRE_SIZE, acreCentre } from './AcreLibrary';
 import type { IslandMap } from './IslandMap';
 import { placementsById } from './PieceLibrary';
+import { SEA_LEVEL } from './IslandRuntime';
 import type { PieceKind } from './AcreLibrary';
 import type { AcreFixture } from './AcrePiece';
 import { activeGameObject } from '../../content/activePack';
@@ -38,6 +39,7 @@ export interface PlacedFixture {
   yaw: number;
   /** Degrees clockwise in the acre's frame, before conversion to yaw. */
   turn: number;
+  piece?: string;
 }
 
 /**
@@ -70,7 +72,8 @@ export function placeFixture(
   // `conform` re-samples under the fixture itself; `rigid` measures from the
   // acre's centre, so a building's interior marks keep their spacing instead of
   // riding the slope the floor is cutting through.
-  const base = fixture.ground === 'conform' ? ground(x, z) : ground(centre.x, centre.z);
+  const base = fixture.ground === 'sea' ? SEA_LEVEL
+    : fixture.ground === 'conform' ? ground(x, z) : ground(centre.x, centre.z);
   return {
     acre: { col: acre.col, row: acre.row },
     family: acre.kind,
@@ -90,7 +93,7 @@ export function islandFixtures(island: IslandMap, ground: GroundHeight): PlacedF
   for (const acre of island.acres) {
     const piece = acre.pieceId ? pieces.get(acre.pieceId) : undefined;
     if (!piece?.fixtures) continue;
-    for (const fixture of piece.fixtures) out.push(placeFixture(fixture, acre, ground));
+    for (const fixture of piece.fixtures) out.push({ ...placeFixture(fixture, acre, ground), piece: acre.pieceId });
   }
   return out;
 }

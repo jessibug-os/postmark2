@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { ACTIVE_FIELD, MAP } from '../world/mapConstants';
 import { heightAt } from '../world/terrain';
+import { crossable, deckTopAt } from '../world/decks';
 
 /**
  * The walkable route between two marks on the loaded island.
@@ -55,11 +56,12 @@ export function standableAt(x: number, z: number, r = 0.45): boolean {
 function standable(x: number, z: number, r: number): boolean {
   const field = ACTIVE_FIELD;
   if (!field) return true;
-  return field.walkableAt(x, z)
-    && field.walkableAt(x + r, z)
-    && field.walkableAt(x - r, z)
-    && field.walkableAt(x, z + r)
-    && field.walkableAt(x, z - r);
+  const walkable = (px: number, pz: number): boolean => deckTopAt(px, pz) !== null || field.walkableAt(px, pz);
+  return walkable(x, z)
+    && walkable(x + r, z)
+    && walkable(x - r, z)
+    && walkable(x, z + r)
+    && walkable(x, z - r);
 }
 
 /**
@@ -154,6 +156,9 @@ function findPath(from: THREE.Vector3, to: THREE.Vector3): THREE.Vector3[] | nul
       if (nx < 0 || nz < 0 || nx >= cols || nz >= rows) continue;
       const next = nz * cols + nx;
       if (seen[next] || !passable(next)) continue;
+      const a = world(cx, cz);
+      const b = world(nx, nz);
+      if (!crossable(a.x, a.z, b.x, b.z)) continue;
       seen[next] = 1;
       from_[next] = index;
       queue.push(next);

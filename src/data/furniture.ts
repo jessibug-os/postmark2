@@ -562,6 +562,23 @@ export const FURNITURE: FurnitureDef[] = [
     ],
   },
   {
+    id: 'furn-boombox', name: 'Boombox', icon: '📻', price: 900, set: 'Parlour',
+    description: 'Two cones, one cassette, no patience for silence.',
+    radius: 0.35,
+    parts: [
+      box([0.7, 0.36, 0.2], [0, 0.18, 0], IRON),
+      box([0.72, 0.03, 0.22], [0, 0.37, 0], BRASS),
+      cyl([0.12, 0.12, 0.03], [-0.22, 0.18, 0.1], WOOD_DARK, 10, [Math.PI / 2, 0, 0]),
+      cyl([0.12, 0.12, 0.03], [0.22, 0.18, 0.1], WOOD_DARK, 10, [Math.PI / 2, 0, 0]),
+      cyl([0.04, 0.04, 0.035], [-0.22, 0.18, 0.11], BRASS, 6, [Math.PI / 2, 0, 0]),
+      cyl([0.04, 0.04, 0.035], [0.22, 0.18, 0.11], BRASS, 6, [Math.PI / 2, 0, 0]),
+      box([0.18, 0.11, 0.02], [0, 0.2, 0.1], IVORY),
+      box([0.5, 0.03, 0.04], [0, 0.48, 0], IRON),
+      box([0.03, 0.12, 0.04], [-0.24, 0.42, 0], IRON),
+      box([0.03, 0.12, 0.04], [0.24, 0.42, 0], IRON),
+    ],
+  },
+  {
     id: 'furn-hedge-planter', name: 'Hedge Planter', icon: '🌳', price: 600, set: 'Town',
     description: 'Clipped square. Wick finds it very calming.',
     radius: 0.5,

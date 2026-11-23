@@ -44,6 +44,8 @@
     "island:facing": "node scripts/face-landmarks.mjs",
     "scene": "vite --port 5173 --strictPort --open /scene",
     "sky": "vite --port 5173 --strictPort --open /sky",
+    "chargen": "vite --port 5173 --strictPort --open /chargen",
+    "chargen:kit": "/Applications/Blender.app/Contents/MacOS/Blender --background assets/chargen/kit-source.blend --python assets/chargen/build_kit.py -- \"$PWD\"",
     "sky:evidence": "node scripts/sky-evidence.mjs",
     "sky:bake": "node scripts/sky-bake.mjs"
   },

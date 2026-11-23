@@ -13,9 +13,14 @@ sssssssssssss~~~
 ~ssssssssssss~~~
 ~~ss~sssssss~~~~
 ~~~~~sssss~~~~~~
-~~~~~~ddd~~~~~~~
-~~~~~~ddd~~~~~~~
-~~~~~~ddd~~~~~~~
-~~~~~~ddd~~~~~~~
 ~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+# fixtures:
+# prop pier dock at -0.44 0.75 4 ground sea
+# mark dock.berth at -0.44 0.75 6.2 turn 180 ground sea
+# mark dock.boarding at -0.44 0.75 6.5 ground sea
+# prop boat boat at -0.44 0 8.75 ground sea

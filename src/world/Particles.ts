@@ -204,5 +204,6 @@ export class Particles {
     this.dust.update(dt, 3.2);
     this.sparkle.update(dt, 2.0);
     this.splash.update(dt, 3.8);
+    this.ripple.update(dt, 0);
   }
 }

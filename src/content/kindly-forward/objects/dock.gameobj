@@ -1,0 +1,6 @@
+# object: dock
+# name: Timber pier
+# model: dock.glb
+# note: Origin is the centre of the deck's top surface. Length runs along Z.
+
+deck 1.5 3

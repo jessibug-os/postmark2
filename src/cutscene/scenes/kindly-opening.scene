@@ -271,7 +271,7 @@ beat fog-cut
 # no memory of arriving.
 beat wake
   @0 fog 11 44 3
-  @0 move player to dock.wake over 0
+  @0 move player to dock.berth over 0
   @0 pose player lying
   @0 camera wake over 1.3
   @0 fade in 2.4

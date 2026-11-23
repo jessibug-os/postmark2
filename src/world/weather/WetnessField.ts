@@ -139,11 +139,8 @@ export class CellWetnessField {
     this.buildHydrology();
     this.texture = new THREE.DataTexture(this.pixels, cols, rows, THREE.RGBAFormat, THREE.UnsignedByteType);
     this.texture.colorSpace = THREE.NoColorSpace;
-    // Moisture is gameplay-cell state. Linear filtering made adjacent values
-    // average into one broad wash, hiding the deliberately wide per-cell
-    // disparity from the terrain even though `/grid -w` reported it correctly.
-    this.texture.minFilter = THREE.NearestFilter;
-    this.texture.magFilter = THREE.NearestFilter;
+    this.texture.minFilter = THREE.LinearFilter;
+    this.texture.magFilter = THREE.LinearFilter;
     this.texture.wrapS = this.texture.wrapT = THREE.ClampToEdgeWrapping;
     this.texture.needsUpdate = true;
   }

@@ -1,276 +1,33 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Plan for a recipe-driven character generator that builds the Little Harbor player and every resident from one shared kit.">
-<title>Character Generator Plan</title>
-<link rel="stylesheet" href="/chargen/style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KINDLY FORWARD — Character Creator</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧑‍🎨</text></svg>" />
+<style>
+  * { box-sizing: border-box; }
+  html, body, #app { height: 100%; margin: 0; }
+  body { background: #1e1914; color: #e8dfc8; font: 14px/1.5 Baskerville, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif; }
+  #app { display: flex; flex-direction: column; }
+  .cg-top { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #2c2620; border-bottom: 2px solid #9a7f4e; flex-wrap: wrap; }
+  .cg-top b { letter-spacing: .08em; }
+  .cg-top .sub { color: #c9b98f; font-size: 13px; }
+  .cg-top a { color: #e8d9a8; text-decoration: none; font-size: 13px; margin-left: auto; }
+  .cg-main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 300px; }
+  .cg-side { display: flex; flex-direction: column; gap: 10px; padding: 12px; border-left: 1px solid #4a3f30; background: #241f1a; min-height: 0; overflow-y: auto; }
+  .cg-side h3 { margin: 4px 0 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #c9b98f; font-weight: normal; }
+  .cg-side input, .cg-side select, .cg-side textarea { width: 100%; font: 12px/1.4 ui-monospace, monospace; color: #e8dfc8; background: #16120e; border: 1px solid #4a3f30; border-radius: 6px; padding: 6px 8px; }
+  .cg-side textarea { flex: 1; min-height: 220px; resize: vertical; }
+  .cg-side button, .cg-main .cc-footer button { font: inherit; color: #e8dfc8; background: #3a332b; border: 1px solid #6a5a40; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+  .cg-side .row { display: flex; gap: 6px; }
+  .cg-note { color: #a89a7c; font-size: 12px; margin: 0; }
+  .cg-status { font: 12px ui-monospace, monospace; color: #c9b98f; min-height: 1.4em; }
+  @media (max-width: 1000px) { .cg-main { grid-template-columns: 1fr; } .cg-side { border-left: 0; border-top: 1px solid #4a3f30; } }
+</style>
 </head>
 <body>
-<header>
-  <a class="wordmark" href="#">CHARGEN <span>/ ONE KIT, EVERY RESIDENT</span></a>
-  <nav class="top-links"><a href="/direction">Direction</a><a href="/characters">Current cast</a><a href="/">Current build ↗</a></nav>
-</header>
-<main>
-
-<section class="hero">
-  <div class="hero-copy">
-    <p class="eyebrow">PLAN · CHARACTER GENERATOR</p>
-    <h1>Everyone in town,<br>from one kit.</h1>
-    <p class="lede">The player, the six neighbours, and every ferry passenger should come from the same parts, the same skeleton and the same animations, described by a small recipe.</p>
-    <p>Today each character is hand-built in its own Blender file and animated one at a time. That made nine polished people. It cannot make a player creator, a wardrobe, or a town that is different in every save.</p>
-    <a class="primary" href="#phases">Jump to the build order ↓</a>
-  </div>
-  <figure class="style-target">
-    <img src="/chargen-media/style-target.png" alt="Concept image: a stone cottage with a vegetable garden at dusk above a harbour. Small round-headed characters in aprons, flat caps and a straw hat chat on the path while a dog watches.">
-    <figcaption>Style target. Generated concept, not final art. The proportions, hats and aprons are what the kit should be able to produce.</figcaption>
-  </figure>
-</section>
-
-<nav class="sections" aria-label="Sections">
-  <a href="#today">Where we are</a><a href="#target">Style target</a><a href="#approach">Approach</a><a href="#kit">The kit</a><a href="#recipe">Recipe</a><a href="#motion">Animation</a><a href="#runtime">Runtime</a><a href="#generate">Generating NPCs</a><a href="#creator">Player creator</a><a href="#phases">Build order</a><a href="#risks">Risks</a>
-</nav>
-
-<section id="today" class="split">
-  <div>
-    <p class="eyebrow">01 / WHERE WE ARE</p>
-    <h2>Good foundations, built one person at a time.</h2>
-    <p>The repo already agrees on more than it seems. Every humanoid uses the same <code>equipment-v1</code> skeleton and ships the same clip set, so holding a tool works on everyone. Faces are already painted from a short list of settings in <code>chibi_faces.py</code>, and <code>FaceRig</code> swaps expressions by swapping textures.</p>
-    <p>The cost is everywhere else. Bodies, hair and clothes are modelled by hand per character, re-saved through a dozen or more versions, then animated separately on each body. The player model in the game is still a code-built placeholder whose only customisation is re-tinting the coat.</p>
-    <ul class="facts">
-      <li><strong>10</strong> hand-authored characters, each with its own <code>.blend</code> and 12–20 saved source versions</li>
-      <li><strong>14</strong> bones in the shared rig, with hand sockets for equipment</li>
-      <li><strong>14</strong> clips authored again for every body: idle, walk, run, arm layers, holds</li>
-      <li><strong>1,200–4,400</strong> triangles per character, against the 600–900 budget in <code>CONVENTION.md</code></li>
-      <li><strong>35–40</strong> separate meshes per character, so dozens of draw calls each</li>
-    </ul>
-  </div>
-  <div class="viewer-card">
-    <div id="cast-view" role="img" aria-label="Rotating preview of an existing character model"><p id="model-status" role="status">Loading current model…</p></div>
-    <div class="cast-controls" aria-label="Existing models">
-      <button data-model="postmaster" aria-pressed="true">Postmaster</button>
-      <button data-model="mira" aria-pressed="false">Mira</button>
-      <button data-model="rowan" aria-pressed="false">Rowan</button>
-      <button data-model="maeve" aria-pressed="false">Maeve</button>
-      <button id="rotate" aria-pressed="false">Rotate</button>
-    </div>
-    <p class="caption">Current runtime models. Compare the head-to-body ratio with the style target above.</p>
-  </div>
-</section>
-
-<section id="target" class="band">
-  <p class="eyebrow">02 / STYLE TARGET</p>
-  <h2>What the reference asks for.</h2>
-  <div class="grid three">
-    <article><h3>Proportion</h3><p>About two and a half heads tall. The head is close to half the height, round rather than boxy. Short legs, a soft pear-shaped torso, stubby arms with mitten hands. Children are the same shape, only smaller.</p></article>
-    <article><h3>Face</h3><p>Small dark eyes set wide and low, tiny nose, warm blush, mouth only when it is expressing something. Painted, not modelled. This is close to what <code>chibi_faces.py</code> already paints.</p></article>
-    <article><h3>Silhouette</h3><p>People are read by their outlines: a flat cap, a wide straw brim, a bun, an apron over a skirt, suspenders, big boots. Hats and hair carry most of the identity, so they need the most variety.</p></article>
-    <article><h3>Surface</h3><p>Soft cloth colour with a few painted folds and seams; trims and buttons are painted, not modelled. Keeps the retro look inside the triangle budget.</p></article>
-    <article><h3>Palette</h3><p>Muted, earthy and warm, with one accent colour per outfit. Colours come from the project palette in <code>src/art/palette.ts</code>, never free RGB, so every combination sits in the world.</p></article>
-    <article><h3>Not in scope</h3><p>Realistic bodies, gender-coded body types, and fine detail that disappears at the gameplay camera distance.</p></article>
-  </div>
-</section>
-
-<section id="approach">
-  <p class="eyebrow">03 / APPROACH</p>
-  <h2>Author parts in Blender. Assemble people in the game.</h2>
-  <p class="large narrow">A <em>recipe</em> (a short JSON description) names a body, a face, hair, clothes and colours. The game assembles the character from a <em>kit</em> of parts at load time. The same recipe drives the player, the named cast, and seeded townsfolk.</p>
-  <div class="flow" aria-label="Pipeline: kit parts authored in Blender, exported as kit.glb; a recipe chooses parts; the assembler builds one skinned mesh and one texture; the result runs on shared animations.">
-    <div><span>Blender</span><strong>Kit parts</strong><small>bodies, hair, hats, garment shells, all skinned to one skeleton</small></div>
-    <i aria-hidden="true">→</i>
-    <div><span>Data</span><strong>Recipe</strong><small>about 30 lines of JSON per person</small></div>
-    <i aria-hidden="true">→</i>
-    <div><span>Runtime</span><strong>Assembler</strong><small>picks parts, paints one texture, merges into one mesh</small></div>
-    <i aria-hidden="true">→</i>
-    <div><span>Game</span><strong>Character</strong><small>shared clips, face expressions, equipment sockets</small></div>
-  </div>
-  <div class="table-wrap">
-  <table>
-    <caption>Alternatives considered</caption>
-    <thead><tr><th>Option</th><th>Good at</th><th>Why not on its own</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Runtime kit assembly</strong> (recommended)</td><td>Player creator, wardrobe changes, seeded townsfolk, one animation set</td><td>Needs the parts to be built to strict rules so they fit together</td></tr>
-      <tr><td>Offline bake: recipe → headless Blender → one <code>.glb</code> per person</td><td>Hand polish per hero character, fits today's pipeline</td><td>The player can't change clothes, and per-save villagers can't exist</td></tr>
-      <tr><td>Procedural geometry in Three.js</td><td>No Blender step</td><td>This is where the project started; it was replaced because it couldn't reach the art quality</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p class="note">Keep the offline bake as an escape hatch: if a named resident needs a one-off part, author it as a kit part used by one recipe rather than forking a whole body.</p>
-</section>
-
-<section id="kit" class="band">
-  <p class="eyebrow">04 / THE KIT</p>
-  <h2>Layer by layer.</h2>
-  <div class="layers">
-    <article>
-      <h3><span>1</span> Body frames</h3>
-      <p>Four base bodies on one skeleton: <strong>child</strong>, <strong>adult</strong>, <strong>sturdy</strong> and <strong>elder</strong> (slight stoop, softer). Each comes with a few blend shapes: height, girth, belly and shoulder width. A frame changes bone lengths; blend shapes change the surface only, so animations survive both.</p>
-      <p class="spec">~350 tris per body, mitten hands, no separate fingers.</p>
-    </article>
-    <article>
-      <h3><span>2</span> Head</h3>
-      <p>Three or four head shapes (round, oval, soft-square, wide) plus ears and nose variants. Heads are UV-mapped to the same face rectangle so any face can go on any head.</p>
-    </article>
-    <article>
-      <h3><span>3</span> Face</h3>
-      <p>Painted at runtime on a canvas, as <code>FaceRig</code> already does. The picker chooses eyes, brows, nose, mouth, blush, freckles, moles, wrinkles, glasses and facial hair. Expressions still swap textures. Port the <code>chibi_faces.py</code> settings to TypeScript so Blender and the game share one painter.</p>
-    </article>
-    <article>
-      <h3><span>4</span> Hair</h3>
-      <p>Separate meshes attached to the head bone. 12–16 styles to start: bun, braids, crop, curls, bob, long, bald, beard sets. Each style also ships a <em>hat-compatible</em> version squashed to fit under a brim, so any hat can go with any hair.</p>
-    </article>
-    <article>
-      <h3><span>5</span> Clothing: texture first</h3>
-      <p>Most clothing is painted onto the body: shirts, sweaters, trousers, stockings. Geometry is added only where the outline changes: skirts, aprons, coat tails, rolled cuffs, boots. Every garment shell lists the body regions it covers, so the assembler drops the hidden body faces and nothing pokes through.</p>
-      <p class="spec">Slots: top · bottom · outer · shoes · hat · face accessory · bag.</p>
-    </article>
-    <article>
-      <h3><span>6</span> Colour</h3>
-      <p>Parts are painted in greyscale shading with a few colour-region masks. A recipe assigns palette colours to each region, and the assembler recolours on a canvas once. No per-frame shader work is needed, which avoids the shader-cache-key trap in <code>RetroMaterial</code>.</p>
-    </article>
-  </div>
-  <p class="note">Every kit part is a Blender object with custom properties (slot, frames it fits, regions it hides, colour regions, triangle count), the same way the postmaster's source parts already carry <code>uv_mode</code> and <code>atlas</code>. A validation script refuses parts that are missing them.</p>
-</section>
-
-<section id="recipe" class="split">
-  <div>
-    <p class="eyebrow">05 / THE RECIPE</p>
-    <h2>A person is about thirty lines.</h2>
-    <p>The recipe is the only thing saved for a character. Content packs ship recipes for the named cast. The save file stores the player's recipe and the seed for everyone generated. Changing outfit means editing a recipe and reassembling.</p>
-    <p>Ids point into the kit, and colours are palette keys. Recipes carry a <code>kit</code> version so an old save can be upgraded when parts are renamed, the same way <code>.island</code> templates carry a library fingerprint.</p>
-    <p><code>CastMember.model</code> in <code>src/content/types.ts</code> becomes <code>look: CharacterRecipe</code>, and the per-character clip loaders go away.</p>
-  </div>
-<pre><code>{
-  "kit": 1,
-  "id": "ada",
-  "frame": "sturdy",
-  "shape": { "height": 0.35, "girth": 0.6, "shoulders": 0.7 },
-  "skin": "skin-07",
-  "head": "round",
-  "face": {
-    "eyes": "dot-wide", "brows": "thick-flat",
-    "nose": "button", "mouth": "smirk",
-    "marks": ["laugh-lines", "freckles-light"],
-    "eyeColor": "ink-brown"
-  },
-  "hair": { "style": "crop-grey", "color": "hair-ash" },
-  "outfit": {
-    "top":   { "id": "work-shirt",  "colors": ["denim-faded"] },
-    "outer": { "id": "overall-bib", "colors": ["navy-oil", "brass"] },
-    "shoes": { "id": "work-boots",  "colors": ["leather-dark"] },
-    "hat":   { "id": "flat-cap",    "colors": ["wool-charcoal"] },
-    "face":  null
-  },
-  "gait": { "rate": 0.95, "bounce": 0.6 },
-  "idle": "pocket-watch"
-}</code></pre>
-</section>
-
-<section id="motion" class="band">
-  <p class="eyebrow">06 / ANIMATION</p>
-  <h2>Animate four bodies, not every person.</h2>
-  <div class="grid two">
-    <article>
-      <h3>One skeleton, four frames</h3>
-      <p>Keep the 14-bone <code>equipment-v1</code> layout and its hand sockets. Author the clip set once per frame, so four times instead of ten, rising to dozens of people. Blend shapes don't move bones, so clips need no per-person changes. <code>author_locomotion.py</code> already derives bounce from leg length, which is exactly how it should scale across frames.</p>
-    </article>
-    <article>
-      <h3>Clips the new game needs</h3>
-      <p>The existing set covers walking, running and holding things. Little Harbor also needs: sit and stand, seated talk, eat and drink, carry a tray, wipe a counter, play cards, shelve, hammer, sweep, wave across the street, and laugh. Add a knee to <code>extra_leg_*</code> while you're there; the locomotion script already notes the foot drags without one.</p>
-    </article>
-    <article>
-      <h3>Personality without bespoke clips</h3>
-      <p>Gait settings (rate, bounce, sway, posture) already exist on <code>CastMember</code>. Keep those, plus one idle quirk per recipe, as the way residents move differently.</p>
-    </article>
-    <article>
-      <h3>Clothes that move</h3>
-      <p>Skirts, aprons and coat tails get one extra bone or a simple spring sway in code. Nothing is cloth-simulated.</p>
-    </article>
-  </div>
-</section>
-
-<section id="runtime">
-  <p class="eyebrow">07 / IN THE GAME</p>
-  <h2>Assemble once, then it's one mesh.</h2>
-  <ol class="steps">
-    <li><strong>Load the kit.</strong> One <code>kit.glb</code> holds every part and the four frames, or one file per category once it grows.</li>
-    <li><strong>Pick parts.</strong> Resolve the recipe: frame, head, hair (or its hat-compatible version), garment shells. Drop the body faces each garment hides.</li>
-    <li><strong>Paint one texture.</strong> Composite skin, painted clothing, masks and palette colours onto a single 256 px canvas per character. Faces stay a separate small canvas so expression swaps stay cheap.</li>
-    <li><strong>Merge.</strong> Combine the chosen skinned pieces into one mesh on one skeleton: one or two draw calls per person instead of 35–40.</li>
-    <li><strong>Cache.</strong> Key the result by recipe hash, so twenty ferry passengers sharing a look cost one build.</li>
-    <li><strong>Hand off.</strong> The output looks exactly like today's <code>.glb</code> to <code>SkeletalAnimator</code>, <code>EquipmentController</code> and <code>FaceRig</code>, so the NPC and player code doesn't need to know where it came from.</li>
-  </ol>
-</section>
-
-<section id="generate" class="band">
-  <p class="eyebrow">08 / GENERATING THE TOWN</p>
-  <h2>Seeded, but never random-looking.</h2>
-  <p class="large narrow">Each save already has an island seed. The same seed should produce the people who aren't named cast: ferry commuters, market visitors, the family in the house on the hill.</p>
-  <div class="grid three">
-    <article><h3>Wardrobes, not dice</h3><p>Generation starts from a role and an age (fisher, student, retiree, visitor) and draws from that role's wardrobe. An outfit is a curated set of parts with colour rules, so nobody comes out in a clown suit.</p></article>
-    <article><h3>Colour harmony</h3><p>Each outfit takes one base colour family and one accent from palette groups that are known to work together. Skin, hair and eyes come from separate natural ranges.</p></article>
-    <article><h3>Distinct from the cast</h3><p>Generated people must differ from every named resident in at least their hat-or-hair outline and main colour, so nobody confuses a stranger with Basil from across the street.</p></article>
-    <article><h3>Named cast stay fixed</h3><p>Ada, Basil, June, Omar, Nell and Pip are hand-written recipes in the content pack, identical in every save. Only their homes and routines move with the island.</p></article>
-    <article><h3>Changes over time</h3><p>Recipes can carry seasonal outfit overrides: scarves in winter, rolled sleeves in summer, rain gear on wet days. The weather system already knows when it's raining.</p></article>
-    <article><h3>Reproducible</h3><p>Same seed, same people. Never store generated recipes in the save; store the seed plus anything the player changed, such as a gift someone now wears.</p></article>
-  </div>
-</section>
-
-<section id="creator" class="split">
-  <div>
-    <p class="eyebrow">09 / THE PLAYER CREATOR</p>
-    <h2>A photo for the ferry pass, then a wardrobe.</h2>
-    <p>Character creation happens inside the fiction: before boarding, you fill in your ferry pass and pick the photo. Later, a mirror and wardrobe in your room let you change anything. Hair can be changed at a barber's chair, if the town gets one.</p>
-    <p>There's no gender selection and no part locked to a body type. Every frame, face, hair and garment is open to everyone, and pronouns are a separate question on the pass.</p>
-    <p>Clothes become part of the economy. The creator starts you with a small closet. More arrives through the secondhand shop, gifts from neighbours, and things you make at the repair yard. This gives the money loop from the direction page something personal to buy.</p>
-  </div>
-  <div class="creator-sketch" aria-label="Sketch of the creator layout: a live 3D preview on the left; tabs for Body, Face, Hair, Clothes and Colours on the right; a randomise button and a done button below.">
-    <div class="sketch-preview"><span>live preview<br>· rotate · try an expression ·</span></div>
-    <div class="sketch-panel">
-      <div class="tabs"><b>Body</b><b>Face</b><b>Hair</b><b>Clothes</b><b>Colours</b></div>
-      <div class="swatches"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <div class="sketch-actions"><span>Surprise me</span><span>Done</span></div>
-    </div>
-    <p class="caption">Layout sketch, not a design.</p>
-  </div>
-</section>
-
-<section id="phases" class="band">
-  <p class="eyebrow">10 / BUILD ORDER</p>
-  <h2>Each step ends with something you can look at.</h2>
-  <ol class="phases">
-    <li><h3>Lock the proportions</h3><p>Block out the four frames in Blender as grey shapes beside the style target and the current cast. Agree on head size, leg length and hand size before any detail.</p><p class="done">Done when: a turnaround sheet of the four frames is approved.</p></li>
-    <li><h3>Skeleton and clips</h3><p>Rig the frames on <code>equipment-v1</code> (plus knees), move the existing clip set over, check holds still land in the hands.</p><p class="done">Done when: four grey bodies walk, run, sit and hold a pot in the game.</p></li>
-    <li><h3>Face painter in TypeScript</h3><p>One painter for Blender previews and the runtime, built from <code>FaceRig</code> and <code>chibi_faces.py</code>. Twenty face parts to start.</p><p class="done">Done when: the existing cast's faces can be reproduced from recipes.</p></li>
-    <li><h3>Assembler and recipe schema</h3><p>Load the kit, resolve parts, paint one texture, merge one mesh, cache by hash. Replace this plan page with the live lab: recipe editor, randomise, turnaround, clip player.</p><p class="done">Done when: /chargen builds a character from JSON at the gameplay camera size.</p></li>
-    <li><h3>First wardrobe</h3><p>Painted tops and bottoms, the first garment shells (apron, skirt, overalls, coat), six hats, twelve hair styles with hat-compatible versions.</p><p class="done">Done when: the six named residents are built as recipes and recognisable at gameplay distance.</p></li>
-    <li><h3>Into the game</h3><p>Switch <code>CastMember</code> to recipes, give the player a recipe in the save, retire <code>PlayerModel.ts</code>.</p><p class="done">Done when: the save, golden and island tests pass with recipe-built characters.</p></li>
-    <li><h3>Seeded townsfolk</h3><p>Roles, wardrobes, colour rules, cast-distinctness check, seasonal overrides.</p><p class="done">Done when: two different seeds produce different but equally believable crowds of 20.</p></li>
-    <li><h3>Creator and wardrobe in the game</h3><p>Ferry-pass creator, mirror and wardrobe, clothing as shop stock and gifts.</p><p class="done">Done when: a new player can make themselves and change outfit without leaving the game.</p></li>
-  </ol>
-</section>
-
-<section id="risks">
-  <p class="eyebrow">11 / RISKS AND OPEN QUESTIONS</p>
-  <h2>Where this could go wrong.</h2>
-  <div class="grid two">
-    <article><h3>Kit people look generic</h3><p>The hand-built cast has charm because each one was fussed over. The answer is enough hair and hat variety, faces with character, and a few one-off parts reserved for the named residents. Test early by rebuilding Mira from the kit and comparing the two side by side.</p></article>
-    <article><h3>Clipping between layers</h3><p>The usual failure of modular characters. Painting most clothing on, hiding covered body faces, and having hat-compatible hair versions removes most of it. Add a test that renders every hat × hair pair and every shell on every frame.</p></article>
-    <article><h3>Four frames may be too few</h3><p>The style target's people are almost all one shape, which supports starting small. Add a frame only when a recipe truly can't be reached with blend shapes.</p></article>
-    <article><h3>What happens to the current cast?</h3><p>Albert, Mira and the others belong to the retired story. Keep their files as reference for quality and painting style, but don't migrate them. The new cast starts as recipes.</p></article>
-    <article><h3>Open: how much does the player customise?</h3><p>Body shape sliders or just frame choice? Free colour or palette only? This plan assumes frames plus three sliders and palette-only colour.</p></article>
-    <article><h3>Open: animals</h3><p>The style target has a dog and a cat. Animals need a separate small kit on their own skeleton; that's out of scope here, but worth planning next.</p></article>
-  </div>
-</section>
-
-<section class="closing">
-  <blockquote>A stranger on the ferry, your neighbour, and the face in your mirror should all look like they were made by the same hands.</blockquote>
-  <p class="small">This page is a plan. No game, story or asset files were changed. Triangle and clip counts were read from the current <code>public/assets</code> exports.</p>
-</section>
-
-</main>
-<footer><span>CHARGEN · PLAN</span><a href="#">Back to top ↑</a></footer>
-<script type="module" src="/chargen/main.ts"></script>
+<div id="app"></div>
+<script type="module" src="/chargen/main.tsx"></script>
 </body>
 </html>

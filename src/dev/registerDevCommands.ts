@@ -12,6 +12,7 @@ import { ACRE_SIZE, acreCentre, GRID_COLS, GRID_ROWS } from '../world/island/Acr
 import { ACTIVE_FIELD, ACTIVE_LAYOUT, ISLAND_MAP_ID } from '../world/mapConstants';
 import { TEMPLATES } from '../world/island/TemplateLibrary';
 import type { WeatherKind } from '../world/Weather';
+import { ITEMS } from '../data/items';
 import { WeatherDebugPanel } from './WeatherDebugPanel';
 
 const WEATHER_KINDS: readonly WeatherKind[] = ['clear', 'rain', 'snow', 'fog'];
@@ -19,6 +20,37 @@ const WEATHER_KINDS: readonly WeatherKind[] = ['clear', 'rain', 'snow', 'fog'];
 export function registerDevCommands(game: Game): void {
   const console_ = game.devConsole;
   const weatherPanel = new WeatherDebugPanel(document.querySelector('#game') ?? document.body, game);
+
+  console_.commands.register({
+    name: 'edit',
+    help: 'Toggle editor mode: select and move placed objects, save them to their .acre.',
+    usage: 'edit',
+    run: () => {
+      if (!game.editor) return 'Editor mode is only available in dev.';
+      game.editor.toggle();
+      return game.editor.active ? 'Editor on. F1 to exit.' : 'Editor off.';
+    },
+  });
+
+  console_.commands.register({
+    name: 'item',
+    help: 'List items (optionally filtered), or give one to the player.',
+    usage: 'item [filter] | item <id> [count]',
+    run: (args) => {
+      const [query, countArg] = args;
+      if (query && ITEMS[query]) {
+        const count = Math.max(1, Number(countArg ?? 1) || 1);
+        if (!game.inventory.add(query, count)) return 'Your pockets are full.';
+        return `Gave ${count} × ${ITEMS[query].name}.`;
+      }
+      const needle = query?.toLowerCase() ?? '';
+      const matches = Object.values(ITEMS).filter(
+        (d) => d.id.toLowerCase().includes(needle) || d.name.toLowerCase().includes(needle),
+      );
+      if (!matches.length) return `No items match "${query}".`;
+      return matches.map((d) => `${d.id} — ${d.name} (${d.category})`);
+    },
+  });
 
   console_.commands.register({
     name: 'acre',

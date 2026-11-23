@@ -4,6 +4,7 @@ import { makeRetroMaterial } from '../core/RetroMaterial';
 import { SkeletalAnimator } from '../characters/SkeletalAnimator';
 import { EmoteBubble, type EmoteKind } from '../characters/EmoteBubble';
 import { createPostmasterRig, type PostmasterRigParts } from '../characters/PostmasterRig';
+import { DEFAULT_RECIPE, type CharacterRecipe } from '../characters/chargen/recipe';
 import { makeBlobShadow } from '../characters/blobShadow';
 import { makeItemSprite } from '../characters/iconSprite';
 import { heightAt, type TownMap } from '../world/TownMap';
@@ -81,6 +82,7 @@ export class Player {
   interior: { floorY: number; collide: (pos: THREE.Vector3) => void } | null = null;
 
   private parts: PostmasterRigParts;
+  look: CharacterRecipe = DEFAULT_RECIPE;
   private animator: SkeletalAnimator;
 
   /**
@@ -129,6 +131,7 @@ export class Player {
     t: number; span: number;
     /** Shapes the travel across the span. See `SEAT_EASE`. */
     ease: (t: number) => number;
+    hop: number;
     then: () => void;
   } | null = null;
 
@@ -143,7 +146,7 @@ export class Player {
    * arrive in the pose rather than moving into it, which is what every character
    * but the Postmaster does today.
    */
-  sitAt(position: THREE.Vector3, facing: number, hold: string, enter?: string): boolean {
+  sitAt(position: THREE.Vector3, facing: number, hold: string, enter?: string, hop = 0): boolean {
     this.animator.takeDirection();
     const span = enter ? this.animator.performanceLength(enter) : 0;
     const first = span > 0 && enter ? enter : hold;
@@ -162,6 +165,7 @@ export class Player {
         fromYaw: this.facing, toYaw: this.facing + delta,
         t: 0, span,
         ease: SEAT_EASE.sit,
+        hop,
         then: () => { this.animator.perform(hold); },
       };
       return true;
@@ -178,7 +182,7 @@ export class Player {
    * Resolves when she is standing again, so the caller can hold the seat until
    * then — releasing early would let the state machine take over mid-rise.
    */
-  standFrom(to: THREE.Vector3, facing: number, exit?: string): void {
+  standFrom(to: THREE.Vector3, facing: number, exit?: string, hop = 0): void {
     if (!this.seated) return;
     const span = exit ? this.animator.performanceLength(exit) : 0;
     if (span > 0 && exit && this.animator.perform(exit)) {
@@ -188,12 +192,20 @@ export class Player {
         fromYaw: this.facing, toYaw: this.facing + delta,
         t: 0, span,
         ease: SEAT_EASE.stand,
+        hop,
         then: () => { this.seated = false; this.animator.releaseDirection(); },
       };
       return;
     }
     this.position.copy(to);
     this.stand();
+  }
+
+  ride(position: THREE.Vector3, facing: number): void {
+    if (this.seatMove) return;
+    this.position.copy(position);
+    this.facing = facing;
+    this.object.rotation.y = facing;
   }
 
   /** Give the body back immediately. The state machine picks up where she is. */
@@ -212,6 +224,7 @@ export class Player {
     const raw = move.span <= 0 ? 1 : move.t / move.span;
     const eased = move.ease(raw);
     this.position.copy(move.from).lerp(move.to, eased);
+    this.position.y += move.hop * 4 * eased * (1 - eased);
     this.facing = THREE.MathUtils.lerp(move.fromYaw, move.toYaw, eased);
     this.object.rotation.y = this.facing;
     if (move.t < move.span) return;
@@ -233,7 +246,7 @@ export class Player {
   stepped = false;
 
   constructor(private map: TownMap) {
-    this.parts = createPostmasterRig();
+    this.parts = createPostmasterRig(this.look);
     this.object = this.parts.root;
     this.object.add(makeBlobShadow(0.45));
     this.animator = new SkeletalAnimator(this.object, this.parts.clips);
@@ -263,8 +276,14 @@ export class Player {
     }
   }
 
+  setLook(recipe: CharacterRecipe): void {
+    this.look = recipe;
+    this.parts.character.apply(recipe);
+  }
+
   setCoatColor(color: number): void {
-    for (const mat of this.parts.coatMats) mat.color.setHex(color);
+    const top = `#${color.toString(16).padStart(6, '0')}`;
+    this.setLook({ ...this.look, colors: { ...this.look.colors, top } });
   }
 
   emote(kind: EmoteKind, seconds?: number): void {

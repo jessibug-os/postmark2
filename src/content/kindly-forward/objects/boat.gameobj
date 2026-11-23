@@ -1,0 +1,6 @@
+# object: boat
+# name: Motor boat
+# model: boat.glb
+# note: Origin is the waterline at the middle of the hull. The bow points +Z.
+
+seat helm at 0 0.08 -0.8

@@ -7,7 +7,7 @@
  */
 import { ACRE_SIZE, GRID_COLS, GRID_ROWS, TIER_HEIGHT, acreCentre, type Acre, type Tier } from './AcreLibrary';
 import type { IslandMap } from './IslandMap';
-import { BRIDGE_DECK_RISE, RIVER_DEPTH, RIVER_HALF_WIDTH, sampleIsland, type AcreSample, type IslandFieldQuery } from './IslandRuntime';
+import { BRIDGE_DECK_RISE, RIVER_DEPTH, RIVER_HALF_WIDTH, sampleIsland, sampleIslandSurface, type AcreSample, type IslandFieldQuery } from './IslandRuntime';
 
 interface Hit {
   acre: Acre;
@@ -26,8 +26,8 @@ export class IslandField implements IslandFieldQuery {
     else this.enabledBridges.delete(id);
   }
 
-  private sample(x: number, z: number): AcreSample {
-    const base = sampleIsland(this.island, x, z);
+  private sample(x: number, z: number, surfaceOnly = false): AcreSample {
+    const base = surfaceOnly ? sampleIslandSurface(this.island, x, z) : sampleIsland(this.island, x, z);
     const acre = this.acreAt(x, z);
     if (!acre || !acre.kind.startsWith('river')) return base;
     const bridge = this.island.bridges.find((b) =>
@@ -61,7 +61,7 @@ export class IslandField implements IslandFieldQuery {
   }
 
   heightAt(x: number, z: number): number {
-    return this.sample(x, z).height;
+    return this.sample(x, z, true).height;
   }
 
   tierAt(x: number, z: number): Tier | null {
@@ -74,7 +74,7 @@ export class IslandField implements IslandFieldQuery {
   }
 
   waterAt(x: number, z: number): number | null {
-    return this.sample(x, z).water;
+    return this.sample(x, z, true).water;
   }
 }
 

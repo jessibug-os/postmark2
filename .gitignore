@@ -9,3 +9,5 @@ __pycache__/
 # would put a megabyte of near-identical stills in the history for every shot
 # anyone tried. A take worth keeping gets copied into the review queue by hand.
 docs/review-queue/takes/
+
+public/boombox/

@@ -14,5 +14,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src", "acre", "island", "cutscene", "tests"]
+  "include": ["src", "acre", "island", "cutscene", "chargen", "tests"]
 }
