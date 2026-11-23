@@ -62,7 +62,13 @@ export function kit(): Kit {
   const { body, mask } = found;
   if (!body || !mask) throw new Error('chargen kit has no body atlas or colour mask');
   mask.colorSpace = THREE.NoColorSpace;
-  mask.needsUpdate = true;
+  for (const texture of [body.map, mask]) {
+    if (!texture) continue;
+    texture.magFilter = THREE.NearestFilter;
+    texture.minFilter = THREE.NearestFilter;
+    texture.generateMipmaps = false;
+    texture.needsUpdate = true;
+  }
   cached = { hairStyles: hairStyles.filter((style) => !hatVariants.has(style)), tinted, body, mask, grey: extras.kit_mask_grey, defaults, clips: assets.animations(KIT_ASSET) };
   return cached;
 }

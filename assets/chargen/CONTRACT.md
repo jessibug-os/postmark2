@@ -26,13 +26,17 @@ the JSON drifts from them.
   `_kit_normal` corner attribute, and `kit.ts` restores them at runtime over
   the loader's recomputed ones. The skull and the torso skin get one applied
   level of Catmull-Clark before projection.
-- **Budgets.** 600–900 tris per character, at most 3 draw calls, 1024 px body
-  atlas (the head sheet stays 512).
+- **Budgets.** 600–900 tris per character, at most 3 draw calls, one 2048 px
+  body atlas plus its 2048 px mask (the head sheet stays 512). The runtime
+  samples both with `NearestFilter` and no mipmaps, so rects never bleed into
+  each other and the mask stays exact; together they cost 32 MiB of GPU memory
+  once, shared by every character.
 - **Atlas layout.** `atlas_layout.json` is the only list of body-atlas rects.
   Rects are normalised `[u0, v0, u1, v1]` with v up from the bottom of the
   image, like Blender UVs. The postmaster's 512 sheet is copied unchanged into
-  the top-left quadrant (`"legacy": true` rects are its `RECTS` scaled by 0.5;
-  the build fails if they drift). Each rect declares `tint` (`primary`,
+  the top-left 512 corner (`"legacy": true` rects are its `RECTS` scaled by
+  512/2048; the build fails if they drift). The rects of the earlier 1024 sheet
+  sit unchanged in the top-left 1024 quadrant at the same pixel size. Each rect declares `tint` (`primary`,
   `secondary`, `accent` or `null`) and optionally `group` (the tint group, when
   it is not the mesh's slot), `painter` and `preview`. The build fails on
   overlapping rects. `kit_tints` and each mesh's `kit_tint` group are derived
@@ -134,6 +138,34 @@ with id `<id>` (for example `tee`):
 | sundress | `top-sundress` 256×256 | none |
 | spare-1, spare-2 | `top-spare-N` 256×128 | `top-spare-N-sleeve` 128×128 |
 | spare-3 | `top-spare-3` 128×128 | none |
+| spare-4, spare-5, spare-6 | `top-spare-N` 256×256 | `top-spare-N-sleeve` 128×256 |
+
+Bottoms, hats and shoes have their own rects; a bottom's files are
+`parts/bottom-<id>.py`, `paint/bottom-<id>.py` and the item JSON:
+
+| id | hips / skirt panel | leg panel |
+| --- | --- | --- |
+| shorts, jeans, wide | `bottom-<id>` 256×256 | `bottom-<id>-leg` 256×256 |
+| pleated, longskirt | `bottom-<id>` 256×256 | none |
+| spare-1, spare-2, spare-3 | `bottom-spare-N` 256×256 | none |
+| hat spare-1 … spare-4 | `hat-spare-N` 256×128 | |
+| shoes spare-1 … spare-4 | `shoes-spare-N` 128×128 | |
+
+Both legs share the leg panel the way sleeves share theirs; the painter is
+called with `rect["sleeve"]` false for it, so test `rect["name"].endswith("-leg")`.
+About 1.93 M texels (46 % of the sheet) are still unallocated, mostly the
+bottom 2048×896 strip.
+
+**Bottoms.** `kit_slot="bottom"`. A skirt is one cylindrical mesh skinned to
+`core_hips`, with hem vertices optionally weighted to `extra_hem_front` /
+`extra_hem_back` so the spring bones can swing it. Trousers and shorts split
+into a seat mesh (`core_hips`) and one mesh per leg, weighted to
+`extra_thigh_*` above the knee and `extra_shin_*` below it, as in
+`parts/bottom-trousers.py`; legs use `uv_mode="axial_z_down"` and
+`uv_rect="bottom-<id>-leg"`. `kit_hides` lists what it covers: `hips` always,
+plus `thighs` for anything reaching the knee and `shins` for full-length legs.
+The waistband must overlap the hem of the top so no skin shows between them
+when the torso bends.
 
 Every top rect is tinted `primary`. Use the mask to put trims in `secondary`
 or `accent`, or to keep their paint (alpha 1). The texture is split per object:
