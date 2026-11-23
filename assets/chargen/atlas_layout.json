@@ -16,6 +16,8 @@
     "ribbon":  { "rect": [0.3, 0.5, 0.4, 0.625], "tint": "primary", "legacy": true },
     "dress":   { "rect": [0.4, 0.5, 0.5, 0.625], "tint": "primary", "legacy": true },
 
+    "hair-soft": { "rect": [0.0, 0.625, 0.25, 0.75], "tint": "primary", "painter": "hair", "preview": { "primary": "#6b4a36" } },
+
     "skin-body": { "rect": [0.875, 0.875, 1.0, 1.0], "tint": "primary", "painter": "example_plain", "preview": { "primary": "#d6a86b" } },
 
     "top-tee":            { "rect": [0.5, 0.75, 0.75, 1.0], "tint": "primary" },
