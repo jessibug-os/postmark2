@@ -6,7 +6,7 @@ import { FACE_SIZE } from './facePaint';
 import { createFaceAnimator, type FaceAnimator } from './face/FaceAnimator';
 import { faceSpecFrom, type Expression, type FaceSpec } from './face/types';
 import { createAssembly } from './assemble';
-import { itemById, type ItemVariant } from './items';
+import { isOnePiece, itemById, type ItemVariant } from './items';
 import { KIT_ASSET, KIT_MASK, kit } from './kit';
 import { createBodyMaterial, setTints, TINT_GROUPS, type TintGroup } from './material';
 import type { CharacterRecipeV2 } from './recipeV2';
@@ -34,7 +34,7 @@ function canvasTexture(size: number): { ctx: CanvasRenderingContext2D; texture: 
 const KIT_SLOT: Record<string, SlotV2> = { apron: 'outer' };
 
 function outfitItem(recipe: CharacterRecipeV2, slot: SlotV2): { parts: string[]; colors: ItemVariant['colors'] } {
-  const entry = recipe.outfit[slot];
+  const entry = slot === 'bottom' && isOnePiece(recipe.outfit.top?.item) ? null : recipe.outfit[slot];
   const item = entry ? itemById(entry.item) : undefined;
   const colors = item?.variants.find((v) => v.id === entry?.variant)?.colors ?? {};
   return {
@@ -103,7 +103,7 @@ export function createCharacter(recipe: CharacterRecipeV2): Character {
   root.getObjectByName(KIT_MASK)?.removeFromParent();
   const head = canvasTexture(FACE_SIZE);
   const body = createBodyMaterial(template, mask);
-  const parts: Array<{ mesh: THREE.SkinnedMesh; slot: string; names: string[]; hides: string[] }> = [];
+  const parts: Array<{ mesh: THREE.SkinnedMesh; slot: string; names: string[]; hides: string[]; area: string }> = [];
   let headMaterial: THREE.Material | null = null;
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
@@ -121,6 +121,7 @@ export function createCharacter(recipe: CharacterRecipeV2): Character {
       slot: object.userData.kit_slot,
       names: String(object.userData.kit_part).split(','),
       hides: String(object.userData.kit_hides ?? '').split(','),
+      area: String(object.userData.kit_area ?? ''),
     });
   });
   const assembly = createAssembly(parts.map((part) => part.mesh), body);
@@ -136,8 +137,9 @@ export function createCharacter(recipe: CharacterRecipeV2): Character {
 
   const apply = (next: CharacterRecipeV2): void => {
     const visible = parts.filter((part) => worn(next, part.slot, part.names));
-    const capped = visible.some((part) => part.hides.includes('scalp'));
-    const shown = capped ? visible.filter((part) => part.slot !== 'hair' || !/crown|fringe/.test(part.mesh.name)) : visible;
+    const hidden = new Set(visible.flatMap((part) => part.hides));
+    const shown = visible.filter((part) => !(part.area && hidden.has(part.area))
+      && !(hidden.has('scalp') && part.slot === 'hair' && /crown|fringe/.test(part.mesh.name)));
     assembly.update(shown.map((part) => part.mesh));
     setTints(body, tintColors(next), defaults, grey);
     const spec = faceSpec(next);

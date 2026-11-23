@@ -1,7 +1,7 @@
 import { PALETTE_CSS } from '../../art/palette';
 import { BODIES, OPTIONAL_SLOTS_V2, SLOTS_V2, type BodyId, type SlotV2 } from './contract';
 import { hexToRgb } from './facePaint';
-import { itemById, type ClothingItem } from './items';
+import { isOnePiece, itemById, type ClothingItem } from './items';
 import { DEFAULT_SKIN, type FaceRecipe } from './recipe';
 
 export interface OutfitEntry {
@@ -149,6 +149,7 @@ function normalizeV2(raw: Omit<Partial<CharacterRecipeV2>, 'face'> & { face?: Re
     const entry = normalizeEntry(slot, rawOutfit[slot]);
     return [slot, entry ?? (OPTIONAL_SLOTS_V2.includes(slot) ? null : defaults.outfit[slot] ?? null)];
   }));
+  if (isOnePiece(outfit.top?.item)) outfit.bottom = null;
   const hair = (raw.hair && typeof raw.hair === 'object' ? raw.hair : {}) as Partial<CharacterRecipeV2['hair']>;
   return {
     kit: 2,

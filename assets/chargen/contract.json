@@ -46,12 +46,13 @@
     "tint": "albedo_grey * mix(white, channelColour, mask), applied per channel, skipped where a = 1"
   },
   "skinChannels": ["skin", "hair", "eyes"],
-  "budgets": { "trisPerCharacter": [600, 900], "drawCallsPerCharacter": 3, "atlasSize": 512 },
+  "budgets": { "trisPerCharacter": [600, 900], "drawCallsPerCharacter": 3, "atlasSize": 1024 },
   "partProperties": {
     "kit_slot": { "type": "string", "meaning": "one of slots[].id, or \"body\" for base body pieces" },
     "kit_part": { "type": "string", "meaning": "comma list of style ids this mesh belongs to; a ClothingItem's parts reference these" },
     "kit_fit": { "type": "string", "meaning": "one of fitClasses; how the mesh sits relative to the body" },
     "kit_hides": { "type": "string", "meaning": "comma list of hideAreas whose body faces are dropped when this part is worn; empty for none" },
+    "kit_area": { "type": "string", "meaning": "base body pieces only: the hideArea this mesh belongs to, hidden when any worn part's kit_hides lists it; empty otherwise" },
     "kit_bodies": { "type": "string", "meaning": "comma list of bodies this mesh was fitted to, or \"*\" for all" },
     "kit_hat_variant": { "type": "string", "meaning": "hair only: kit_part id of the squashed version worn under a hat, or empty" },
     "kit_tris_max": { "type": "int", "meaning": "triangle ceiling for this mesh; the build fails above it" },
@@ -74,7 +75,8 @@
       "bones": "dict bone name -> (head, tail) rest positions in world space",
       "collection": "the bpy collection new objects must be linked into",
       "skin_to": "skin_to(obj, bone): parent obj to the rig and weight every vertex 1.0 to bone",
-      "tag": "tag(obj, **props): set partProperties custom properties on obj",
+      "attach": "attach(obj): parent obj to the rig with an Armature modifier, keeping the vertex groups it already has",
+      "tag": "tag(obj, **props): set partProperties custom properties on obj; kit_area defaults to empty",
       "ring": "ring(bm, radius_x, radius_y, z, sides, cy=0.0): add a closed vertex loop, -Y front",
       "bridge": "bridge(bm, a, b): join two equal-length loops with quads",
       "cap": "cap(bm, loop, z, flip=False): close a loop with a triangle fan"

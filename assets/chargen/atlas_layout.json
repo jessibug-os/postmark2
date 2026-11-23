@@ -1,0 +1,40 @@
+{
+  "size": 1024,
+  "units": "normalised [u0, v0, u1, v1], v up from the bottom of the image, same convention as Blender UVs",
+  "rects": {
+    "coat":    { "rect": [0.0, 0.75, 0.375, 1.0], "tint": "primary", "legacy": true },
+    "sleeve":  { "rect": [0.375, 0.75, 0.5, 1.0], "tint": "primary", "legacy": true },
+    "hair":    { "rect": [0.0, 0.625, 0.25, 0.75], "tint": "primary", "legacy": true },
+    "skin":    { "rect": [0.25, 0.625, 0.3125, 0.75], "tint": "primary", "legacy": true },
+    "collar":  { "rect": [0.3125, 0.625, 0.375, 0.75], "tint": "accent", "legacy": true },
+    "boot":    { "rect": [0.375, 0.625, 0.4375, 0.75], "tint": "primary", "legacy": true },
+    "tights":  { "rect": [0.4375, 0.625, 0.5, 0.75], "tint": "secondary", "group": "bottom", "legacy": true },
+    "satchel": { "rect": [0.0, 0.5, 0.175, 0.625], "tint": null, "legacy": true },
+    "letter":  { "rect": [0.175, 0.5, 0.26, 0.625], "tint": null, "legacy": true },
+    "leather": { "rect": [0.26, 0.5, 0.2825, 0.625], "tint": null, "legacy": true },
+    "gold":    { "rect": [0.2825, 0.5, 0.3, 0.625], "tint": null, "legacy": true },
+    "ribbon":  { "rect": [0.3, 0.5, 0.4, 0.625], "tint": "primary", "legacy": true },
+    "dress":   { "rect": [0.4, 0.5, 0.5, 0.625], "tint": "primary", "legacy": true },
+
+    "skin-body": { "rect": [0.875, 0.875, 1.0, 1.0], "tint": "primary", "painter": "example_plain", "preview": { "primary": "#d6a86b" } },
+
+    "top-tee":            { "rect": [0.5, 0.75, 0.75, 1.0], "tint": "primary" },
+    "top-tee-sleeve":     { "rect": [0.75, 0.75, 0.875, 1.0], "tint": "primary" },
+    "top-breton":         { "rect": [0.5, 0.5, 0.75, 0.75], "tint": "primary" },
+    "top-breton-sleeve":  { "rect": [0.75, 0.5, 0.875, 0.75], "tint": "primary" },
+    "top-sweater":        { "rect": [0.0, 0.25, 0.25, 0.5], "tint": "primary" },
+    "top-sweater-sleeve": { "rect": [0.25, 0.25, 0.375, 0.5], "tint": "primary" },
+    "top-buttonup":       { "rect": [0.375, 0.25, 0.625, 0.5], "tint": "primary" },
+    "top-buttonup-sleeve": { "rect": [0.625, 0.25, 0.75, 0.5], "tint": "primary" },
+    "top-sundress":       { "rect": [0.75, 0.25, 1.0, 0.5], "tint": "primary" },
+    "top-hoodie":         { "rect": [0.0, 0.0, 0.25, 0.25], "tint": "primary" },
+    "top-hoodie-sleeve":  { "rect": [0.25, 0.0, 0.375, 0.25], "tint": "primary" },
+    "top-smock":          { "rect": [0.375, 0.0, 0.625, 0.25], "tint": "primary" },
+    "top-smock-sleeve":   { "rect": [0.625, 0.0, 0.75, 0.25], "tint": "primary" },
+    "top-spare-1":        { "rect": [0.75, 0.125, 1.0, 0.25], "tint": "primary" },
+    "top-spare-1-sleeve": { "rect": [0.875, 0.75, 1.0, 0.875], "tint": "primary" },
+    "top-spare-2":        { "rect": [0.75, 0.0, 1.0, 0.125], "tint": "primary" },
+    "top-spare-2-sleeve": { "rect": [0.875, 0.625, 1.0, 0.75], "tint": "primary" },
+    "top-spare-3":        { "rect": [0.875, 0.5, 1.0, 0.625], "tint": "primary" }
+  }
+}

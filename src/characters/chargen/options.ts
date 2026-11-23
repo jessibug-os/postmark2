@@ -1,6 +1,6 @@
 import { PALETTE_CSS } from '../../art/palette';
 import { OPTIONAL_SLOTS_V2, SLOTS_V2 } from './contract';
-import { ITEMS } from './items';
+import { ITEMS, isOnePiece } from './items';
 import { kit } from './kit';
 import type { CharacterRecipeV2 } from './recipeV2';
 
@@ -84,6 +84,7 @@ export function randomRecipe(random: () => number = Math.random): CharacterRecip
     const item = pick(items);
     return [slot, { item: item.id, variant: pick(item.variants).id }];
   }));
+  if (isOnePiece(outfit.top?.item)) outfit.bottom = null;
   const hair = pick(HAIR_SWATCHES);
   const eyes = pick(IRIS_SWATCHES);
   return {

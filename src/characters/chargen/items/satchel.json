@@ -1,0 +1,14 @@
+{
+  "id": "satchel",
+  "name": "Satchel",
+  "slot": "bag",
+  "fit": "accessory",
+  "parts": [
+    "satchel"
+  ],
+  "variants": [
+    {"id": "leather", "colors": {"primary": "h725426", "accent": "h9a7f4e"}},
+    {"id": "dark", "colors": {"primary": "h3a2c20", "accent": "h9a7f4e"}},
+    {"id": "canvas", "colors": {"primary": "h8a7455", "accent": "h7d7a72"}}
+  ]
+}

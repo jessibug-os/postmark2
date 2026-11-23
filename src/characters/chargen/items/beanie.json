@@ -1,0 +1,15 @@
+{
+  "id": "beanie",
+  "name": "Beanie",
+  "slot": "hat",
+  "fit": "headwear",
+  "parts": [
+    "beanie"
+  ],
+  "variants": [
+    {"id": "rust", "colors": {"primary": "h8a3327"}},
+    {"id": "moss", "colors": {"primary": "h4a6a4a"}},
+    {"id": "mustard", "colors": {"primary": "hc9a227"}},
+    {"id": "blue", "colors": {"primary": "h405f91"}}
+  ]
+}

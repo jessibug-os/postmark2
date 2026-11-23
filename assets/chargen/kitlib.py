@@ -92,6 +92,8 @@ def check(name, props):
         raise ValueError(f"'{name}': kit_slot={props['kit_slot']!r} not in {sorted(SLOTS)}")
     if "kit_fit" in props and props["kit_fit"] not in CONTRACT["fitClasses"]:
         raise ValueError(f"'{name}': kit_fit={props['kit_fit']!r} not in fitClasses")
+    if props.get("kit_area") and props["kit_area"] not in CONTRACT["hideAreas"]:
+        raise ValueError(f"'{name}': kit_area={props['kit_area']!r} not in hideAreas")
     for area in items("kit_hides"):
         if area not in CONTRACT["hideAreas"]:
             raise ValueError(f"'{name}': kit_hides area {area!r} not in hideAreas")
@@ -168,6 +170,7 @@ class Context:
         return self.attach(obj)
 
     def tag(self, obj, **props):
+        props.setdefault("kit_area", "")
         check(obj.name, props)
         for key, value in props.items():
             obj[key] = value

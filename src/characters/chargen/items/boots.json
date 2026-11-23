@@ -1,0 +1,13 @@
+{
+  "id": "boots",
+  "name": "Boots",
+  "slot": "shoes",
+  "fit": "footwear",
+  "parts": [
+    "boots"
+  ],
+  "variants": [
+    {"id": "brown", "colors": {"primary": "h3a2c20"}},
+    {"id": "black", "colors": {"primary": "h201a14"}}
+  ]
+}

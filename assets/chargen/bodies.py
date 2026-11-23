@@ -1,6 +1,7 @@
 import ast
 import os
 
+import bmesh
 import bpy
 from mathutils import Vector
 
@@ -10,6 +11,12 @@ BLOCKOUT = os.path.join(kitlib.HERE, "blockout", "blockout_bodies.py")
 BASE = {
     "skull": ("tight", 400), "ear_l": ("tight", 20), "ear_r": ("tight", 20), "neck": ("tight", 70),
     "hand_l": ("tight", 20), "hand_r": ("tight", 20), "leg_l": ("tight", 60), "leg_r": ("tight", 60),
+}
+SKIN = {
+    "torso": ("torso", "cylindrical_z", 140),
+    "upper_arm_l": ("upper_arms", "axial_z_down", 24), "upper_arm_r": ("upper_arms", "axial_z_down", 24),
+    "forearm_l": ("forearms", "axial_z_down", 24), "forearm_r": ("forearms", "axial_z_down", 24),
+    "foot_l": ("feet", "planar_xz", 32), "foot_r": ("feet", "planar_xz", 32),
 }
 
 
@@ -80,3 +87,35 @@ def head_width(body, legacy_bones, skull):
 
 def build_base(ctx):
     return [ctx.port(name, "base", "body", fit, "", cap) for name, (fit, cap) in BASE.items()]
+
+
+def build_skin(ctx):
+    P = PARAMS[ctx.body]
+    upright = BLOCK["layout"](P)
+    pivot, subtree, turn = BLOCK["stooped"](P, upright)
+    shoulder = upright["core_spine"][2].z
+    bottom = upright["core_hips"][2].z - 0.05 * P["Ls"]
+    rings = [(bottom + t * (shoulder - bottom), rx * P[w], ry * P[w]) for t, rx, ry, w in BLOCK["TORSO"]]
+    shapes = {name: (mesh, bone) for name, mesh, bone in BLOCK["parts"](P, upright)}
+    shapes["torso"] = (BLOCK["lathe"](rings, 10), None)
+    made = []
+    for name, (area, mode, cap) in SKIN.items():
+        (verts, faces), bone = shapes[name]
+        groups = [bone or ("core_hips" if v.z < pivot.z else "core_spine") for v in verts]
+        verts = [turn(v) if g in subtree else v for v, g in zip(verts, groups)]
+        mesh = bpy.data.meshes.new(f"skin_{name}_mesh")
+        mesh.from_pydata([tuple(v) for v in verts], [], faces)
+        bm = bmesh.new()
+        bm.from_mesh(mesh)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bm.to_mesh(mesh)
+        bm.free()
+        obj = bpy.data.objects.new(f"skin_{name}", mesh)
+        ctx.collection.objects.link(obj)
+        for g in sorted(set(groups)):
+            obj.vertex_groups.new(name=g).add([i for i, gg in enumerate(groups) if gg == g], 1.0, "REPLACE")
+        ctx.attach(obj)
+        made.append(ctx.tag(obj, kit_slot="body", kit_part="base", kit_fit="tight", kit_hides="", kit_area=area,
+                            kit_bodies=ctx.body, kit_hat_variant="", kit_tris_max=cap, atlas="body",
+                            uv_mode=mode, uv_rect="skin-body"))
+    return made
