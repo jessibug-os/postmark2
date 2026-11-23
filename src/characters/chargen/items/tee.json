@@ -1,0 +1,16 @@
+{
+  "id": "tee",
+  "name": "T-shirt",
+  "slot": "top",
+  "fit": "tight",
+  "parts": [
+    "tee"
+  ],
+  "variants": [
+    {"id": "white", "colors": {"primary": "hf0eee8", "accent": "hd5d4c8"}},
+    {"id": "heather", "colors": {"primary": "h9a9a96", "accent": "h7a7a74"}},
+    {"id": "navy", "colors": {"primary": "h263048", "accent": "h303c59"}},
+    {"id": "mustard", "colors": {"primary": "hc9a227", "accent": "hb17c32"}},
+    {"id": "sage", "colors": {"primary": "h93a583", "accent": "h74805c"}}
+  ]
+}
