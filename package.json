@@ -46,6 +46,7 @@
     "sky": "vite --port 5173 --strictPort --open /sky",
     "chargen": "vite --port 5173 --strictPort --open /chargen",
     "chargen:kit": "/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --python assets/chargen/build_kit.py -- \"$PWD\"",
+    "chargen:sheets": "/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --python assets/chargen/review_sheets.py",
     "sky:evidence": "node scripts/sky-evidence.mjs",
     "sky:bake": "node scripts/sky-bake.mjs"
   },
