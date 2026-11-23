@@ -48,10 +48,10 @@ def validate(parts, body):
     budget = kitlib.CONTRACT["budgets"]["trisPerCharacter"]
     styles = {}
     for obj in parts:
-        missing = [k for k in kitlib.PROPS if k not in obj]
+        missing = [k for k, spec in kitlib.PROPS.items() if not spec.get("optional") and k not in obj]
         if missing:
             raise ValueError(f"'{obj.name}' is missing {missing}")
-        kitlib.check(obj.name, {k: obj[k] for k in kitlib.PROPS})
+        kitlib.check(obj.name, {k: obj[k] for k in kitlib.PROPS if k in obj})
         if kitlib.tris(obj) > obj["kit_tris_max"]:
             raise ValueError(f"'{obj.name}' has {kitlib.tris(obj)} tris, over kit_tris_max {obj['kit_tris_max']}")
         for style in obj["kit_part"].split(","):
@@ -96,6 +96,7 @@ def build(root, body):
         obj.data.materials.clear()
         obj.data.materials.append(head_mat if obj["atlas"] == "head" else body_mat)
         obj["kit_tint"] = tint_group(obj)
+        kitlib.smooth(obj)
     ctx.dispose()
     carrier = mask_carrier(collection, mask_mat)
 
@@ -115,7 +116,7 @@ def build(root, body):
     bpy.ops.export_scene.gltf(
         filepath=glb, export_format="GLB", export_yup=True, export_apply=False,
         export_animations=True, export_nla_strips=True, export_skins=True,
-        export_extras=True, use_selection=True,
+        export_extras=True, export_attributes=True, use_selection=True,
     )
     bpy.data.objects.remove(carrier)
     kit_atlas.use_review(body_mat, review)

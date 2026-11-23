@@ -76,6 +76,24 @@ def cap(bm, loop, z, flip=False):
         bm.faces.new(face[::-1] if flip else face)
 
 
+def subdivide(obj):
+    mod = obj.modifiers.new("kit_subsurf", "SUBSURF")
+    mod.levels = 1
+    obj.modifiers.move(len(obj.modifiers) - 1, 0)
+    with bpy.context.temp_override(object=obj, active_object=obj):
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+    return obj
+
+
+def smooth(obj):
+    mesh = obj.data
+    mesh.polygons.foreach_set("use_smooth", [True] * len(mesh.polygons))
+    mesh.set_sharp_from_angle(angle=math.radians(obj.get("kit_crease", CONTRACT["crease"])))
+    normals = mesh.attributes.new("_kit_normal", "FLOAT_VECTOR", "CORNER")
+    normals.data.foreach_set("vector", [c for n in mesh.corner_normals for c in n.vector])
+    return obj
+
+
 def tris(obj):
     return sum(len(p.vertices) - 2 for p in obj.data.polygons)
 

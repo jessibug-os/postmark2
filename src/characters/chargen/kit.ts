@@ -5,6 +5,7 @@ import { TINT_GROUPS, TINT_SLOTS, type TintGroup } from './material';
 
 export const KIT_ASSET = 'chargen-kit';
 export const KIT_MASK = 'kit_mask';
+const KIT_NORMAL = '_kit_normal';
 
 const CHANNEL_INDEX: Record<MaskChannel, number> = { primary: 0, secondary: 1, accent: 2 };
 
@@ -33,10 +34,16 @@ export function kit(): Kit {
   template.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
     const material = object.material as THREE.MeshLambertMaterial;
+    const normals = object.geometry.getAttribute(KIT_NORMAL);
+    if (normals) {
+      object.geometry.setAttribute('normal', normals);
+      object.geometry.deleteAttribute(KIT_NORMAL);
+    }
     if (object.name === KIT_MASK) {
       found.mask = material.map;
       return;
     }
+    if (object.userData.atlas === 'head') material.flatShading = false;
     if (object.userData.atlas !== 'body') return;
     found.body ??= material;
     const rect = String(object.userData.uv_rect);

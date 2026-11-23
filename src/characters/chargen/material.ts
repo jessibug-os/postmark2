@@ -26,7 +26,7 @@ export function createBodyMaterial(template: THREE.MeshLambertMaterial, mask: TH
     name: template.name,
     map: template.map,
     side: template.side,
-    flatShading: true,
+    flatShading: false,
   }));
   const tints = { value: Array.from({ length: TINT_SLOTS }, () => new THREE.Color(1, 1, 1)) };
   const retro = material.onBeforeCompile;

@@ -47,6 +47,7 @@
   },
   "skinChannels": ["skin", "hair", "eyes"],
   "budgets": { "trisPerCharacter": [600, 900], "drawCallsPerCharacter": 3, "atlasSize": 1024 },
+  "crease": 60,
   "partProperties": {
     "kit_slot": { "type": "string", "meaning": "one of slots[].id, or \"body\" for base body pieces" },
     "kit_part": { "type": "string", "meaning": "comma list of style ids this mesh belongs to; a ClothingItem's parts reference these" },
@@ -58,7 +59,8 @@
     "kit_tris_max": { "type": "int", "meaning": "triangle ceiling for this mesh; the build fails above it" },
     "atlas": { "type": "string", "meaning": "\"body\" or \"head\"; which texture sheet the mesh samples" },
     "uv_mode": { "type": "string", "meaning": "projection used when the build reprojects UVs (e.g. cylindrical_z, planar_xz)" },
-    "uv_rect": { "type": "string", "meaning": "name of the atlas rect the mesh's UVs are projected into" }
+    "uv_rect": { "type": "string", "meaning": "name of the atlas rect the mesh's UVs are projected into" },
+    "kit_crease": { "type": "int", "optional": true, "meaning": "degrees; edges whose faces meet at more than this stay sharp, the rest shade smooth. Omit for the contract default crease" }
   },
   "scripts": {
     "parts": {
