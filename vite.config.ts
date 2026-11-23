@@ -6,7 +6,6 @@ import { formatAcre, parseAcre } from './src/world/island/AcreFormat';
 import { formatScene, parseScene } from './src/cutscene/scene/SceneFormat';
 import { formatSet, parseSet } from './src/cutscene/set/SetFormat';
 import { performanceClipNames, roleOf, type ClipRole } from './src/characters/clipVocabulary';
-import { formatRecipeV2, upgradeRecipe } from './src/characters/chargen/recipeV2';
 
 /**
  * Serve the wiki at a bare `/wiki` in dev and preview. The page itself lives
@@ -883,7 +882,7 @@ function chargenRecipesApi(): Plugin {
             req.on('data', (chunk) => { body += chunk; });
             req.on('end', () => {
               try {
-                const canonical = formatRecipeV2(upgradeRecipe(JSON.parse(body)));
+                const canonical = JSON.stringify(JSON.parse(body), null, 2) + '\n';
                 mkdirSync(RECIPE_DIR, { recursive: true });
                 writeFileSync(recipeFile(id), canonical);
                 send(200, { id });
