@@ -103,7 +103,7 @@ export function createCharacter(recipe: CharacterRecipeV2): Character {
   root.getObjectByName(KIT_MASK)?.removeFromParent();
   const head = canvasTexture(FACE_SIZE);
   const body = createBodyMaterial(template, mask);
-  const parts: Array<{ mesh: THREE.SkinnedMesh; slot: string; names: string[]; hides: string[]; area: string }> = [];
+  const parts: Array<{ mesh: THREE.SkinnedMesh; slot: string; names: string[]; hides: string[]; area: string; variant: string }> = [];
   let headMaterial: THREE.Material | null = null;
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
@@ -122,6 +122,7 @@ export function createCharacter(recipe: CharacterRecipeV2): Character {
       names: String(object.userData.kit_part).split(','),
       hides: String(object.userData.kit_hides ?? '').split(','),
       area: String(object.userData.kit_area ?? ''),
+      variant: String(object.userData.kit_hat_variant ?? ''),
     });
   });
   const assembly = createAssembly(parts.map((part) => part.mesh), body);
@@ -130,16 +131,18 @@ export function createCharacter(recipe: CharacterRecipeV2): Character {
 
   const worn = (next: CharacterRecipeV2, slot: string, names: string[]): boolean => {
     if (slot === 'body') return true;
-    if (slot === 'hair') return names.includes(next.hair.style ?? '');
     const items = outfitItem(next, KIT_SLOT[slot] ?? (slot as SlotV2)).parts;
     return names.some((name) => items.includes(name));
   };
 
   const apply = (next: CharacterRecipeV2): void => {
-    const visible = parts.filter((part) => worn(next, part.slot, part.names));
-    const hidden = new Set(visible.flatMap((part) => part.hides));
-    const shown = visible.filter((part) => !(part.area && hidden.has(part.area))
-      && !(hidden.has('scalp') && part.slot === 'hair' && /crown|fringe/.test(part.mesh.name)));
+    const outfit = parts.filter((part) => part.slot !== 'hair' && worn(next, part.slot, part.names));
+    const hidden = new Set(outfit.flatMap((part) => part.hides));
+    const style = next.hair.style ?? '';
+    const base = parts.filter((part) => part.slot === 'hair' && part.names.includes(style));
+    const variant = hidden.has('scalp') ? base.find((part) => part.variant)?.variant : undefined;
+    const hair = variant ? parts.filter((part) => part.slot === 'hair' && part.names.includes(variant)) : base;
+    const shown = [...outfit, ...hair].filter((part) => !(part.area && hidden.has(part.area)));
     assembly.update(shown.map((part) => part.mesh));
     setTints(body, tintColors(next), defaults, grey);
     const spec = faceSpec(next);
