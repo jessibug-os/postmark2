@@ -18,7 +18,14 @@ the JSON drifts from them.
   recipe colours, not item colours.
 - **Part properties.** Every kit mesh carries the `partProperties` keys as
   custom properties, which export as glTF extras. A mesh with a key missing
-  fails the build.
+  fails the build, except keys marked `"optional": true`.
+- **Shading.** After UV projection every kit mesh is shaded smooth, and edges
+  whose faces meet at more than `crease` degrees (60) stay sharp. A part that
+  wants harder folds (brims, collar flaps, soles, buckles) sets the optional
+  `kit_crease` (int degrees) lower. The build writes the normals to a
+  `_kit_normal` corner attribute, and `kit.ts` restores them at runtime over
+  the loader's recomputed ones. The skull and the torso skin get one applied
+  level of Catmull-Clark before projection.
 - **Budgets.** 600–900 tris per character, at most 3 draw calls, 1024 px body
   atlas (the head sheet stays 512).
 - **Atlas layout.** `atlas_layout.json` is the only list of body-atlas rects.
