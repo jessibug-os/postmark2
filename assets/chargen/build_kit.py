@@ -18,9 +18,25 @@ import kitlib
 BODIES = ["adult"]
 DEFAULT_OUTFIT = {"base", "long", "headband", "long-coat", "skirt", "tall-boots", "satchel"}
 TINTS = {
-    "coat": "top", "sleeve": "top", "collar": "accent", "dress": "bottom",
-    "tights": "legs", "hair": "hair", "skin": "skin", "boot": "shoes", "ribbon": "hat",
+    "coat": "primary", "sleeve": "primary", "collar": "accent", "dress": "primary",
+    "tights": "secondary", "hair": "primary", "skin": "primary", "boot": "primary", "ribbon": "primary",
 }
+
+
+def tint_group(obj):
+    if obj["uv_rect"] == "tights":
+        return "bottom"
+    return {"body": "skin", "apron": "outer"}.get(obj["kit_slot"], obj["kit_slot"])
+
+
+def mask_carrier(collection, material):
+    mesh = bpy.data.meshes.new("kit_mask_mesh")
+    mesh.from_pydata([(0, 0, 0), (0.01, 0, 0), (0, 0, 0.01)], [], [(0, 1, 2)])
+    mesh.uv_layers.new()
+    mesh.materials.append(material)
+    obj = bpy.data.objects.new("kit_mask", mesh)
+    collection.objects.link(obj)
+    return obj
 
 
 def scripts(kind):
@@ -79,15 +95,20 @@ def build(root, body):
     suffix = "" if body == "adult" else f"-{body}"
     body_path = os.path.join(textures, f"chargen-kit{suffix}-body.png")
     head_path = os.path.join(textures, f"chargen-kit{suffix}-head.png")
-    body_mat, head_mat = kit_atlas.paint(body_path, head_path, ctx)
+    mask_path = os.path.join(textures, f"chargen-kit{suffix}-mask.png")
+    body_mat, head_mat, mask_mat, review, defaults = kit_atlas.paint(body_path, head_path, mask_path, TINTS, ctx)
     kit_uv.project(parts, ctx)
     for obj in parts:
         obj.data.materials.clear()
         obj.data.materials.append(head_mat if obj["atlas"] == "head" else body_mat)
+        obj["kit_tint"] = tint_group(obj)
     ctx.dispose()
+    carrier = mask_carrier(collection, mask_mat)
 
     scene["kit_rects"] = json.dumps(kit_atlas.atlas.RECTS)
     scene["kit_tints"] = json.dumps(TINTS)
+    scene["kit_tint_defaults"] = json.dumps(defaults)
+    scene["kit_mask_grey"] = kit_atlas.GREY
     scene["kit_atlas"] = kit_atlas.atlas.ATLAS
     scene["kit_version"] = 2
     scene["kit_body"] = body
@@ -100,6 +121,8 @@ def build(root, body):
         export_animations=True, export_nla_strips=True, export_skins=True,
         export_extras=True, use_selection=True,
     )
+    bpy.data.objects.remove(carrier)
+    kit_atlas.use_review(body_mat, review)
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(HERE, f"kit-built{suffix}.blend"))
     print(f"KIT EXPORTED · {body} · {len(parts)} parts · {len(rig.animation_data.nla_tracks)} clips · {glb}")
 
