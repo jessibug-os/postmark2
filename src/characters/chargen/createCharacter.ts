@@ -6,8 +6,10 @@ import { FACE_SIZE } from './facePaint';
 import { createFaceAnimator, type FaceAnimator } from './face/FaceAnimator';
 import { paintFaceLayers } from './face/paintFaceLayers';
 import { faceSpecFrom, type Expression, type FaceSpec } from './face/types';
+import { createAssembly } from './assemble';
 import { itemById, type ItemVariant } from './items';
-import { KIT_ASSET, kit, paintBody, type Channel } from './kit';
+import { KIT_ASSET, KIT_MASK, kit } from './kit';
+import { createBodyMaterial, setTints, TINT_GROUPS, type TintGroup } from './material';
 import type { CharacterRecipeV2 } from './recipeV2';
 
 export interface Character {
@@ -37,19 +39,22 @@ function outfitItem(recipe: CharacterRecipeV2, slot: SlotV2): { parts: string[];
   return { parts: item?.parts ?? [], variant: item?.variants.find((v) => v.id === entry?.variant) };
 }
 
-function channelColors(recipe: CharacterRecipeV2): Partial<Record<Channel, string>> {
-  const primary = (slot: SlotV2): string | undefined => outfitItem(recipe, slot).variant?.colors.primary;
-  const colors: Partial<Record<Channel, string | undefined>> = {
-    skin: recipe.skin,
-    hair: recipe.hair.color,
-    hat: primary('hat'),
-    top: primary('top'),
-    bottom: primary('bottom'),
-    legs: outfitItem(recipe, 'bottom').variant?.colors.secondary,
-    shoes: primary('shoes'),
-    accent: primary('outer') ?? outfitItem(recipe, 'top').variant?.colors.accent,
+function tintColors(recipe: CharacterRecipeV2): Array<string | undefined> {
+  const item = (slot: SlotV2): Array<string | undefined> => {
+    const colors = outfitItem(recipe, slot).variant?.colors ?? {};
+    return [colors.primary, colors.secondary, colors.accent ?? colors.primary];
   };
-  return Object.fromEntries(Object.entries(colors).filter(([, hex]) => hex)) as Partial<Record<Channel, string>>;
+  const groups: Record<TintGroup, Array<string | undefined>> = {
+    skin: [recipe.skin],
+    hair: [recipe.hair.color],
+    top: item('top'),
+    bottom: item('bottom'),
+    outer: item('outer'),
+    shoes: item('shoes'),
+    hat: item('hat'),
+    bag: item('bag'),
+  };
+  return TINT_GROUPS.flatMap((group) => [0, 1, 2].map((i) => groups[group][i]));
 }
 
 function faceRig(face: FaceAnimator, idleCanvas: HTMLCanvasElement) {
@@ -89,43 +94,42 @@ function faceRig(face: FaceAnimator, idleCanvas: HTMLCanvasElement) {
 const faceSpec = (recipe: CharacterRecipeV2): FaceSpec => faceSpecFrom({ ...recipe.face, iris: recipe.eyes });
 
 export function createCharacter(recipe: CharacterRecipeV2): Character {
-  const { size, clips } = kit();
+  const { clips, body: template, mask, defaults, grey } = kit();
   const root = assets.model(KIT_ASSET);
-  const body = canvasTexture(size);
+  root.getObjectByName(KIT_MASK)?.removeFromParent();
   const head = canvasTexture(FACE_SIZE);
-  const bodyPixels = body.ctx.createImageData(size, size);
-  const copies = new Map<THREE.Material, THREE.Material>();
-  const parts: Array<{ mesh: THREE.Mesh; slot: string; names: string[] }> = [];
+  const body = createBodyMaterial(template, mask);
+  const parts: Array<{ mesh: THREE.SkinnedMesh; slot: string; names: string[] }> = [];
+  let headMaterial: THREE.Material | null = null;
   root.traverse((object) => {
     if (!(object instanceof THREE.Mesh)) return;
-    const source = object.material as THREE.MeshLambertMaterial;
-    let copy = copies.get(source);
-    if (!copy) {
-      const material = applyVertexSnap(source.clone());
-      material.map = object.userData.atlas === 'head' ? head.texture : body.texture;
-      copies.set(source, material);
-      copy = material;
+    if (object.userData.atlas === 'head') {
+      if (!headMaterial) {
+        const material = applyVertexSnap((object.material as THREE.MeshLambertMaterial).clone());
+        material.map = head.texture;
+        headMaterial = material;
+      }
+      object.material = headMaterial;
+      return;
     }
-    object.material = copy;
-    parts.push({ mesh: object, slot: object.userData.kit_slot, names: String(object.userData.kit_part).split(',') });
+    parts.push({ mesh: object as THREE.SkinnedMesh, slot: object.userData.kit_slot, names: String(object.userData.kit_part).split(',') });
   });
+  const assembly = createAssembly(parts.map((part) => part.mesh), body);
   const rig = root.getObjectByName('core_root')!.parent!;
   const idleCanvas = document.createElement('canvas');
   idleCanvas.width = idleCanvas.height = FACE_SIZE;
   let face: FaceAnimator | null = null;
 
+  const worn = (next: CharacterRecipeV2, slot: string, names: string[]): boolean => {
+    if (slot === 'body') return true;
+    if (slot === 'hair') return names.includes(next.hair.style ?? '');
+    const items = outfitItem(next, KIT_SLOT[slot] ?? (slot as SlotV2)).parts;
+    return names.some((name) => items.includes(name));
+  };
+
   const apply = (next: CharacterRecipeV2): void => {
-    for (const { mesh, slot, names } of parts) {
-      if (slot === 'body') mesh.visible = true;
-      else if (slot === 'hair') mesh.visible = names.includes(next.hair.style ?? '');
-      else {
-        const worn = outfitItem(next, KIT_SLOT[slot] ?? (slot as SlotV2)).parts;
-        mesh.visible = names.some((name) => worn.includes(name));
-      }
-    }
-    paintBody(bodyPixels, channelColors(next));
-    body.ctx.putImageData(bodyPixels, 0, 0);
-    body.texture.needsUpdate = true;
+    assembly.update(parts.filter((part) => worn(next, part.slot, part.names)).map((part) => part.mesh));
+    setTints(body, tintColors(next), defaults, grey);
     const spec = faceSpec(next);
     if (face) face.setSpec(next.skin, spec);
     else face = createFaceAnimator(head.ctx, head.texture, next.skin, spec);
