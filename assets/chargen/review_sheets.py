@@ -46,7 +46,10 @@ class Kit:
             obj.hide_render = True
         self.styles = {}
         self.hat_variant = {}
+        self.scalp_hats = set()
         for obj in self.meshes:
+            if obj["kit_slot"] == "hat" and "scalp" in str(obj.get("kit_hides", "")).split(","):
+                self.scalp_hats.update(obj["kit_part"].split(","))
             for style in obj["kit_part"].split(","):
                 self.styles.setdefault(obj["kit_slot"], [])
                 if style not in self.styles[obj["kit_slot"]]:
@@ -97,7 +100,7 @@ class Kit:
         rig.rotation_euler = (math.radians(pitch), 0, math.radians(yaw))
         self.temp.append(rig)
         hair = look.get("hair")
-        if look.get("hat") and hair in self.hat_variant:
+        if look.get("hat") in self.scalp_hats and hair in self.hat_variant:
             hair = self.hat_variant[hair]
         wanted = dict(look, hair=hair)
         worn = [o for o in self.meshes if o["kit_slot"] != "body" and wanted.get(o["kit_slot"]) in o["kit_part"].split(",")]

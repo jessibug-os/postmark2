@@ -29,6 +29,7 @@ export function kit(): Kit {
   const paint = JSON.parse(extras.kit_tint_defaults) as Record<string, string>;
   const defaults: Array<string | undefined> = new Array(TINT_SLOTS).fill(undefined);
   const hairStyles: string[] = [];
+  const hatVariants = new Set<string>();
   const tinted = new Set<string>();
   const found: { body?: THREE.MeshLambertMaterial; mask?: THREE.Texture | null } = {};
   template.traverse((object) => {
@@ -53,6 +54,7 @@ export function kit(): Kit {
       for (const part of String(object.userData.kit_part).split(',')) tinted.add(part);
     }
     if (object.userData.kit_slot !== 'hair') return;
+    if (object.userData.kit_hat_variant) hatVariants.add(String(object.userData.kit_hat_variant));
     for (const part of String(object.userData.kit_part).split(',')) {
       if (!hairStyles.includes(part)) hairStyles.push(part);
     }
@@ -61,6 +63,6 @@ export function kit(): Kit {
   if (!body || !mask) throw new Error('chargen kit has no body atlas or colour mask');
   mask.colorSpace = THREE.NoColorSpace;
   mask.needsUpdate = true;
-  cached = { hairStyles, tinted, body, mask, grey: extras.kit_mask_grey, defaults, clips: assets.animations(KIT_ASSET) };
+  cached = { hairStyles: hairStyles.filter((style) => !hatVariants.has(style)), tinted, body, mask, grey: extras.kit_mask_grey, defaults, clips: assets.animations(KIT_ASSET) };
   return cached;
 }
