@@ -1,0 +1,83 @@
+{
+  "version": 2,
+  "bones": [
+    { "name": "core_root", "parent": null, "deform": true },
+    { "name": "core_hips", "parent": "core_root", "deform": true },
+    { "name": "core_spine", "parent": "core_hips", "deform": true },
+    { "name": "core_head", "parent": "core_spine", "deform": true },
+    { "name": "core_upper_arm_l", "parent": "core_spine", "deform": true },
+    { "name": "core_forearm_l", "parent": "core_upper_arm_l", "deform": true },
+    { "name": "core_hand_l", "parent": "core_forearm_l", "deform": true },
+    { "name": "socket_hand_l", "parent": "core_hand_l", "deform": false },
+    { "name": "core_upper_arm_r", "parent": "core_spine", "deform": true },
+    { "name": "core_forearm_r", "parent": "core_upper_arm_r", "deform": true },
+    { "name": "core_hand_r", "parent": "core_forearm_r", "deform": true },
+    { "name": "socket_hand_r", "parent": "core_hand_r", "deform": false },
+    { "name": "extra_thigh_l", "parent": "core_hips", "deform": true },
+    { "name": "extra_shin_l", "parent": "extra_thigh_l", "deform": true },
+    { "name": "extra_thigh_r", "parent": "core_hips", "deform": true },
+    { "name": "extra_shin_r", "parent": "extra_thigh_r", "deform": true },
+    { "name": "extra_hair_back", "parent": "core_head", "deform": true },
+    { "name": "extra_hem_front", "parent": "core_hips", "deform": true },
+    { "name": "extra_hem_back", "parent": "core_hips", "deform": true }
+  ],
+  "bodies": ["adult", "child", "sturdy", "elder"],
+  "slots": [
+    { "id": "hair", "optional": true },
+    { "id": "hat", "optional": true },
+    { "id": "top", "optional": false },
+    { "id": "bottom", "optional": false },
+    { "id": "outer", "optional": true },
+    { "id": "shoes", "optional": false },
+    { "id": "face", "optional": true },
+    { "id": "bag", "optional": true }
+  ],
+  "fitClasses": ["tight", "loose", "coat", "skirt", "onepiece", "headwear", "footwear", "accessory"],
+  "hideAreas": ["torso", "upper_arms", "forearms", "hips", "thighs", "shins", "feet", "scalp"],
+  "maskChannels": {
+    "texture": "RGBA mask parallel to the body atlas, same size and UV layout",
+    "channels": [
+      { "id": "primary", "component": "r" },
+      { "id": "secondary", "component": "g" },
+      { "id": "accent", "component": "b" }
+    ],
+    "detail": { "component": "a", "meaning": "1 keeps the painted albedo colour untinted, 0 allows tinting" },
+    "albedo": "body atlas is painted in greyscale wherever a mask channel is non-zero",
+    "tint": "albedo_grey * mix(white, channelColour, mask), applied per channel, skipped where a = 1"
+  },
+  "skinChannels": ["skin", "hair", "eyes"],
+  "budgets": { "trisPerCharacter": [600, 900], "drawCallsPerCharacter": 3, "atlasSize": 512 },
+  "partProperties": {
+    "kit_slot": { "type": "string", "meaning": "one of slots[].id, or \"body\" for base body pieces" },
+    "kit_part": { "type": "string", "meaning": "comma list of style ids this mesh belongs to; a ClothingItem's parts reference these" },
+    "kit_fit": { "type": "string", "meaning": "one of fitClasses; how the mesh sits relative to the body" },
+    "kit_hides": { "type": "string", "meaning": "comma list of hideAreas whose body faces are dropped when this part is worn; empty for none" },
+    "kit_bodies": { "type": "string", "meaning": "comma list of bodies this mesh was fitted to, or \"*\" for all" },
+    "kit_hat_variant": { "type": "string", "meaning": "hair only: kit_part id of the squashed version worn under a hat, or empty" },
+    "kit_tris_max": { "type": "int", "meaning": "triangle ceiling for this mesh; the build fails above it" },
+    "atlas": { "type": "string", "meaning": "\"body\" or \"head\"; which texture sheet the mesh samples" },
+    "uv_mode": { "type": "string", "meaning": "projection used when the build reprojects UVs (e.g. cylindrical_z, planar_xz)" },
+    "uv_rect": { "type": "string", "meaning": "name of the atlas rect the mesh's UVs are projected into" }
+  },
+  "scripts": {
+    "parts": {
+      "path": "assets/chargen/parts/<id>.py",
+      "entry": "build(ctx) -> list of bpy mesh objects, each tagged with every partProperties key"
+    },
+    "clips": {
+      "path": "assets/chargen/clips/<id>.py",
+      "entry": "build(ctx) -> None; creates one or more actions on ctx.rig named <asset-id>_<state>"
+    },
+    "ctx": {
+      "rig": "the armature object, built from bones for ctx.body",
+      "body": "the body id being built, one of bodies",
+      "bones": "dict bone name -> (head, tail) rest positions in world space",
+      "collection": "the bpy collection new objects must be linked into",
+      "skin_to": "skin_to(obj, bone): parent obj to the rig and weight every vertex 1.0 to bone",
+      "tag": "tag(obj, **props): set partProperties custom properties on obj",
+      "ring": "ring(bm, radius_x, radius_y, z, sides, cy=0.0): add a closed vertex loop, -Y front",
+      "bridge": "bridge(bm, a, b): join two equal-length loops with quads",
+      "cap": "cap(bm, loop, z, flip=False): close a loop with a triangle fan"
+    }
+  }
+}
