@@ -6,24 +6,24 @@ from mathutils import Matrix, Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 KIT = os.path.join(os.path.dirname(HERE), "kit-source.blend")
-OUT = os.path.join(HERE, "blockout-v01.blend")
+OUT = os.path.join(HERE, "blockout-v02.blend")
 DEFAULTS = {"base", "long", "headband", "long-coat", "skirt", "tall-boots", "satchel"}
 
 BODIES = [
-    ("adult", dict(Ls=1.0, Ts=1.0, Hs=1.0, Wt=1.0, Wsh=1.0, Lt=1.0, Aw=1.0, stoop=0.0)),
-    ("child", dict(Ls=0.6, Ts=0.62, Hs=0.88, Wt=0.64, Wsh=0.62, Lt=0.68, Aw=0.62, stoop=0.0)),
-    ("sturdy", dict(Ls=1.0, Ts=1.0, Hs=1.0, Wt=1.25, Wsh=1.22, Lt=1.3, Aw=1.18, stoop=0.0)),
-    ("elder", dict(Ls=0.95, Ts=0.95, Hs=0.97, Wt=1.0, Wsh=0.85, Lt=0.95, Aw=0.92, stoop=10.0)),
+    ("adult", dict(H=2.44, f=0.45, Ls=1.0, Ts=1.0, Wt=1.0, Wsh=1.0, Lt=1.0, Aw=1.0, stoop=0.0)),
+    ("child", dict(H=1.71, f=0.50, Ls=0.6, Ts=0.62, Wt=0.64, Wsh=0.62, Lt=0.68, Aw=0.62, stoop=0.0)),
+    ("sturdy", dict(H=2.44, f=0.45, Ls=1.0, Ts=1.0, Wt=1.25, Wsh=1.22, Lt=1.3, Aw=1.18, stoop=0.0)),
+    ("elder", dict(H=2.31, f=0.45, Ls=0.95, Ts=0.95, Wt=1.0, Wsh=0.85, Lt=0.95, Aw=0.92, stoop=10.0)),
 ]
 
 TORSO = [
-    (0.55, 0.20, 0.17),
-    (0.68, 0.33, 0.26),
-    (0.90, 0.36, 0.28),
-    (1.15, 0.31, 0.24),
-    (1.40, 0.25, 0.20),
-    (1.54, 0.17, 0.14),
-    (1.60, 0.10, 0.09),
+    (0.0, 0.20, 0.17, "Wt"),
+    (0.15, 0.33, 0.26, "Wt"),
+    (0.40, 0.36, 0.28, "Wt"),
+    (0.68, 0.31, 0.24, "Wsh"),
+    (0.96, 0.25, 0.20, "Wsh"),
+    (1.12, 0.17, 0.14, "Wsh"),
+    (1.19, 0.10, 0.09, "Lt"),
 ]
 
 
@@ -86,12 +86,13 @@ def tube(p0, p1, r0, r1, seg, overlap):
 
 
 def layout(P):
-    Ls, Ts, Hs, Aw = P["Ls"], P["Ts"], P["Hs"], P["Aw"]
+    Ls, Ts, Aw = P["Ls"], P["Ts"], P["Aw"]
+    hh = P["f"] * P["H"]
+    head1 = P["H"]
+    head0 = head1 - hh
     hips = 0.6 * Ls
     spine0 = hips + 0.1 * Ts
-    shoulder = spine0 + 0.735 * Ts
-    head0 = shoulder + 0.205 * Ts
-    head1 = head0 + 0.8 * Hs
+    shoulder = head0 - 0.02 * Ts
     hipx = 0.138 * P["Wt"]
     shx = 0.245 * P["Wsh"]
     hipj, ankle = 0.72 * Ls, 0.04 * Ls
@@ -101,14 +102,14 @@ def layout(P):
         "core_hips": ("core_root", (0, 0, hips), (0, 0, hips + 0.18 * Ls)),
         "core_spine": ("core_hips", (0, 0, spine0), (0, 0, shoulder)),
         "core_head": ("core_spine", (0, 0, head0), (0, 0, head1)),
-        "extra_hair_back": ("core_head", (0, 0.3 * Hs, head0 + 0.45 * Hs), (0, 0.34 * Hs, head0 - 0.05 * Hs)),
+        "extra_hair_back": ("core_head", (0, 0.36 * hh, head0 + 0.55 * hh), (0, 0.42 * hh, head0 - 0.05 * hh)),
         "extra_hem_front": ("core_hips", (0, -0.22 * P["Wt"], hips), (0, -0.28 * P["Wt"], hips - 0.3 * Ls)),
         "extra_hem_back": ("core_hips", (0, 0.22 * P["Wt"], hips), (0, 0.28 * P["Wt"], hips - 0.3 * Ls)),
     }
     for s, sx in (("l", -1), ("r", 1)):
         sh = Vector((sx * shx, 0, shoulder))
-        el = sh + Vector((sx * 0.172 * Aw, -0.008, -0.285 * Ts))
-        wr = sh + Vector((sx * 0.345 * Aw, -0.016, -0.553 * Ts))
+        wr = Vector((sx * (0.245 * P["Wsh"] + 0.345 * Aw), -0.016, shoulder - 0.44 * Ts))
+        el = (sh + wr) / 2
         b[f"core_upper_arm_{s}"] = ("core_spine", sh, el)
         b[f"core_forearm_{s}"] = (f"core_upper_arm_{s}", el, wr)
         b[f"core_hand_{s}"] = (f"core_forearm_{s}", wr, wr + Vector((0, 0, -0.092 * Ts)))
@@ -119,18 +120,15 @@ def layout(P):
 
 
 def parts(P, bones):
-    Ts, Hs, Lt, Ls = P["Ts"], P["Hs"], P["Lt"], P["Ls"]
+    Lt, Ls = P["Lt"], P["Ls"]
     shoulder = bones["core_spine"][2].z
     head0 = bones["core_head"][1].z
-    rings = []
-    for z, rx, ry in TORSO:
-        w = P["Wsh"] if z >= 1.15 else P["Wt"]
-        if z > 1.56:
-            w = Lt
-        rings.append((shoulder + (z - 1.435) * Ts, rx * w, ry * w))
-    rings.append((head0 + 0.1 * Hs, 0.10 * Lt, 0.09 * Lt))
+    hh = P["f"] * P["H"]
+    bottom = bones["core_hips"][1].z - 0.05 * Ls
+    rings = [(bottom + t * (shoulder - bottom), rx * P[w], ry * P[w]) for t, rx, ry, w in TORSO]
+    rings.append((head0 + 0.15 * hh, 0.10 * Lt, 0.09 * Lt))
     torso = lathe(rings, 10)
-    out = [("torso", torso, None), ("head", ellipsoid((0, 0, head0 + 0.42 * Hs), (0.45 * Hs, 0.36 * Hs, 0.38 * Hs), 10, 7), "core_head")]
+    out = [("torso", torso, None), ("head", ellipsoid((0, 0, head0 + 0.5 * hh), (0.59 * hh, 0.47 * hh, 0.5 * hh), 10, 7), "core_head")]
     for s, sx in (("l", -1), ("r", 1)):
         ua, fa, ha = bones[f"core_upper_arm_{s}"], bones[f"core_forearm_{s}"], bones[f"socket_hand_{s}"]
         out.append((f"upper_arm_{s}", tube(ua[1], ua[2], 0.085 * Lt, 0.075 * Lt, 6, 0.02 * Lt), f"core_upper_arm_{s}"))
@@ -216,7 +214,7 @@ def build(name, P, x):
         tris += sum(len(p.vertices) - 2 for p in mesh.polygons)
     rig["blockout_tris"] = tris
     zs = {o.name: [v.co.z for v in o.data.vertices] for o in rig.children}
-    print(f"BODY {name} tris={tris} height={max(max(z) for z in zs.values()):.3f} head={max(zs[name + '_head']) - min(zs[name + '_head']):.3f} hip={bones['extra_thigh_l'][1].z:.3f} knee={bones['extra_shin_l'][1].z:.3f} shoulders={bones['core_upper_arm_r'][1].x * 2:.3f}")
+    print(f"BODY {name} tris={tris} height={max(max(z) for z in zs.values()):.3f} head={max(zs[name + '_head']) - min(zs[name + '_head']):.3f} hip={bones['extra_thigh_l'][1].z:.3f} knee={bones['extra_shin_l'][1].z:.3f} pct={(max(zs[name + '_head']) - min(zs[name + '_head'])) / max(max(z) for z in zs.values()) * 100:.1f} shoulders={bones['core_upper_arm_r'][1].x * 2:.3f} hand={bones['socket_hand_r'][1].z:.3f}")
     return rig
 
 

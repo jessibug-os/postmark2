@@ -6,7 +6,7 @@ import bpy
 HERE = os.path.dirname(os.path.abspath(__file__))
 VIEWS = [("front", 0), ("34", 45), ("side", 90)]
 
-bpy.ops.wm.open_mainfile(filepath=os.path.join(HERE, "blockout-v01.blend"))
+bpy.ops.wm.open_mainfile(filepath=os.path.join(HERE, "blockout-v02.blend"))
 scene = bpy.context.scene
 rigs = [o for o in scene.objects if o.type == "ARMATURE"]
 for o in scene.objects:
