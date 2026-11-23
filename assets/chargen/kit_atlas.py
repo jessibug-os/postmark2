@@ -41,13 +41,14 @@ def check():
         if not LAYOUT.get(name, {}).get("legacy"):
             raise ValueError(f"atlas_layout.json is missing legacy rect '{name}'")
     taken = np.full((SIZE, SIZE), "", dtype=object)
+    s = atlas.ATLAS / SIZE
     for name, r in LAYOUT.items():
         if r["tint"] not in (None, *CHANNELS):
             raise ValueError(f"atlas rect '{name}': tint {r['tint']!r} not in {sorted(CHANNELS)} or null")
         if r.get("legacy"):
             u0, v0, u1, v1 = atlas.RECTS[name]
-            if not np.allclose(r["rect"], (u0 * 0.5, 0.5 + v0 * 0.5, u1 * 0.5, 0.5 + v1 * 0.5)):
-                raise ValueError(f"atlas rect '{name}' is not the postmaster rect scaled into the top-left quadrant")
+            if not np.allclose(r["rect"], (u0 * s, 1 - s + v0 * s, u1 * s, 1 - s + v1 * s)):
+                raise ValueError(f"atlas rect '{name}' is not the postmaster rect copied unscaled into the top-left corner")
             continue
         ys, xs = box(name)
         clash = {n for n in taken[ys, xs].ravel() if n}
@@ -112,8 +113,6 @@ def legacy_body(zbounds):
     small = load(tmp)
     os.remove(tmp)
     n = small.shape[0]
-    if SIZE != 2 * n:
-        raise ValueError(f"atlas_layout size {SIZE} must be twice the postmaster atlas {n}")
     body = np.zeros((SIZE, SIZE, 4), dtype=np.float32)
     body[SIZE - n:, :n] = small
     return body
