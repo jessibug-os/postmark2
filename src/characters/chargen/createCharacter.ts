@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import { assets } from '../../core/AssetLoader';
 import { applyVertexSnap } from '../../core/RetroMaterial';
-import { FACE_SIZE, paintFace } from './facePaint';
 import type { SlotV2 } from './contract';
+import { FACE_SIZE } from './facePaint';
+import { createFaceAnimator, type FaceAnimator } from './face/FaceAnimator';
+import { paintFaceLayers } from './face/paintFaceLayers';
+import { faceSpecFrom, type Expression, type FaceSpec } from './face/types';
 import { itemById, type ItemVariant } from './items';
 import { KIT_ASSET, kit, paintBody, type Channel } from './kit';
 import type { CharacterRecipeV2 } from './recipeV2';
@@ -10,6 +13,7 @@ import type { CharacterRecipeV2 } from './recipeV2';
 export interface Character {
   root: THREE.Group;
   clips: THREE.AnimationClip[];
+  face: FaceAnimator;
   apply(recipe: CharacterRecipeV2): void;
 }
 
@@ -48,6 +52,42 @@ function channelColors(recipe: CharacterRecipeV2): Partial<Record<Channel, strin
   return Object.fromEntries(Object.entries(colors).filter(([, hex]) => hex)) as Partial<Record<Channel, string>>;
 }
 
+function faceRig(face: FaceAnimator, idleCanvas: HTMLCanvasElement) {
+  let queued: { expression: Expression; seconds: number } | null = null;
+  let moodLeft = 0;
+  let asleep = false;
+  return {
+    idleCanvas,
+    mood(expression: Expression, seconds = 1.2, then?: Expression, thenSeconds = 1.2): void {
+      face.setExpression(expression, seconds);
+      queued = then ? { expression: then, seconds: thenSeconds } : null;
+      moodLeft = seconds;
+    },
+    blink(): void {
+      if (!asleep && moodLeft <= 0 && !queued) face.setExpression('blink', 0.13);
+    },
+    get sleeping(): boolean {
+      return asleep;
+    },
+    set sleeping(value: boolean) {
+      if (value === asleep) return;
+      asleep = value;
+      face.setExpression(value ? 'asleep' : 'idle');
+    },
+    update(dt: number): void {
+      moodLeft -= dt;
+      if (queued && moodLeft <= 0) {
+        face.setExpression(queued.expression, queued.seconds);
+        moodLeft = queued.seconds;
+        queued = null;
+      }
+      face.update(dt);
+    },
+  };
+}
+
+const faceSpec = (recipe: CharacterRecipeV2): FaceSpec => faceSpecFrom({ ...recipe.face, iris: recipe.eyes });
+
 export function createCharacter(recipe: CharacterRecipeV2): Character {
   const { size, clips } = kit();
   const root = assets.model(KIT_ASSET);
@@ -70,6 +110,9 @@ export function createCharacter(recipe: CharacterRecipeV2): Character {
     parts.push({ mesh: object, slot: object.userData.kit_slot, names: String(object.userData.kit_part).split(',') });
   });
   const rig = root.getObjectByName('core_root')!.parent!;
+  const idleCanvas = document.createElement('canvas');
+  idleCanvas.width = idleCanvas.height = FACE_SIZE;
+  let face: FaceAnimator | null = null;
 
   const apply = (next: CharacterRecipeV2): void => {
     for (const { mesh, slot, names } of parts) {
@@ -83,12 +126,15 @@ export function createCharacter(recipe: CharacterRecipeV2): Character {
     paintBody(bodyPixels, channelColors(next));
     body.ctx.putImageData(bodyPixels, 0, 0);
     body.texture.needsUpdate = true;
-    paintFace(head.ctx, next.skin, { ...next.face, iris: next.eyes });
-    head.texture.needsUpdate = true;
+    const spec = faceSpec(next);
+    if (face) face.setSpec(next.skin, spec);
+    else face = createFaceAnimator(head.ctx, head.texture, next.skin, spec);
+    paintFaceLayers(idleCanvas.getContext('2d')!, next.skin, spec, 'idle', 0);
     rig.scale.setScalar(next.height);
   };
   apply(recipe);
-  return { root, clips, apply };
+  root.userData.faceRig = faceRig(face!, idleCanvas);
+  return { root, clips, face: face!, apply };
 }
 
 export function recipeAssets(recipe: CharacterRecipeV2): { model: () => THREE.Group; clips: () => THREE.AnimationClip[] } {

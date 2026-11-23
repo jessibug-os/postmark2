@@ -1,3 +1,5 @@
+import type { BrowStyle, EyeStyle, MouthStyle, NoseStyle } from './face/types';
+
 export interface FaceRecipe {
   iris: string;
   brow: string;
@@ -8,6 +10,10 @@ export interface FaceRecipe {
   age: boolean;
   glasses: boolean;
   moustache: boolean;
+  eyeStyle?: EyeStyle;
+  browStyle?: BrowStyle;
+  mouthStyle?: MouthStyle;
+  nose?: NoseStyle;
 }
 
 export const DEFAULT_SKIN = '#d6a86b';

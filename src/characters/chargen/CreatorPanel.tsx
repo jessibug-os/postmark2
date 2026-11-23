@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { CharacterPreview } from './CharacterPreview';
+import { BROW_STYLES, EYE_STYLES, MOUTH_STYLES, NOSE_STYLES, faceSpecFrom, type Expression } from './face/types';
 import { BODIES, OPTIONAL_SLOTS_V2, type SlotV2 } from './contract';
 import { ITEMS, itemById } from './items';
 import { kit } from './kit';
@@ -26,6 +27,15 @@ const FACE_TOGGLES: Array<{ key: keyof FaceRecipe; label: string }> = [
   { key: 'glasses', label: 'Glasses' },
   { key: 'moustache', label: 'Moustache' },
 ];
+
+const FACE_STYLES = [
+  { key: 'eyeStyle', label: 'Eye style', options: EYE_STYLES },
+  { key: 'browStyle', label: 'Brow style', options: BROW_STYLES },
+  { key: 'mouthStyle', label: 'Mouth', options: MOUTH_STYLES },
+  { key: 'nose', label: 'Nose', options: NOSE_STYLES },
+] as const;
+
+const EXPRESSIONS: Expression[] = ['idle', 'happy', 'surprised', 'asleep'];
 
 const label = (id: string): string => id.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase());
 
@@ -65,6 +75,9 @@ export function CreatorPanel({ recipe, onChange, children }: {
   children?: ReactNode;
 }) {
   const [tab, setTab] = useState<Tab>('Body');
+  const [expression, setExpression] = useState<Expression>('idle');
+  const [talking, setTalking] = useState(false);
+  const spec = faceSpecFrom(recipe.face);
   const { hairStyles } = kit();
   const setFace = (face: Partial<FaceRecipe>): void => onChange({ ...recipe, face: { ...recipe.face, ...face } });
   const setItem = (slot: SlotV2, id: string | null): void => {
@@ -76,7 +89,7 @@ export function CreatorPanel({ recipe, onChange, children }: {
 
   return (
     <div className="cc-creator">
-      <CharacterPreview recipe={recipe} />
+      <CharacterPreview recipe={recipe} expression={expression} talking={talking} />
       <div className="cc-controls">
         <nav className="cc-tabs">
           {TABS.map((name) => (
@@ -113,6 +126,19 @@ export function CreatorPanel({ recipe, onChange, children }: {
               </Row>
               <Row title="Brows">
                 <Swatches colors={HAIR_SWATCHES} value={recipe.face.brow} onPick={(brow) => setFace({ brow })} />
+              </Row>
+              {FACE_STYLES.map(({ key, label: text, options }) => (
+                <Row key={key} title={text}>
+                  <Choices options={options.map((id) => ({ id, name: label(id) }))} value={spec[key]} optional={false} onPick={(id) => setFace({ [key]: id })} />
+                </Row>
+              ))}
+              <Row title="Expression">
+                <div className="cc-choices">
+                  {EXPRESSIONS.map((name) => (
+                    <button key={name} aria-pressed={expression === name} onClick={() => setExpression(name)}>{label(name)}</button>
+                  ))}
+                  <button aria-pressed={talking} onClick={() => setTalking(!talking)}>Talk</button>
+                </div>
               </Row>
               <Row title="Details">
                 <div className="cc-choices">

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { createCharacter, type Character } from './createCharacter';
+import type { Expression } from './face/types';
 import type { CharacterRecipeV2 } from './recipeV2';
 
 const CLIPS = ['idle', 'walk', 'run_lower', 'seated_idle'] as const;
@@ -8,7 +9,7 @@ const CLIP_LABELS: Record<(typeof CLIPS)[number], string> = {
   idle: 'Idle', walk: 'Walk', run_lower: 'Run', seated_idle: 'Sit',
 };
 
-export function CharacterPreview({ recipe }: { recipe: CharacterRecipeV2 }) {
+export function CharacterPreview({ recipe, expression = 'idle', talking = false }: { recipe: CharacterRecipeV2; expression?: Expression; talking?: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const character = useRef<Character | null>(null);
   const play = useRef<(name: string) => void>(() => {});
@@ -79,6 +80,7 @@ export function CharacterPreview({ recipe }: { recipe: CharacterRecipeV2 }) {
       frame = requestAnimationFrame(tick);
       const dt = Math.min(clock.getDelta(), 0.1);
       mixer.update(dt);
+      made.face.update(dt);
       if (spin.current && drag === null) yaw += dt * 0.5;
       made.root.rotation.y = yaw;
       const distance = far.current ? 22 : 8;
@@ -101,6 +103,14 @@ export function CharacterPreview({ recipe }: { recipe: CharacterRecipeV2 }) {
   useEffect(() => {
     character.current?.apply(recipe);
   }, [recipe]);
+
+  useEffect(() => {
+    character.current?.face.setExpression(expression);
+  }, [expression]);
+
+  useEffect(() => {
+    character.current?.face.talk(talking);
+  }, [talking]);
 
   return (
     <div className="cc-preview">

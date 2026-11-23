@@ -1,4 +1,5 @@
-import { DEFAULT_RECIPE, type FaceRecipe } from '../recipe';
+import type { FaceRecipe } from '../recipe';
+import { DEFAULT_RECIPE_V2 } from '../recipeV2';
 
 export const EXPRESSIONS = ['idle', 'blink', 'happy', 'surprised', 'asleep'] as const;
 export type Expression = (typeof EXPRESSIONS)[number];
@@ -25,7 +26,7 @@ export interface FaceSpec extends FaceRecipe {
 }
 
 export const DEFAULT_FACE_SPEC: FaceSpec = {
-  ...DEFAULT_RECIPE.face,
+  ...DEFAULT_RECIPE_V2.face,
   eyeStyle: 'round',
   browStyle: 'soft',
   mouthStyle: 'smile',
