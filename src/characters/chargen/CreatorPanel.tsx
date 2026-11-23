@@ -2,11 +2,11 @@ import { useState, type ReactNode } from 'react';
 import { CharacterPreview } from './CharacterPreview';
 import { BROW_STYLES, EYE_STYLES, MOUTH_STYLES, NOSE_STYLES, faceSpecFrom, type Expression } from './face/types';
 import { BODIES, OPTIONAL_SLOTS_V2, type SlotV2 } from './contract';
-import { ITEMS, itemById } from './items';
+import { ITEMS, isOnePiece, itemById } from './items';
 import { kit } from './kit';
 import { HAIR_SWATCHES, IRIS_SWATCHES, SKIN_SWATCHES, randomRecipe } from './options';
 import type { FaceRecipe } from './recipe';
-import type { CharacterRecipeV2 } from './recipeV2';
+import { DEFAULT_RECIPE_V2, type CharacterRecipeV2 } from './recipeV2';
 
 const TABS = ['Body', 'Face', 'Hair', 'Clothes'] as const;
 type Tab = (typeof TABS)[number];
@@ -49,12 +49,12 @@ function Swatches({ colors, value, onPick }: { colors: string[]; value: string; 
   );
 }
 
-function Choices({ options, value, optional, onPick }: { options: Array<{ id: string; name: string }>; value: string | null; optional: boolean; onPick: (id: string | null) => void }) {
+function Choices({ options, value, optional, disabled = false, onPick }: { options: Array<{ id: string; name: string }>; value: string | null; optional: boolean; disabled?: boolean; onPick: (id: string | null) => void }) {
   return (
     <div className="cc-choices">
-      {optional && <button aria-pressed={value === null} onClick={() => onPick(null)}>None</button>}
+      {optional && <button disabled={disabled} aria-pressed={value === null} onClick={() => onPick(null)}>None</button>}
       {options.map(({ id, name }) => (
-        <button key={id} aria-pressed={value === id} onClick={() => onPick(id)}>{name}</button>
+        <button key={id} disabled={disabled} aria-pressed={value === id} onClick={() => onPick(id)}>{name}</button>
       ))}
     </div>
   );
@@ -82,8 +82,11 @@ export function CreatorPanel({ recipe, onChange, children }: {
   const setFace = (face: Partial<FaceRecipe>): void => onChange({ ...recipe, face: { ...recipe.face, ...face } });
   const setItem = (slot: SlotV2, id: string | null): void => {
     const item = id ? itemById(id) : undefined;
-    onChange({ ...recipe, outfit: { ...recipe.outfit, [slot]: item ? { item: item.id, variant: item.variants[0].id } : null } });
+    const outfit = { ...recipe.outfit, [slot]: item ? { item: item.id, variant: item.variants[0].id } : null };
+    if (slot === 'top') outfit.bottom = item?.fit === 'onepiece' ? null : outfit.bottom ?? DEFAULT_RECIPE_V2.outfit.bottom;
+    onChange({ ...recipe, outfit });
   };
+  const onePiece = isOnePiece(recipe.outfit.top?.item);
   const setVariant = (slot: SlotV2, item: string, variant: string): void =>
     onChange({ ...recipe, outfit: { ...recipe.outfit, [slot]: { item, variant } } });
 
@@ -160,11 +163,12 @@ export function CreatorPanel({ recipe, onChange, children }: {
             </>
           )}
           {tab === 'Clothes' && CLOTHES.map(({ slot, label: text }) => {
-            const entry = recipe.outfit[slot] ?? null;
+            const covered = slot === 'bottom' && onePiece;
+            const entry = covered ? null : recipe.outfit[slot] ?? null;
             const item = entry ? itemById(entry.item) : undefined;
             return (
-              <Row key={slot} title={text}>
-                <Choices options={ITEMS.filter((i) => i.slot === slot)} value={entry?.item ?? null} optional={OPTIONAL_SLOTS_V2.includes(slot)} onPick={(id) => setItem(slot, id)} />
+              <Row key={slot} title={covered ? `${text} · one-piece top` : text}>
+                <Choices options={ITEMS.filter((i) => i.slot === slot)} value={entry?.item ?? null} optional={OPTIONAL_SLOTS_V2.includes(slot)} disabled={covered} onPick={(id) => setItem(slot, id)} />
                 {item && item.parts.some((part) => tinted.has(part)) && (
                   <div className="cc-swatches">
                     {item.variants.map((variant) => (

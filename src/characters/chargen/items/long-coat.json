@@ -1,0 +1,15 @@
+{
+  "id": "long-coat",
+  "name": "Long coat",
+  "slot": "top",
+  "fit": "coat",
+  "parts": [
+    "long-coat"
+  ],
+  "variants": [
+    {"id": "plum", "colors": {"primary": "h252b3d", "accent": "hd5d4c8"}},
+    {"id": "navy", "colors": {"primary": "h314858", "accent": "hd5d4c8"}},
+    {"id": "postal", "colors": {"primary": "hb8442f", "accent": "hc9a227"}},
+    {"id": "moss", "colors": {"primary": "h4a6a4a", "accent": "hcbbf9e"}}
+  ]
+}

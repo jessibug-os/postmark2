@@ -1,0 +1,13 @@
+{
+  "id": "straw-hat",
+  "name": "Straw hat",
+  "slot": "hat",
+  "fit": "headwear",
+  "parts": [
+    "straw-hat"
+  ],
+  "variants": [
+    {"id": "straw", "colors": {"primary": "hd7ad55", "accent": "h8a3327"}},
+    {"id": "pale", "colors": {"primary": "hcbbf9e", "accent": "h314858"}}
+  ]
+}

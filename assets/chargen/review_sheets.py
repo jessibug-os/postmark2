@@ -100,10 +100,12 @@ class Kit:
         if look.get("hat") and hair in self.hat_variant:
             hair = self.hat_variant[hair]
         wanted = dict(look, hair=hair)
-        for obj in self.meshes:
-            slot = obj["kit_slot"]
-            if slot != "body" and wanted.get(slot) not in obj["kit_part"].split(","):
-                continue
+        worn = [o for o in self.meshes if o["kit_slot"] != "body" and wanted.get(o["kit_slot"]) in o["kit_part"].split(",")]
+        if any(o["kit_slot"] == "top" and o["kit_fit"] == "onepiece" for o in worn):
+            worn = [o for o in worn if o["kit_slot"] != "bottom"]
+        hidden = {a for o in worn for a in o["kit_hides"].split(",") if a}
+        body = [o for o in self.meshes if o["kit_slot"] == "body" and o.get("kit_area", "") not in hidden]
+        for obj in body + worn:
             copy = obj.copy()
             copy.hide_render = False
             self.scene.collection.objects.link(copy)
@@ -209,9 +211,30 @@ def strip(kit):
     return path
 
 
+def style_cell(kit, style):
+    slot = next((s for s in kit.slots if style in kit.styles[s]), None)
+    if not slot:
+        raise SystemExit(f"style {style!r} is not in the build; styles: {kit.styles}")
+    views = [("front", FRONT), ("3/4", THREE_Q), ("side", SIDE), ("back", BACK), ("3/4 back", BACK_Q)]
+    look = kit.outfit(**{"hair": None, "hat": None, "bag": None, "apron": None, slot: style})
+    cells = [[(look, yaw, "") for _, yaw in views]]
+    return kit.grid(f"style-{style}.png", f"{slot} · {style} · {kit.body}", len(views), 1, cells,
+                    col_labels=[v for v, _ in views])
+
+
+def only():
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+    if "--only" in argv:
+        return argv[argv.index("--only") + 1]
+    return os.environ.get("CHARGEN_ONLY")
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     builds = sorted(glob.glob(os.path.join(HERE, "kit-built*.blend")), key=lambda p: (len(p), p))
+    if only():
+        style_cell(Kit(builds[0]), only())
+        return
     summary = []
     for i, path in enumerate(builds):
         kit = Kit(path)

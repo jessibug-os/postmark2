@@ -1,0 +1,14 @@
+{
+  "id": "flat-cap",
+  "name": "Flat cap",
+  "slot": "hat",
+  "fit": "headwear",
+  "parts": [
+    "flat-cap"
+  ],
+  "variants": [
+    {"id": "stone", "colors": {"primary": "h7d7a72"}},
+    {"id": "brown", "colors": {"primary": "h5c4a38"}},
+    {"id": "navy", "colors": {"primary": "h314858"}}
+  ]
+}

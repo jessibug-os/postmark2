@@ -1,0 +1,14 @@
+{
+  "id": "jacket",
+  "name": "Jacket",
+  "slot": "top",
+  "fit": "loose",
+  "parts": [
+    "jacket"
+  ],
+  "variants": [
+    {"id": "plum", "colors": {"primary": "h252b3d", "accent": "hd5d4c8"}},
+    {"id": "teal", "colors": {"primary": "h397477", "accent": "hcbbf9e"}},
+    {"id": "timber", "colors": {"primary": "h8a7455", "accent": "hd5d4c8"}}
+  ]
+}

@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -12,6 +13,9 @@ import uvproject
 
 FACE = (atlas.FACE_Z, atlas.FACE_HALF_H, atlas.FACE_HALF_W)
 HAIR = (atlas.HAIR_Z0, atlas.HAIR_Z1)
+LAYOUT = json.load(open(os.path.join(kitlib.HERE, "atlas_layout.json")))
+SIZE = LAYOUT["size"]
+RECTS = {name: tuple(r["rect"]) for name, r in LAYOUT["rects"].items()}
 
 
 def head_z(z, ctx):
@@ -27,7 +31,12 @@ def project(parts, ctx):
     for obj in parts:
         if obj["uv_mode"] == "cylindrical_z_span":
             obj["uv_z0"], obj["uv_z1"] = z0, z1
-    reports = uvproject.project_all(parts)
+    legacy = atlas.RECTS, atlas.ATLAS
+    atlas.RECTS, atlas.ATLAS = RECTS, SIZE
+    try:
+        reports = uvproject.project_all(parts)
+    finally:
+        atlas.RECTS, atlas.ATLAS = legacy
     for obj in parts:
         if obj["uv_mode"] != "face_front":
             continue

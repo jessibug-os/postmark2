@@ -17,16 +17,10 @@ import kitlib
 
 BODIES = ["adult"]
 DEFAULT_OUTFIT = {"base", "long", "headband", "long-coat", "skirt", "tall-boots", "satchel"}
-TINTS = {
-    "coat": "primary", "sleeve": "primary", "collar": "accent", "dress": "primary",
-    "tights": "secondary", "hair": "primary", "skin": "primary", "boot": "primary", "ribbon": "primary",
-}
 
 
 def tint_group(obj):
-    if obj["uv_rect"] == "tights":
-        return "bottom"
-    return {"body": "skin", "apron": "outer"}.get(obj["kit_slot"], obj["kit_slot"])
+    return kit_atlas.group(obj["uv_rect"]) or {"body": "skin", "apron": "outer"}.get(obj["kit_slot"], obj["kit_slot"])
 
 
 def mask_carrier(collection, material):
@@ -79,7 +73,7 @@ def build(root, body):
     rig, bones = bodies.build_rig(body, collection)
     ctx = kitlib.Context(body, rig, bones, collection, {})
     ctx.widths["core_head"] = bodies.head_width(body, ctx.legacy_bones, ctx.cache["skull"])
-    parts = bodies.build_base(ctx)
+    parts = bodies.build_base(ctx) + bodies.build_skin(ctx)
     for name, module in scripts("parts"):
         made = module.build(ctx)
         if body in made[0]["kit_bodies"].split(",") or made[0]["kit_bodies"] == "*":
@@ -96,7 +90,7 @@ def build(root, body):
     body_path = os.path.join(textures, f"chargen-kit{suffix}-body.png")
     head_path = os.path.join(textures, f"chargen-kit{suffix}-head.png")
     mask_path = os.path.join(textures, f"chargen-kit{suffix}-mask.png")
-    body_mat, head_mat, mask_mat, review, defaults = kit_atlas.paint(body_path, head_path, mask_path, TINTS, ctx)
+    body_mat, head_mat, mask_mat, review, defaults = kit_atlas.paint(body_path, head_path, mask_path, ctx)
     kit_uv.project(parts, ctx)
     for obj in parts:
         obj.data.materials.clear()
@@ -105,11 +99,11 @@ def build(root, body):
     ctx.dispose()
     carrier = mask_carrier(collection, mask_mat)
 
-    scene["kit_rects"] = json.dumps(kit_atlas.atlas.RECTS)
-    scene["kit_tints"] = json.dumps(TINTS)
+    scene["kit_rects"] = json.dumps(kit_uv.RECTS)
+    scene["kit_tints"] = json.dumps(kit_atlas.tints())
     scene["kit_tint_defaults"] = json.dumps(defaults)
     scene["kit_mask_grey"] = kit_atlas.GREY
-    scene["kit_atlas"] = kit_atlas.atlas.ATLAS
+    scene["kit_atlas"] = kit_uv.SIZE
     scene["kit_version"] = 2
     scene["kit_body"] = body
     scene["kit_walk_stride"] = rig["kit_walk_stride"]

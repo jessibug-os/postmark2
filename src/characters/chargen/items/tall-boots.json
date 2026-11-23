@@ -1,0 +1,14 @@
+{
+  "id": "tall-boots",
+  "name": "Tall boots",
+  "slot": "shoes",
+  "fit": "footwear",
+  "parts": [
+    "tall-boots"
+  ],
+  "variants": [
+    {"id": "brown", "colors": {"primary": "h3a2c20"}},
+    {"id": "black", "colors": {"primary": "h201a14"}},
+    {"id": "tan", "colors": {"primary": "h8a7455"}}
+  ]
+}
