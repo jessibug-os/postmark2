@@ -112,6 +112,8 @@ def build(root, body):
     scene["kit_atlas"] = kit_atlas.atlas.ATLAS
     scene["kit_version"] = 2
     scene["kit_body"] = body
+    scene["kit_walk_stride"] = rig["kit_walk_stride"]
+    scene["kit_run_stride"] = rig["kit_run_stride"]
     for obj in scene.objects:
         obj.select_set(obj.type in {"MESH", "ARMATURE"})
     bpy.context.view_layer.objects.active = rig

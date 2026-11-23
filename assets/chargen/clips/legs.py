@@ -288,5 +288,7 @@ def build(ctx):
     transition(ctx, legs, "sit_down", sit, True)
     transition(ctx, legs, "stand_up", sit, False)
     data.use_nla = True
+    ctx.rig["kit_walk_stride"] = math.asin(walk / (2 * legs.hip))
+    ctx.rig["kit_run_stride"] = math.asin(run / (2 * legs.hip))
     print(f"KNEE CLIPS · {ctx.body} · thigh {legs.thigh['l']:.3f} shin {legs.shin['l']:.3f} hip {legs.hip:.3f} · "
           f"walk stride {math.asin(walk / (2 * legs.hip)):.3f} run stride {math.asin(run / (2 * legs.hip)):.3f}")

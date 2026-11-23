@@ -151,6 +151,8 @@ export class SkeletalAnimator implements HandLayerDriver {
   };
   /** Hip height at bind, which is what the stride swings about. */
   private readonly legLength: number;
+  private readonly walkStride: number;
+  private readonly runStride: number;
   /** Last mixer output and last written value per shaped property; see
    * `shapeQuaternion` for why re-reading the bone would compound. */
   private readonly shapedRootPos = {
@@ -165,6 +167,8 @@ export class SkeletalAnimator implements HandLayerDriver {
 
   constructor(root: THREE.Object3D, clips: THREE.AnimationClip[]) {
     this.mixer = new THREE.AnimationMixer(root);
+    this.walkStride = root.userData.kit_walk_stride ?? WALK_STRIDE;
+    this.runStride = root.userData.kit_run_stride ?? RUN_STRIDE;
     this.performanceClips = clips;
     /**
      * Resolve a locomotion base through the vocabulary's preference order.
@@ -425,7 +429,7 @@ export class SkeletalAnimator implements HandLayerDriver {
     const runBlend = this.gaitBlend;
     // Cadence follows the stride actually on screen, which is the blend of the
     // two clips' strides, otherwise the feet skate through the transition.
-    const stride = THREE.MathUtils.lerp(WALK_STRIDE, RUN_STRIDE, runBlend);
+    const stride = THREE.MathUtils.lerp(this.walkStride, this.runStride, runBlend);
     const cadence = this.cadenceFor(
       opts.speed, stride, THREE.MathUtils.lerp(WALK_SKATE, RUN_SKATE, runBlend),
     );
