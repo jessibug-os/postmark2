@@ -245,11 +245,12 @@ export class SkeletalAnimator implements HandLayerDriver {
       right: this.armNodes.right?.quaternion.clone() ?? null,
     };
     const rootBone = root.getObjectByName('core_root') ?? null;
-    const legL = root.getObjectByName('extra_leg_l') ?? null;
+    const legL = root.getObjectByName('extra_leg_l') ?? root.getObjectByName('extra_thigh_l') ?? null;
+    const legR = root.getObjectByName('extra_leg_r') ?? root.getObjectByName('extra_thigh_r') ?? null;
     this.gaitNodes = {
       root: rootBone,
       hips: root.getObjectByName('core_hips') ?? null,
-      legs: { l: legL, r: root.getObjectByName('extra_leg_r') ?? null },
+      legs: { l: legL, r: legR },
     };
     this.gaitRest = {
       rootPos: this.gaitNodes.root?.position.clone() ?? null,
