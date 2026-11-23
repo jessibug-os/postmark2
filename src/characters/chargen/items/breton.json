@@ -1,0 +1,13 @@
+{
+  "id": "breton",
+  "name": "Breton",
+  "slot": "top",
+  "fit": "tight",
+  "parts": ["breton"],
+  "variants": [
+    {"id": "white-navy", "colors": {"primary": "he8f0ff", "secondary": "h1e2a4a"}},
+    {"id": "cream-red", "colors": {"primary": "he8dcc8", "secondary": "hd83c3c"}},
+    {"id": "navy-white", "colors": {"primary": "h1e2a4a", "secondary": "he8f0ff"}},
+    {"id": "ecru-forest", "colors": {"primary": "hd8cdb4", "secondary": "h354f42"}}
+  ]
+}
