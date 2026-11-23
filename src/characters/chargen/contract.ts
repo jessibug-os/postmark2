@@ -13,18 +13,10 @@ const FIT_IDS = ['tight', 'loose', 'coat', 'skirt', 'onepiece', 'headwear', 'foo
 const HIDE_IDS = ['torso', 'upper_arms', 'forearms', 'hips', 'thighs', 'shins', 'feet', 'scalp'] as const;
 const MASK_IDS = ['primary', 'secondary', 'accent'] as const;
 
-export type BoneName = (typeof BONE_NAMES)[number];
 export type BodyId = (typeof BODY_IDS)[number];
 export type SlotV2 = (typeof SLOT_IDS)[number];
 export type FitClass = (typeof FIT_IDS)[number];
-export type HideArea = (typeof HIDE_IDS)[number];
 export type MaskChannel = (typeof MASK_IDS)[number];
-
-export interface BoneDef {
-  name: BoneName;
-  parent: BoneName | null;
-  deform: boolean;
-}
 
 interface ContractShape {
   version: number;
@@ -45,14 +37,11 @@ function checked<T extends string>(label: string, expected: readonly T[], actual
   return expected;
 }
 
-export const CONTRACT_VERSION = source.version;
-
 checked('bones', BONE_NAMES, source.bones.map((bone) => bone.name));
-export const BONES = source.bones as readonly BoneDef[];
 
 export const BODIES = checked('bodies', BODY_IDS, source.bodies);
 export const SLOTS_V2 = checked('slots', SLOT_IDS, source.slots.map((slot) => slot.id));
 export const OPTIONAL_SLOTS_V2: readonly SlotV2[] = source.slots.filter((slot) => slot.optional).map((slot) => slot.id as SlotV2);
-export const FIT_CLASSES = checked('fitClasses', FIT_IDS, source.fitClasses);
-export const HIDE_AREAS = checked('hideAreas', HIDE_IDS, source.hideAreas);
-export const MASK_CHANNELS = checked('maskChannels', MASK_IDS, source.maskChannels.channels.map((channel) => channel.id));
+checked('fitClasses', FIT_IDS, source.fitClasses);
+checked('hideAreas', HIDE_IDS, source.hideAreas);
+checked('maskChannels', MASK_IDS, source.maskChannels.channels.map((channel) => channel.id));

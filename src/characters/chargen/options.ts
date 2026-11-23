@@ -94,7 +94,6 @@ export function randomRecipe(random: () => number = Math.random): CharacterRecip
     hair: { style: random() > 0.92 ? null : pick(kit().hairStyles), color: hair },
     eyes,
     face: {
-      iris: eyes,
       brow: hair,
       blush: '#e06642',
       squint: 0.86 + random() * 0.14,
