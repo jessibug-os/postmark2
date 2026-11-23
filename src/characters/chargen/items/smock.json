@@ -1,0 +1,15 @@
+{
+  "id": "smock",
+  "name": "Fisherman's smock",
+  "slot": "top",
+  "fit": "loose",
+  "parts": [
+    "smock"
+  ],
+  "variants": [
+    {"id": "navy", "colors": {"primary": "h263048", "accent": "hf0eee8"}},
+    {"id": "red", "colors": {"primary": "ha8302f", "accent": "h263048"}},
+    {"id": "ecru", "colors": {"primary": "hd8d0c0", "accent": "h263048"}},
+    {"id": "slate", "colors": {"primary": "h4a5a78", "accent": "hf6efdc"}}
+  ]
+}
