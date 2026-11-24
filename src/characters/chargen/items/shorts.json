@@ -1,0 +1,16 @@
+{
+  "id": "shorts",
+  "name": "Shorts",
+  "slot": "bottom",
+  "fit": "loose",
+  "parts": [
+    "shorts"
+  ],
+  "variants": [
+    {"id": "khaki", "colors": {"primary": "hb8a678"}},
+    {"id": "navy", "colors": {"primary": "h263048"}},
+    {"id": "olive", "colors": {"primary": "h5a6b3f"}},
+    {"id": "brick", "colors": {"primary": "h9c5a3c"}},
+    {"id": "denim", "colors": {"primary": "h436b82"}}
+  ]
+}
