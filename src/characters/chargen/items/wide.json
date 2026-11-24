@@ -1,0 +1,16 @@
+{
+  "id": "wide",
+  "name": "Wide trousers",
+  "slot": "bottom",
+  "fit": "loose",
+  "parts": [
+    "wide"
+  ],
+  "variants": [
+    {"id": "charcoal", "colors": {"primary": "h343236"}},
+    {"id": "camel", "colors": {"primary": "hb08d52"}},
+    {"id": "cream", "colors": {"primary": "hd8cdb4"}},
+    {"id": "forest", "colors": {"primary": "h354f42"}},
+    {"id": "rust", "colors": {"primary": "ha8532f"}}
+  ]
+}
