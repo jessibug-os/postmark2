@@ -14,6 +14,8 @@ BASE = {
 }
 SKIN = {
     "torso": ("torso", "cylindrical_z", 560),
+    "hips": ("hips", "cylindrical_z", 100),
+    "thigh_l": ("thighs", "axial_z_down", 28), "thigh_r": ("thighs", "axial_z_down", 28),
     "upper_arm_l": ("upper_arms", "axial_z_down", 24), "upper_arm_r": ("upper_arms", "axial_z_down", 24),
     "forearm_l": ("forearms", "axial_z_down", 24), "forearm_r": ("forearms", "axial_z_down", 24),
     "foot_l": ("feet", "planar_xz", 32), "foot_r": ("feet", "planar_xz", 32),
@@ -100,6 +102,11 @@ def build_skin(ctx):
     rings = [(bottom + t * (shoulder - bottom), rx * P[w], ry * P[w]) for t, rx, ry, w in BLOCK["TORSO"]]
     shapes = {name: (mesh, bone) for name, mesh, bone in BLOCK["parts"](P, upright)}
     shapes["torso"] = (BLOCK["lathe"](rings, 10), None)
+    joint = upright["extra_thigh_l"][1].z
+    shapes["hips"] = (BLOCK["ellipsoid"]((0, 0, joint), (0.26 * P["Wt"], 0.19 * P["Wt"], 0.13 * P["Ls"]), 10, 6), "core_hips")
+    for s in ("l", "r"):
+        head, tail = upright[f"extra_thigh_{s}"][1:]
+        shapes[f"thigh_{s}"] = (BLOCK["tube"](head, tail, 0.115 * P["Lt"], 0.115 * P["Lt"], 8, 0.03 * P["Lt"]), f"extra_thigh_{s}")
     made = []
     for name, (area, mode, cap) in SKIN.items():
         (verts, faces), bone = shapes[name]

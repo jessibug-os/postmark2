@@ -80,6 +80,6 @@ def build(ctx):
     obj.vertex_groups.new(name="core_hips").add([v.index for v in mesh.vertices if v.co.z < split], 1.0, "REPLACE")
     obj.vertex_groups.new(name="core_spine").add([v.index for v in mesh.vertices if v.co.z >= split], 1.0, "REPLACE")
     ctx.attach(obj)
-    return [ctx.tag(obj, kit_slot="top", kit_part=PART, kit_fit="onepiece", kit_hides="hips",
+    return [ctx.tag(obj, kit_slot="top", kit_part=PART, kit_fit="onepiece", kit_hides="hips,thighs",
                     kit_bodies="adult", kit_hat_variant="", kit_tris_max=220, atlas="body",
                     uv_mode="cylindrical_z", uv_rect=RECT)]
