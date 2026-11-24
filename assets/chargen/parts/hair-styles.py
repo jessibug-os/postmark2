@@ -49,6 +49,10 @@ class Head:
         spine = ctx.bones["core_spine"]
         self.shoulder = spine[1].z
         self.midback = spine[0].z + 0.5 * (spine[1].z - spine[0].z)
+        self.shoulder_x = abs(ctx.bones["core_upper_arm_r"][0].x)
+        self.torso = tree([ctx.collection.objects["skin_torso"]])
+        self.torso_y = min((ctx.collection.objects["skin_torso"].matrix_world @ v.co).y
+                           for v in ctx.collection.objects["skin_torso"].data.vertices)
 
     def skull(self, direction):
         return hit(self.bvh, self.c, direction) or self.r0
@@ -164,36 +168,39 @@ def sphere(centre, radius, squash, axis, rings=6, sides=8):
     return bm
 
 
-def tress(head, theta):
-    h = Vector((math.sin(theta), -math.cos(theta), 0.0))
-    w = Vector((math.cos(theta), math.sin(theta), 0.0))
-    d0 = Vector((h.x * math.cos(0.6), h.y * math.cos(0.6), math.sin(0.6)))
-    r = head.r0
-    path = [
-        (head.c + d0 * (head.skull(d0) - 0.02), 0.08, 0.05),
-        (Vector((0.0, head.c.y, head.c.z)) + h * (head.side(head.c.z, h) + 0.07), 0.11, 0.08),
-        (Vector((0.0, head.c.y, head.shoulder)) + h * r * 0.98 + Vector((0, -0.28 * r, 0)), 0.13, 0.1),
-        (Vector((0.0, head.c.y, head.shoulder - 0.45 * r)) + h * r * 1.0 + Vector((0, -0.3 * r, 0)), 0.07, 0.06),
-    ]
-    sides = 8
+def tress(head, sx):
+    def scalp(az, el):
+        a, e = math.radians(az), math.radians(el)
+        d = Vector((sx * math.sin(a) * math.cos(e), -math.cos(a) * math.cos(e), math.sin(e)))
+        return head.c + d * head.skull(d), d
+
+    def chest(f, dz):
+        x, z = sx * f * head.shoulder_x, head.shoulder - dz
+        y = head.torso_y + 0.1 - (hit(head.torso, Vector((x, head.torso_y + 0.1, z)), Vector((0, -1, 0))) or 0.0)
+        n = Vector((0.35 * sx, -1.0, 0.0)).normalized()
+        return Vector((x, y, z)), n
+
+    path = [(*scalp(42, 28), 0.12, 0.03), (*scalp(52, -15), 0.2, 0.03), (*scalp(50, -44), 0.21, 0.03),
+            (*chest(0.8, 0.02), 0.22, 0.08), (*chest(0.72, 0.2), 0.15, 0.08), (*chest(0.66, 0.34), 0.05, 0.08)]
+    thick = 0.02
+    sides = 6
     bm = bmesh.new()
     loops = []
-    for i, (p, a, b) in enumerate(path):
+    for i, (p, n, width, gap) in enumerate(path):
         nxt = path[min(i + 1, len(path) - 1)][0]
         prv = path[max(i - 1, 0)][0]
         t = (nxt - prv).normalized()
-        across = (w - t * w.dot(t)).normalized()
-        depth = t.cross(across).normalized()
-        if depth.dot(h) < 0:
-            depth = -depth
-        loops.append([bm.verts.new(p + across * a * math.cos(math.tau * (k + 0.5) / sides)
-                                   + depth * b * math.sin(math.tau * (k + 0.5) / sides))
+        n = (n - t * n.dot(t)).normalized()
+        across = t.cross(n).normalized()
+        centre = p + n * (gap + thick)
+        loops.append([bm.verts.new(centre + across * width * 0.5 * math.cos(math.tau * k / sides)
+                                   + n * thick * math.sin(math.tau * k / sides))
                       for k in range(sides)])
     for a, b in zip(loops, loops[1:]):
         for k in range(sides):
             k1 = (k + 1) % sides
             bm.faces.new((a[k], a[k1], b[k1], b[k]))
-    end = path[-1][0] + (path[-1][0] - path[-2][0]).normalized() * 0.05
+    end = path[-1][0] + path[-1][1] * (path[-1][3] + thick) + (path[-1][0] - path[-2][0]).normalized() * 0.04
     tip = bm.verts.new(end)
     for k in range(sides):
         bm.faces.new((loops[-1][k], loops[-1][(k + 1) % sides], tip))
@@ -257,7 +264,7 @@ def scalp_hats(ctx):
     return hats
 
 
-def mesh(ctx, name, bm, head, part, variant, hats, back_weight):
+def mesh(ctx, name, bm, head, part, variant, hats, lower):
     verts, faces = unseam(bm)
     if hats:
         clamp(verts, head, hats)
@@ -266,9 +273,10 @@ def mesh(ctx, name, bm, head, part, variant, hats, back_weight):
     obj = bpy.data.objects.new(name, data)
     ctx.collection.objects.link(obj)
     head_group = obj.vertex_groups.new(name="core_head")
-    back_group = obj.vertex_groups.new(name="extra_hair_back")
+    back_group = obj.vertex_groups.new(name=lower or "extra_hair_back")
+    a, b = (head.bottom, head.shoulder) if lower == "core_spine" else (head.bottom + 0.1, head.bottom - 0.15)
     for v in data.vertices:
-        w = smooth(head.bottom + 0.1, head.bottom - 0.15, v.co.z) if back_weight else 0.0
+        w = smooth(a, b, v.co.z) if lower else 0.0
         if w < 1:
             head_group.add([v.index], 1 - w, "REPLACE")
         if w > 0:
@@ -315,9 +323,10 @@ def build(ctx):
             pid = f"{part}-hat" if variant else part
             link = "" if variant else f"{part}-hat"
             use = hats if variant else None
-            made.append(mesh(ctx, f"{pid}_hair", grid(*shell(head, style)), head, pid, link, use, not style["hug"]))
+            made.append(mesh(ctx, f"{pid}_hair", grid(*shell(head, style)), head, pid, link, use,
+                             "" if style["hug"] else "extra_hair_back"))
             if style.get("bun"):
-                made.append(mesh(ctx, f"{pid}_bun", bun(head, variant), head, pid, link, use, False))
-            for side, theta in (("l", math.radians(62)), ("r", math.radians(-62))) if style.get("tresses") else ():
-                made.append(mesh(ctx, f"{pid}_tress_{side}", tress(head, theta), head, pid, link, use, False))
+                made.append(mesh(ctx, f"{pid}_bun", bun(head, variant), head, pid, link, use, ""))
+            for side, sx in (("l", 1), ("r", -1)) if style.get("tresses") else ():
+                made.append(mesh(ctx, f"{pid}_tress_{side}", tress(head, sx), head, pid, link, use, "core_spine"))
     return made
