@@ -26,6 +26,13 @@ the JSON drifts from them.
   `_kit_normal` corner attribute, and `kit.ts` restores them at runtime over
   the loader's recomputed ones. The skull and the torso skin get one applied
   level of Catmull-Clark before projection.
+- **Thickness.** Runtime materials are front-side only, so a single-sided
+  surface whose inside can be seen (hair panels, hat brims, skirt hems) sets
+  the optional `kit_solidify` (float metres). Before validation and UV
+  projection the build adds an inward-offset, inverted inner shell and a
+  rounded rim along every open boundary, so the inside is painted by the same
+  projection as the outside. Coincident split seams get no rim. `kit_tris_max`
+  counts the solidified mesh: twice the source tris plus 4 per boundary edge.
 - **Budgets.** 600–900 tris per character, at most 3 draw calls, one 2048 px
   body atlas plus its 2048 px mask (the head sheet stays 512). The runtime
   samples both with `NearestFilter` and no mipmaps, so rects never bleed into

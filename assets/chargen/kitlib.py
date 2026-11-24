@@ -2,8 +2,10 @@ import json
 import math
 import os
 
+import bmesh
 import bpy
 from mathutils import Matrix, Vector
+from mathutils.kdtree import KDTree
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CONTRACT = json.load(open(os.path.join(HERE, "contract.json")))
@@ -94,6 +96,60 @@ def smooth(obj):
     return obj
 
 
+def solidify(obj):
+    t = obj.get("kit_solidify", 0.0)
+    if t <= 0:
+        return obj
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    deform = bm.verts.layers.deform.verify()
+    bm.normal_update()
+    outer, faces = list(bm.verts), list(bm.faces)
+    kd = KDTree(len(outer))
+    for v in outer:
+        kd.insert(v.co, v.index)
+    kd.balance()
+    twin = {v: min(i for _, i, _ in kd.find_range(v.co, 1e-4)) for v in outer}
+    normal, out = {}, {}
+    for v in outer:
+        normal[twin[v]] = normal.get(twin[v], Vector()) + v.normal
+    key = lambda e: frozenset(twin[v] for v in e.verts)
+    edges = [e for e in bm.edges if e.is_boundary and len(key(e)) == 2]
+    count = {}
+    for e in edges:
+        count[key(e)] = count.get(key(e), 0) + 1
+    boundary = []
+    for e in (e for e in edges if count[key(e)] == 1):
+        loop = e.link_loops[0]
+        boundary.append((loop.vert, loop.link_loop_next.vert))
+        n = loop.face.normal
+        d = (e.verts[0].co + e.verts[1].co) / 2 - loop.face.calc_center_median()
+        d = (d - n * d.dot(n)).normalized()
+        for v in e.verts:
+            out[twin[v]] = out.get(twin[v], Vector()) + d
+
+    def copy(v, co):
+        w = bm.verts.new(co)
+        for g, weight in v[deform].items():
+            w[deform][g] = weight
+        return w
+
+    inner = {v: copy(v, v.co - normal[twin[v]].normalized() * t) for v in outer}
+    for f in faces:
+        bm.faces.new([inner[v] for v in reversed(f.verts)])
+    mid = {}
+    for a, b in boundary:
+        for v in (a, b):
+            if v not in mid:
+                mid[v] = copy(v, (v.co + inner[v].co) / 2 + out[twin[v]].normalized() * t * 0.4)
+        bm.faces.new((b, a, mid[a], mid[b]))
+        bm.faces.new((mid[b], mid[a], inner[a], inner[b]))
+    bm.to_mesh(obj.data)
+    bm.free()
+    obj.data.update()
+    return obj
+
+
 def tris(obj):
     return sum(len(p.vertices) - 2 for p in obj.data.polygons)
 
@@ -103,7 +159,8 @@ def check(name, props):
         if key not in PROPS:
             raise ValueError(f"'{name}': '{key}' is not a contract part property")
         kind = PROPS[key]["type"]
-        if (kind == "int") != isinstance(value, int) or (kind == "string" and not isinstance(value, str)):
+        if (kind == "int") != isinstance(value, int) or (kind == "string" and not isinstance(value, str)) \
+                or (kind == "float" and not isinstance(value, float)):
             raise ValueError(f"'{name}': {key}={value!r} is not a {kind}")
     items = lambda key: [s for s in props.get(key, "").split(",") if s]
     if "kit_slot" in props and props["kit_slot"] not in SLOTS:

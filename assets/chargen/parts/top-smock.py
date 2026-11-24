@@ -71,9 +71,10 @@ def body(ctx):
     bm.to_mesh(mesh)
     bm.free()
     pivot = ctx.bones["core_spine"][0].z
-    return finish(ctx, bpy.data.objects.new(f"{PART}_body", mesh),
-                  {"core_hips": lambda co: co.z < pivot, "core_spine": lambda co: co.z >= pivot},
-                  RECT, "cylindrical_z", 220)
+    obj = finish(ctx, bpy.data.objects.new(f"{PART}_body", mesh),
+                 {"core_hips": lambda co: co.z < pivot, "core_spine": lambda co: co.z >= pivot},
+                 RECT, "cylindrical_z", 560)
+    return ctx.tag(obj, kit_solidify=0.012)
 
 
 def sleeve(ctx, side):

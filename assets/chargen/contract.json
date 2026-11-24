@@ -60,7 +60,8 @@
     "atlas": { "type": "string", "meaning": "\"body\" or \"head\"; which texture sheet the mesh samples" },
     "uv_mode": { "type": "string", "meaning": "projection used when the build reprojects UVs (e.g. cylindrical_z, planar_xz)" },
     "uv_rect": { "type": "string", "meaning": "name of the atlas rect the mesh's UVs are projected into" },
-    "kit_crease": { "type": "int", "optional": true, "meaning": "degrees; edges whose faces meet at more than this stay sharp, the rest shade smooth. Omit for the contract default crease" }
+    "kit_crease": { "type": "int", "optional": true, "meaning": "degrees; edges whose faces meet at more than this stay sharp, the rest shade smooth. Omit for the contract default crease" },
+    "kit_solidify": { "type": "float", "optional": true, "meaning": "metres; the build gives the mesh this thickness before UV projection: an inward, inverted inner shell plus rounded rims along open boundaries, so a single-sided surface reads from both sides. kit_tris_max counts the solidified mesh. Omit for none" }
   },
   "scripts": {
     "parts": {

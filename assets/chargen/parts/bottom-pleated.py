@@ -71,5 +71,5 @@ def build(ctx):
     ctx.collection.objects.link(obj)
     ctx.skin_to(obj, "core_hips")
     return [ctx.tag(obj, kit_slot="bottom", kit_part=PART, kit_fit="skirt", kit_hides="hips,thighs",
-                    kit_bodies="adult", kit_hat_variant="", kit_tris_max=180, kit_crease=35, atlas="body",
+                    kit_bodies="adult", kit_hat_variant="", kit_tris_max=560, kit_crease=35, kit_solidify=0.012, atlas="body",
                     uv_mode="cylindrical_z", uv_rect=RECT)]
