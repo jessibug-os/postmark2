@@ -13,6 +13,7 @@ COLUMNS = 20
 DOME = [0.0, 0.32, 0.64, 0.96, 1.2]
 EXTRA = 4
 HAT_MARGIN = 0.025
+THICK = 0.02
 
 
 def smooth(a, b, x):
@@ -264,7 +265,7 @@ def scalp_hats(ctx):
     return hats
 
 
-def mesh(ctx, name, bm, head, part, variant, hats, lower):
+def mesh(ctx, name, bm, head, part, variant, hats, lower, thick=0.0):
     verts, faces = unseam(bm)
     if hats:
         clamp(verts, head, hats)
@@ -283,9 +284,14 @@ def mesh(ctx, name, bm, head, part, variant, hats, lower):
             back_group.add([v.index], w, "REPLACE")
     ctx.attach(obj)
     tris = sum(len(p.vertices) - 2 for p in data.polygons)
+    if thick:
+        uses = {}
+        for key in (k for p in data.polygons for k in p.edge_keys):
+            uses[key] = uses.get(key, 0) + 1
+        tris = 2 * tris + 4 * sum(1 for n in uses.values() if n == 1)
     return ctx.tag(obj, kit_slot="hair", kit_part=part, kit_fit="headwear", kit_hides="", kit_bodies="*",
-                   kit_hat_variant=variant, kit_tris_max=tris, atlas="body", uv_mode="cylindrical_z_span",
-                   uv_rect=RECT)
+                   kit_hat_variant=variant, kit_tris_max=tris, kit_solidify=thick,
+                   atlas="body", uv_mode="cylindrical_z_span", uv_rect=RECT)
 
 
 def styles(head):
@@ -324,7 +330,7 @@ def build(ctx):
             link = "" if variant else f"{part}-hat"
             use = hats if variant else None
             made.append(mesh(ctx, f"{pid}_hair", grid(*shell(head, style)), head, pid, link, use,
-                             "" if style["hug"] else "extra_hair_back"))
+                             "" if style["hug"] else "extra_hair_back", THICK))
             if style.get("bun"):
                 made.append(mesh(ctx, f"{pid}_bun", bun(head, variant), head, pid, link, use, ""))
             for side, sx in (("l", 1), ("r", -1)) if style.get("tresses") else ():

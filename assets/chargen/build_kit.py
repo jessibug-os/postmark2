@@ -83,6 +83,8 @@ def build(root, body):
                 bpy.data.objects.remove(obj)
     for name, module in scripts("clips"):
         module.build(ctx)
+    for obj in parts:
+        kitlib.solidify(obj)
     validate(parts, body)
 
     textures = os.path.join(root, "public", "assets", "textures")

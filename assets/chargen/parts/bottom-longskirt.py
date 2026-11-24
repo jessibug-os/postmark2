@@ -86,5 +86,5 @@ def build(ctx):
             groups["extra_hem_back"].add([v.index], back, "REPLACE")
     ctx.attach(obj)
     return [ctx.tag(obj, kit_slot="bottom", kit_part=PART, kit_fit="skirt", kit_hides="hips,thighs",
-                    kit_bodies="adult", kit_hat_variant="", kit_tris_max=200, atlas="body",
+                    kit_bodies="adult", kit_hat_variant="", kit_tris_max=420, kit_solidify=0.012, atlas="body",
                     uv_mode="cylindrical_z", uv_rect=RECT)]
