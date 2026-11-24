@@ -1,0 +1,16 @@
+{
+  "id": "longskirt",
+  "name": "Long skirt",
+  "slot": "bottom",
+  "fit": "skirt",
+  "parts": [
+    "longskirt"
+  ],
+  "variants": [
+    {"id": "moss", "colors": {"primary": "h5a6b3f", "secondary": "hf2ead6"}},
+    {"id": "rust", "colors": {"primary": "hb8442f", "secondary": "hd39a45"}},
+    {"id": "navy", "colors": {"primary": "h314858", "secondary": "hf0f4ec"}},
+    {"id": "plum", "colors": {"primary": "h6a3540", "secondary": "hc18491"}},
+    {"id": "oatmeal", "colors": {"primary": "hc8b890", "secondary": "h6a4a34"}}
+  ]
+}
