@@ -8,6 +8,8 @@ import bpy
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
 
+import kitlib
+
 RECT = "hair-soft"
 COLUMNS = 20
 DOME = [0.0, 0.32, 0.64, 0.96, 1.2]
@@ -265,7 +267,7 @@ def scalp_hats(ctx):
     return hats
 
 
-def mesh(ctx, name, bm, head, part, variant, hats, lower, thick=0.0):
+def mesh(ctx, name, bm, head, part, variant, hats, lower, sway=0.0, thick=0.0):
     verts, faces = unseam(bm)
     if hats:
         clamp(verts, head, hats)
@@ -274,14 +276,16 @@ def mesh(ctx, name, bm, head, part, variant, hats, lower, thick=0.0):
     obj = bpy.data.objects.new(name, data)
     ctx.collection.objects.link(obj)
     head_group = obj.vertex_groups.new(name="core_head")
-    back_group = obj.vertex_groups.new(name=lower or "extra_hair_back")
-    a, b = (head.bottom, head.shoulder) if lower == "core_spine" else (head.bottom + 0.1, head.bottom - 0.15)
+    spine_group = obj.vertex_groups.new(name="core_spine") if lower else None
     for v in data.vertices:
-        w = smooth(a, b, v.co.z) if lower else 0.0
+        w = smooth(head.bottom, head.shoulder, v.co.z) if lower else 0.0
         if w < 1:
             head_group.add([v.index], 1 - w, "REPLACE")
         if w > 0:
-            back_group.add([v.index], w, "REPLACE")
+            spine_group.add([v.index], w, "REPLACE")
+    if sway:
+        top = head.shoulder if lower else head.bottom + 0.1
+        kitlib.sway(obj, top, sway, ("extra_hair_back",))
     ctx.attach(obj)
     tris = sum(len(p.vertices) - 2 for p in data.polygons)
     if thick:
@@ -301,9 +305,9 @@ def styles(head):
     return {
         "crop": {"hug": True, "tousle": [fringe, (115, 180, 0.12)],
                  "hem": [(0, A(17)), (40, A(14)), (65, A(3)), (90, A(-4)), (120, A(-18)), (180, A(-42))]},
-        "bob": {"hug": False, "flare": 0.09, "curl": 0.08, "tousle": [fringe],
+        "bob": {"hug": False, "sway": 0.25, "flare": 0.09, "curl": 0.08, "tousle": [fringe],
                 "hem": [(0, A(17)), (27, A(16)), (45, Z(head.c.z - 0.06)), (63, Z(jaw)), (180, Z(jaw - 0.02))]},
-        "long": {"hug": False, "flare": 0.05, "curl": 0.05, "tousle": [fringe], "tresses": True,
+        "long": {"hug": False, "sway": 0.9, "flare": 0.05, "curl": 0.05, "tousle": [fringe], "tresses": True,
                  "hem": [(0, A(17)), (40, A(14)), (63, A(4)), (81, A(-2)), (99, Z(jaw + 0.1)),
                          (117, Z(head.midback + 0.3)), (140, Z(head.midback + 0.05)), (180, Z(head.midback))]},
         "bun": {"hug": True, "tousle": [fringe], "bun": True,
@@ -330,9 +334,9 @@ def build(ctx):
             link = "" if variant else f"{part}-hat"
             use = hats if variant else None
             made.append(mesh(ctx, f"{pid}_hair", grid(*shell(head, style)), head, pid, link, use,
-                             "" if style["hug"] else "extra_hair_back", THICK))
+                             "", style.get("sway", 0.0), THICK))
             if style.get("bun"):
                 made.append(mesh(ctx, f"{pid}_bun", bun(head, variant), head, pid, link, use, ""))
             for side, sx in (("l", 1), ("r", -1)) if style.get("tresses") else ():
-                made.append(mesh(ctx, f"{pid}_tress_{side}", tress(head, sx), head, pid, link, use, "core_spine"))
+                made.append(mesh(ctx, f"{pid}_tress_{side}", tress(head, sx), head, pid, link, use, "core_spine", 0.35))
     return made

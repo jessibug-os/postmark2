@@ -15,6 +15,7 @@ import {
   performanceLoops,
   type MotionId,
 } from './clipVocabulary';
+import { createSprings, withoutSpringTracks, type Springs } from './chargen/springs';
 
 /**
  * Leg swing amplitudes authored into `walk_lower` and `run_lower` by
@@ -151,6 +152,7 @@ export class SkeletalAnimator implements HandLayerDriver {
   };
   /** Hip height at bind, which is what the stride swings about. */
   private readonly legLength: number;
+  private readonly springs: Springs | null;
   private readonly walkStride: number;
   private readonly runStride: number;
   /** Last mixer output and last written value per shaped property; see
@@ -167,6 +169,8 @@ export class SkeletalAnimator implements HandLayerDriver {
 
   constructor(root: THREE.Object3D, clips: THREE.AnimationClip[]) {
     this.mixer = new THREE.AnimationMixer(root);
+    this.springs = createSprings(root);
+    if (this.springs) clips = clips.map(withoutSpringTracks);
     this.walkStride = root.userData.kit_walk_stride ?? WALK_STRIDE;
     this.runStride = root.userData.kit_run_stride ?? RUN_STRIDE;
     this.performanceClips = clips;
@@ -403,6 +407,7 @@ export class SkeletalAnimator implements HandLayerDriver {
       for (const action of Object.values(this.armRun)) action?.setEffectiveWeight(0);
       this.face?.update(dt);
       this.mixer.update(dt);
+      this.springs?.update(dt);
       return;
     }
     // Locomotion weights are driven explicitly rather than by `crossFadeTo`.
@@ -477,6 +482,7 @@ export class SkeletalAnimator implements HandLayerDriver {
     this.applyGait(runBlend);
     this.applyHeldArm('left');
     this.applyHeldArm('right');
+    this.springs?.update(dt);
   }
 
   /**

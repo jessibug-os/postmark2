@@ -4,6 +4,7 @@ import bmesh
 import bpy
 
 import bodies
+import kitlib
 
 PART = "longskirt"
 RECT = "bottom-longskirt"
@@ -73,18 +74,8 @@ def build(ctx):
     obj = bpy.data.objects.new(PART, mesh)
     ctx.collection.objects.link(obj)
 
-    groups = {name: obj.vertex_groups.new(name=name) for name in ("core_hips", "extra_hem_front", "extra_hem_back")}
-    span = thigh - hem
-    for v in mesh.vertices:
-        swing = min(1.0, max(0.0, (thigh - v.co.z) / span)) * 0.8
-        side = -v.co.y / (0.5 * wt)
-        front, back = swing * max(side, 0.0), swing * max(-side, 0.0)
-        groups["core_hips"].add([v.index], 1.0 - front - back, "REPLACE")
-        if front > 0:
-            groups["extra_hem_front"].add([v.index], front, "REPLACE")
-        if back > 0:
-            groups["extra_hem_back"].add([v.index], back, "REPLACE")
-    ctx.attach(obj)
+    ctx.skin_to(obj, "core_hips")
+    kitlib.sway(obj, ctx.bones["extra_thigh_l"][0].z)
     return [ctx.tag(obj, kit_slot="bottom", kit_part=PART, kit_fit="skirt", kit_hides="hips,thighs",
                     kit_bodies="adult", kit_hat_variant="", kit_tris_max=420, kit_solidify=0.012, atlas="body",
                     uv_mode="cylindrical_z", uv_rect=RECT)]

@@ -74,6 +74,7 @@ def body(ctx):
     obj = finish(ctx, bpy.data.objects.new(f"{PART}_body", mesh),
                  {"core_hips": lambda co: co.z < pivot, "core_spine": lambda co: co.z >= pivot},
                  RECT, "cylindrical_z", 560)
+    kitlib.sway(obj, ctx.bones["extra_thigh_l"][0].z)
     return ctx.tag(obj, kit_solidify=0.012)
 
 
