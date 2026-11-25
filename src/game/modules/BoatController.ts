@@ -76,7 +76,7 @@ function hullMisses(x: number, z: number, yaw: number): number {
 function motorTo(b: Boat, level: number, rate: number, seconds: number): void {
   if (Math.abs(level - b.motor.level) < 0.02 && Math.abs(rate - b.motor.rate) < 0.02) return;
   b.motor = { level, rate };
-  audio.bed('outboard', level, rate, seconds);
+  audio.bed('outboard', level * 0.6, rate, seconds);
 }
 
 function seatPose(b: Boat): { position: THREE.Vector3; facing: number } {
@@ -118,7 +118,7 @@ export function boatActions(this: Game): Array<{ text: string; key: string; run:
     if (Math.hypot(pos.x - b.boarding.x, pos.z - b.boarding.z) > BOARD_REACH) return [];
     if (Math.hypot(pos.x - seat.position.x, pos.z - seat.position.z) > JUMP_REACH + BOARD_REACH) return [];
     return [{
-      text: '[E] Get in the boat',
+      text: '',
       key: 'KeyE',
       run: () => {
         if (!this.player.sitAt(seat.position, seat.facing, 'seated_idle', 'sit_down', HOP_IN)) {
@@ -135,7 +135,7 @@ export function boatActions(this: Game): Array<{ text: string; key: string; run:
   const dz = b.boarding.z - seat.position.z;
   if (Math.hypot(dx, dz) > JUMP_REACH || Math.abs(b.speed) > JUMP_SPEED) return [];
   return [{
-    text: '[E] Get out',
+    text: '',
     key: 'KeyE',
     run: () => {
       b.speed = 0;

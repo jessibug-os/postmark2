@@ -38,9 +38,7 @@ export function updateInteractions(this: Game): void {
       return;
     }
     if (this.boating()) {
-      const boatActions = this.boatActions();
-      if (boatActions.length) this.runPrimaryAction(boatActions);
-      else this.showPrompt('W/S throttle · A/D steer');
+      this.runPrimaryAction(this.boatActions());
       return;
     }
     const actions: Array<{ text: string; key: string; run: () => void }> = [];

@@ -137,7 +137,7 @@ export function fixtureActions(this: Game): Array<{ text: string; key: string; r
   // Seated: the only thing on offer is getting up, and it must outrank
   // everything else — a player who cannot stand is stuck.
   if (seated) {
-    actions.push({ text: '[E] Stand up', key: 'KeyE', run: () => this.standUp() });
+    actions.push({ text: '', key: 'KeyE', run: () => this.standUp() });
     return actions;
   }
 
