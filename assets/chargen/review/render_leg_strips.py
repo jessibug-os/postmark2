@@ -81,16 +81,42 @@ for name in CLIPS:
     first, last = int(action.frame_range[0]), int(action.frame_range[1])
     print(f"== {name} {first}..{last}")
     probe = rigs[0]
+    swing, stance, hips = [], [], []
     for f in range(first, last + 1):
         pose(probe, action, f)
         line = [f"{f:3d}"]
+        hips.append(probe.pose.bones["core_hips"].head.z)
         for s in "lr":
             pb = probe.pose.bones[f"extra_shin_{s}"]
             low = min((pb.matrix @ p for p in feet[s]), key=lambda p: p.z)
             bend = (probe.pose.bones[f"extra_thigh_{s}"].matrix.to_3x3().col[1]).angle(pb.matrix.to_3x3().col[1])
+            (stance if low.z - ground < 0.005 else swing).append(math.degrees(bend))
             line.append(f"{s} z{low.z - ground:+.3f} y{low.y:+.3f} bend{bend:.2f}")
+        line.append(f"hip {hips[-1]:.3f}")
         print(" ".join(line))
+    print(f"SUMMARY {name} · swing knee max {max(swing, default=0):.0f}° · stance knee {min(stance, default=0):.0f}-{max(stance, default=0):.0f}° · hip bob {max(hips) - min(hips):.3f}")
     for i, r in enumerate(rigs):
         pose(r, action, round(first + (last - first) * i / COUNT))
     scene.render.filepath = os.path.join(OUT, f"legs-{name}.png")
     bpy.ops.render.render(write_still=True)
+
+for name in ("walk_lower", "run_lower"):
+    action = actions[name]
+    first, last = int(action.frame_range[0]), int(action.frame_range[1])
+    hero = rigs[COUNT // 2]
+    for obj in scene.objects:
+        if obj.type == "MESH" and obj.parent in rigs:
+            obj.hide_render = obj.parent != hero
+    pose(hero, action, (first + last) // 2)
+    cam.location.y = hero.location.y
+    cam.data.ortho_scale = 3.0
+    scene.render.resolution_x = scene.render.resolution_y = 800
+    scene.render.filepath = os.path.join(OUT, f"side-{name}.png")
+    bpy.ops.render.render(write_still=True)
+    pose(hero, action, first + 1)
+    cam.location = (0, hero.location.y - 20, 1.25)
+    cam.rotation_euler = (math.pi / 2, 0, 0)
+    scene.render.filepath = os.path.join(OUT, f"front-{name}.png")
+    bpy.ops.render.render(write_still=True)
+    cam.location = (20, 0, 1.25)
+    cam.rotation_euler = (math.pi / 2, 0, math.pi / 2)

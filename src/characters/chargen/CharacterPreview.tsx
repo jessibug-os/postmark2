@@ -1,21 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { SkeletalAnimator } from '../SkeletalAnimator';
 import { createCharacter, type Character } from './createCharacter';
 import type { Expression } from './face/types';
 import type { CharacterRecipeV2 } from './recipeV2';
 
-const CLIPS = ['idle', 'walk', 'run_lower', 'seated_idle'] as const;
-const CLIP_LABELS: Record<(typeof CLIPS)[number], string> = {
-  idle: 'Idle', walk: 'Walk', run_lower: 'Run', seated_idle: 'Sit',
-};
+const MODES = ['idle', 'walk', 'run', 'sit'] as const;
+type Mode = (typeof MODES)[number];
+const MODE_LABELS: Record<Mode, string> = { idle: 'Idle', walk: 'Walk', run: 'Run', sit: 'Sit' };
+const SPEEDS: Record<Mode, number> = { idle: 0, walk: 3.9, run: 6.15, sit: 0 };
 
 export function CharacterPreview({ recipe, expression = 'idle', talking = false }: { recipe: CharacterRecipeV2; expression?: Expression; talking?: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const character = useRef<Character | null>(null);
-  const play = useRef<(name: string) => void>(() => {});
+  const play = useRef<(mode: Mode) => void>(() => {});
   const spin = useRef(true);
   const far = useRef(false);
-  const [clip, setClip] = useState<string>('idle');
+  const [mode, setMode] = useState<Mode>('idle');
   const [spinning, setSpinning] = useState(true);
   const [distant, setDistant] = useState(false);
 
@@ -40,15 +41,16 @@ export function CharacterPreview({ recipe, expression = 'idle', talking = false 
     const made = createCharacter(recipe);
     character.current = made;
     scene.add(made.root);
-    const mixer = new THREE.AnimationMixer(made.root);
-    let action: THREE.AnimationAction | null = null;
-    play.current = (name) => {
-      const next = made.clips.find((c) => c.name === name);
-      if (!next) return;
-      action?.fadeOut(0.2);
-      action = mixer.clipAction(next).reset().fadeIn(0.2).play();
+    const animator = new SkeletalAnimator(made.root, made.clips);
+    let current: Mode = 'idle';
+    play.current = (next) => {
+      if (current === 'sit') animator.releaseDirection();
+      if (next === 'sit') {
+        animator.takeDirection();
+        animator.perform('seated_idle');
+      }
+      current = next;
     };
-    play.current('idle');
 
     let yaw = 0.5;
     let drag: number | null = null;
@@ -79,10 +81,10 @@ export function CharacterPreview({ recipe, expression = 'idle', talking = false 
     const tick = (): void => {
       frame = requestAnimationFrame(tick);
       const dt = Math.min(clock.getDelta(), 0.1);
-      mixer.update(dt);
-      made.face.update(dt);
       if (spin.current && drag === null) yaw += dt * 0.5;
       made.root.rotation.y = yaw;
+      const moving = current === 'walk' || current === 'run';
+      animator.update(dt, { moving, speed: SPEEDS[current], rootYaw: yaw });
       const distance = far.current ? 22 : 8;
       camera.position.set(0, far.current ? 9 : 2.2, distance);
       camera.lookAt(0, 1.25, 0);
@@ -95,7 +97,8 @@ export function CharacterPreview({ recipe, expression = 'idle', talking = false 
       renderer.domElement.removeEventListener('pointerdown', down);
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
-      mixer.stopAllAction();
+      animator.mixer.stopAllAction();
+      animator.mixer.uncacheRoot(made.root);
       made.dispose();
       ground.geometry.dispose();
       ground.material.dispose();
@@ -122,16 +125,16 @@ export function CharacterPreview({ recipe, expression = 'idle', talking = false 
     <div className="cc-preview">
       <div className="cc-stage" ref={host} />
       <div className="cc-stage-bar">
-        {CLIPS.map((name) => (
+        {MODES.map((name) => (
           <button
             key={name}
-            aria-pressed={clip === name}
+            aria-pressed={mode === name}
             onClick={() => {
-              setClip(name);
+              setMode(name);
               play.current(name);
             }}
           >
-            {CLIP_LABELS[name]}
+            {MODE_LABELS[name]}
           </button>
         ))}
         <span className="cc-gap" />
