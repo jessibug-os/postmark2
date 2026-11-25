@@ -1,5 +1,4 @@
 import { bus } from '../core/events';
-import { upgradeRecipe, type CharacterRecipeV2 } from '../characters/chargen/recipeV2';
 import type { FriendState } from './Friendship';
 import type { Stack } from './Inventory';
 import type { MailSaveData } from './MailSystem';
@@ -30,7 +29,6 @@ interface SaveDataBase {
     z: number;
     coatItemId: string;
     equippedTool: string | null;
-    look?: CharacterRecipeV2;
   };
   inventory: { slots: Array<Stack | null>; gears: number };
   museum: string[];
@@ -273,7 +271,6 @@ function normalizeSave(value: UnknownRecord, now: number): SaveData {
       z: finite(player.z, fallback.player.z),
       coatItemId: text(player.coatItemId, fallback.player.coatItemId),
       equippedTool: typeof player.equippedTool === 'string' ? player.equippedTool : null,
-      ...(isRecord(player.look) ? { look: upgradeRecipe(player.look) } : {}),
     },
     inventory: safeInventory(value.inventory),
     museum: strings(value.museum),

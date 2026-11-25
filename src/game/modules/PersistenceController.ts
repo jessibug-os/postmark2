@@ -21,7 +21,6 @@ export function save(this: Game, auto: boolean): void {
         z: this.currentInterior ? this.interiorReturn.z : (this.boatReturn() ?? this.player.position).z,
         coatItemId: this.equippedCoat,
         equippedTool: this.player.equippedTool,
-        look: this.player.look,
       },
       inventory: this.inventory.serialize(),
       museum: [...this.museumDonations],
@@ -78,12 +77,7 @@ export function restore(this: Game, data: SaveData): void {
 
     this.player.position.set(data.player.x, heightAt(data.player.x, data.player.z), data.player.z);
     this.equippedCoat = data.player.coatItemId;
-    if (data.player.look) {
-      this.player.setLook(data.player.look);
-    } else {
-      const coat = ITEMS[this.equippedCoat];
-      if (coat?.clothingColor) this.player.setCoatColor(coat.clothingColor);
-    }
+    this.player.wearCoat(this.equippedCoat, ITEMS[this.equippedCoat]?.clothingColor);
     if (data.player.equippedTool && this.inventory.has(data.player.equippedTool)) {
       this.player.equip(data.player.equippedTool as ToolId);
     }

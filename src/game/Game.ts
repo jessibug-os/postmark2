@@ -21,7 +21,7 @@ import { ITEMS } from '../data/items';
 import { DialogueBox } from '../interaction/DialogueBox';
 import { SpeechBubbles } from '../ui/SpeechBubbles';
 import { Input } from '../player/Input';
-import { Player, type ToolId } from '../player/Player';
+import { Player, STARTING_COAT, type ToolId } from '../player/Player';
 import { BugSystem } from '../systems/BugSystem';
 import { FishingSystem } from '../systems/FishingSystem';
 import { DivingSystem } from '../systems/DivingSystem';
@@ -171,7 +171,7 @@ export class Game {
   ceremonyUntil = 0;
   /** Set while a staged scene is running; overrides the hourly theme. */
   sceneTheme: ThemeName | null = null;
-  equippedCoat = 'coat-postal';
+  equippedCoat = STARTING_COAT;
   /** NPC-to-NPC conversation state. */
   social: {
     a: NPC;
