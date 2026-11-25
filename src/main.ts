@@ -8,15 +8,7 @@ let game: GameType | null = null;
 const title = mountTitleScreen(container, {
   slots: listSaveSlots(),
   onContinue: (slot) => game?.startFromSave(slot),
-  onNewGame: (slot) => {
-    if (!game) return;
-    const current = game;
-    void import('./characters/chargen/chooseLook').then(({ chooseLook }) => chooseLook(container, current.player.look))
-      .then((look) => {
-        current.player.setLook(look);
-        current.startNewGame(slot);
-      });
-  },
+  onNewGame: (slot) => game?.startNewGame(slot),
   musicOn: audio.musicEnabled,
   sfxOn: audio.sfxEnabled,
   musicToggle: () => {

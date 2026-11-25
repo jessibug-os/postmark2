@@ -219,7 +219,7 @@ export function useInventorySlot(this: Game, index: number): void {
       audio.sfx('confirm');
       this.inventoryUI.close();
     } else if (def.category === 'clothing') {
-      this.player.setCoatColor(def.clothingColor ?? PALETTE_HEX.h4a5a78);
+      this.player.wearCoat(stack.itemId, def.clothingColor ?? PALETTE_HEX.h4a5a78);
       this.equippedCoat = stack.itemId;
       audio.sfx('confirm');
       this.player.emote('happy');

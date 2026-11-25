@@ -4,7 +4,8 @@ import { makeRetroMaterial } from '../core/RetroMaterial';
 import { SkeletalAnimator } from '../characters/SkeletalAnimator';
 import { EmoteBubble, type EmoteKind } from '../characters/EmoteBubble';
 import { createPostmasterRig, type PostmasterRigParts } from '../characters/PostmasterRig';
-import { DEFAULT_RECIPE_V2, type CharacterRecipeV2 } from '../characters/chargen/recipeV2';
+import { DEFAULT_RECIPE_V2 } from '../characters/chargen/recipeV2';
+import { castRecipe } from '../content/kindly-forward/cast';
 import { makeBlobShadow } from '../characters/blobShadow';
 import { makeItemSprite } from '../characters/iconSprite';
 import { heightAt, type TownMap } from '../world/TownMap';
@@ -19,6 +20,8 @@ const RUN_SPEED = 6.15;
 const TURN_SPEED = 12; // rad/sec toward movement direction
 const ACCEL = 30; // velocity ease-in rate — near-instant, keeps input snappy
 const DECEL = 14; // velocity ease-out on release — a short (~0.15s) AC-style glide
+const POSTMASTER_LOOK = castRecipe('postmaster') ?? DEFAULT_RECIPE_V2;
+export const STARTING_COAT = 'coat-postal';
 
 export type ToolId = 'tool-net' | 'tool-rod' | 'tool-shovel' | 'tool-axe';
 export type ToolAnimKind = 'cast' | 'swing' | 'dig' | 'chop' | 'shake' | 'reel';
@@ -82,7 +85,6 @@ export class Player {
   interior: { floorY: number; collide: (pos: THREE.Vector3) => void } | null = null;
 
   private parts: PostmasterRigParts;
-  look: CharacterRecipeV2 = DEFAULT_RECIPE_V2;
   private animator: SkeletalAnimator;
 
   /**
@@ -246,11 +248,13 @@ export class Player {
   stepped = false;
 
   constructor(private map: TownMap) {
-    this.parts = createPostmasterRig(this.look);
+    this.parts = createPostmasterRig(POSTMASTER_LOOK);
     this.object = this.parts.root;
+    this.object.updateMatrixWorld(true);
+    const headTop = new THREE.Box3().setFromObject(this.object).max.y;
     this.object.add(makeBlobShadow(0.45));
     this.animator = new SkeletalAnimator(this.object, this.parts.clips);
-    this.bubble = new EmoteBubble(this.object, 2.1);
+    this.bubble = new EmoteBubble(this.object, headTop + 0.1);
     this.buildToolProps();
   }
 
@@ -276,15 +280,13 @@ export class Player {
     }
   }
 
-  setLook(recipe: CharacterRecipeV2): void {
-    this.look = recipe;
-    this.parts.character.apply(recipe);
-  }
-
-  setCoatColor(color: number): void {
-    const top = this.look.outfit.top;
-    if (!top) return;
-    this.setLook({ ...this.look, outfit: { ...this.look.outfit, top: { ...top, color: `#${color.toString(16).padStart(6, '0')}` } } });
+  wearCoat(itemId: string, color?: number): void {
+    const top = POSTMASTER_LOOK.outfit.top;
+    if (itemId === STARTING_COAT || color === undefined || !top) {
+      this.parts.character.apply(POSTMASTER_LOOK);
+      return;
+    }
+    this.parts.character.apply({ ...POSTMASTER_LOOK, outfit: { ...POSTMASTER_LOOK.outfit, top: { ...top, color: `#${color.toString(16).padStart(6, '0')}` } } });
   }
 
   emote(kind: EmoteKind, seconds?: number): void {

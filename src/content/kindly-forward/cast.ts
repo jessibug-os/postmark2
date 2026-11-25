@@ -22,7 +22,6 @@ const clips = (id: AssetId) => () => assets.animations(id);
 
 /** All W4 authored roles; only the frozen eight residents enter `members`. */
 export const KINDLY_FORWARD_CHARACTER_ASSETS = {
-  postmaster: { model: model('postmaster'), clips: clips('postmaster') },
   albert: { model: model('albert'), clips: clips('albert') },
   mira: { model: model('mira'), clips: clips('mira') },
   rowan: { model: model('rowan'), clips: clips('rowan') },
