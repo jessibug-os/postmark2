@@ -154,6 +154,7 @@ export class SkeletalAnimator implements HandLayerDriver {
   private readonly legLength: number;
   private readonly springs: Springs | null;
   private readonly walkStride: number;
+  private readonly walkCadence: number;
   private readonly runStride: number;
   /** Last mixer output and last written value per shaped property; see
    * `shapeQuaternion` for why re-reading the bone would compound. */
@@ -172,6 +173,7 @@ export class SkeletalAnimator implements HandLayerDriver {
     this.springs = createSprings(root);
     if (this.springs) clips = clips.map(withoutSpringTracks);
     this.walkStride = root.userData.kit_walk_stride ?? WALK_STRIDE;
+    this.walkCadence = root.userData.kit_walk_cadence ?? 1;
     this.runStride = root.userData.kit_run_stride ?? RUN_STRIDE;
     this.performanceClips = clips;
     /**
@@ -437,7 +439,7 @@ export class SkeletalAnimator implements HandLayerDriver {
     const stride = THREE.MathUtils.lerp(this.walkStride, this.runStride, runBlend);
     const cadence = this.cadenceFor(
       opts.speed, stride, THREE.MathUtils.lerp(WALK_SKATE, RUN_SKATE, runBlend),
-    );
+    ) * THREE.MathUtils.lerp(this.walkCadence, 1, runBlend);
     if (opts.moving) {
       this.walk.setEffectiveTimeScale(cadence);
       this.phaseValue += dt * opts.speed * this.gait.rate;
