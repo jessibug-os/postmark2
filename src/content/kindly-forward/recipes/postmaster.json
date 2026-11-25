@@ -1,0 +1,46 @@
+{
+  "kit": 2,
+  "body": "adult",
+  "height": 1,
+  "skin": "#d6a86b",
+  "hair": {
+    "style": "long",
+    "color": "#251f18"
+  },
+  "eyes": "#0e131c",
+  "face": {
+    "brow": "#2e241a",
+    "blush": "#e06642",
+    "squint": 1,
+    "lashes": true,
+    "freckles": false,
+    "age": false,
+    "glasses": false,
+    "moustache": false
+  },
+  "outfit": {
+    "hair": null,
+    "hat": {
+      "item": "headband",
+      "variant": "rust"
+    },
+    "top": {
+      "item": "long-coat",
+      "variant": "plum"
+    },
+    "bottom": {
+      "item": "skirt",
+      "variant": "stone"
+    },
+    "outer": null,
+    "shoes": {
+      "item": "tall-boots",
+      "variant": "brown"
+    },
+    "face": null,
+    "bag": {
+      "item": "satchel",
+      "variant": "leather"
+    }
+  }
+}
