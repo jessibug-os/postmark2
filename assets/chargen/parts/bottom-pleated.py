@@ -4,6 +4,7 @@ import bmesh
 import bpy
 
 import bodies
+import kitlib
 
 PART = "pleated"
 RECT = "bottom-pleated"
@@ -70,6 +71,7 @@ def build(ctx):
     obj = bpy.data.objects.new(f"{PART}_skirt", mesh)
     ctx.collection.objects.link(obj)
     ctx.skin_to(obj, "core_hips")
+    kitlib.sway(obj, hipj)
     return [ctx.tag(obj, kit_slot="bottom", kit_part=PART, kit_fit="skirt", kit_hides="hips,thighs",
                     kit_bodies="adult", kit_hat_variant="", kit_tris_max=560, kit_crease=35, kit_solidify=0.012, atlas="body",
                     uv_mode="cylindrical_z", uv_rect=RECT)]

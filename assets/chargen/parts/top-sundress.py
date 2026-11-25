@@ -4,6 +4,7 @@ import bmesh
 import bpy
 
 import bodies
+import kitlib
 
 PART = "sundress"
 RECT = "top-sundress"
@@ -79,6 +80,7 @@ def build(ctx):
     split = at(0.3)
     obj.vertex_groups.new(name="core_hips").add([v.index for v in mesh.vertices if v.co.z < split], 1.0, "REPLACE")
     obj.vertex_groups.new(name="core_spine").add([v.index for v in mesh.vertices if v.co.z >= split], 1.0, "REPLACE")
+    kitlib.sway(obj, ctx.bones["extra_thigh_l"][0].z)
     ctx.attach(obj)
     return [ctx.tag(obj, kit_slot="top", kit_part=PART, kit_fit="onepiece", kit_hides="hips,thighs",
                     kit_bodies="adult", kit_hat_variant="", kit_tris_max=568, kit_solidify=0.012, atlas="body",

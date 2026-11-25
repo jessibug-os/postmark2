@@ -1,3 +1,5 @@
+import kitlib
+
 PART = "skirt"
 SLOT = "bottom"
 FIT = "skirt"
@@ -8,4 +10,6 @@ MESHES = {
 
 
 def build(ctx):
-    return [ctx.port(name, PART, SLOT, FIT, HIDES, cap) for name, cap in MESHES.items()]
+    made = [ctx.port(name, PART, SLOT, FIT, HIDES, cap) for name, cap in MESHES.items()]
+    kitlib.sway(made[0], max(v.co.z for v in made[0].data.vertices))
+    return made

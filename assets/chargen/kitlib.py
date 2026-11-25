@@ -57,6 +57,37 @@ def refit(obj, from_bones, to_bones, widths=None):
     return obj
 
 
+def smoothstep(a, b, x):
+    t = max(0.0, min(1.0, (x - a) / (b - a)))
+    return t * t * (3 - 2 * t)
+
+
+def sway(obj, top, share=0.85, bones=("extra_hem_front", "extra_hem_back")):
+    mesh = obj.data
+    bottom = min(v.co.z for v in mesh.vertices)
+    if bottom >= top:
+        return obj
+    groups = [obj.vertex_groups.get(b) or obj.vertex_groups.new(name=b) for b in bones]
+    own = {g.index for g in groups}
+    for v in mesh.vertices:
+        w = share * smoothstep(top, bottom, v.co.z)
+        if w <= 0:
+            continue
+        for e in v.groups:
+            if e.group not in own:
+                e.weight *= 1 - w
+        if len(groups) == 1:
+            groups[0].add([v.index], w, "ADD")
+            continue
+        r = math.hypot(v.co.x, v.co.y)
+        f = smoothstep(0.0, 1.0, 0.5 - v.co.y / r) if r > 1e-6 else 0.5
+        if f > 0:
+            groups[0].add([v.index], w * f, "ADD")
+        if f < 1:
+            groups[1].add([v.index], w * (1 - f), "ADD")
+    return obj
+
+
 def ring(bm, radius_x, radius_y, z, sides, cy=0.0):
     return [bm.verts.new((radius_x * math.sin(math.tau * i / sides),
                           cy - radius_y * math.cos(math.tau * i / sides), z))
