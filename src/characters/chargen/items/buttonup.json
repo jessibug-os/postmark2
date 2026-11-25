@@ -1,0 +1,14 @@
+{
+  "id": "buttonup",
+  "name": "Button-up shirt",
+  "slot": "top",
+  "fit": "tight",
+  "parts": ["buttonup"],
+  "variants": [
+    {"id": "white", "colors": {"primary": "hd7dde0"}},
+    {"id": "chambray", "colors": {"primary": "h9cb8d8"}},
+    {"id": "pink", "colors": {"primary": "hd8b8c8"}},
+    {"id": "olive", "colors": {"primary": "h6b7d4c"}},
+    {"id": "ochre", "colors": {"primary": "hc89f4a"}}
+  ]
+}

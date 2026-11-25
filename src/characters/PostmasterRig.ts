@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createCharacter, type Character } from './chargen/createCharacter';
-import type { CharacterRecipe } from './chargen/recipe';
+import type { CharacterRecipeV2 } from './chargen/recipeV2';
 
 /**
  * Adapter from the authored `postmaster` GLB to the joint names `Player`
@@ -40,7 +40,7 @@ function requireNode(root: THREE.Object3D, name: string): THREE.Object3D {
   return node;
 }
 
-export function createPostmasterRig(recipe: CharacterRecipe): PostmasterRigParts {
+export function createPostmasterRig(recipe: CharacterRecipeV2): PostmasterRigParts {
   const character = createCharacter(recipe);
   const { root, clips } = character;
 

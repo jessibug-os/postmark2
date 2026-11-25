@@ -1,0 +1,15 @@
+{
+  "id": "jeans",
+  "name": "Rolled jeans",
+  "slot": "bottom",
+  "fit": "loose",
+  "parts": [
+    "jeans"
+  ],
+  "variants": [
+    {"id": "indigo", "colors": {"primary": "h1e2a4a", "secondary": "h8fb0d8"}},
+    {"id": "midwash", "colors": {"primary": "h405f91", "secondary": "hbcd0e8"}},
+    {"id": "black", "colors": {"primary": "h24272c", "secondary": "h858b8d"}},
+    {"id": "ecru", "colors": {"primary": "hd8cdb4", "secondary": "hf0ead8"}}
+  ]
+}

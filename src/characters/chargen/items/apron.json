@@ -1,0 +1,14 @@
+{
+  "id": "apron",
+  "name": "Apron",
+  "slot": "outer",
+  "fit": "loose",
+  "parts": [
+    "apron"
+  ],
+  "variants": [
+    {"id": "linen", "colors": {"primary": "hd5d4c8"}},
+    {"id": "canvas", "colors": {"primary": "hcbbf9e"}},
+    {"id": "denim", "colors": {"primary": "h405f91"}}
+  ]
+}

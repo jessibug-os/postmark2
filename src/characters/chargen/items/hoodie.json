@@ -1,0 +1,16 @@
+{
+  "id": "hoodie",
+  "name": "Hoodie",
+  "slot": "top",
+  "fit": "loose",
+  "parts": [
+    "hoodie"
+  ],
+  "variants": [
+    {"id": "heather", "colors": {"primary": "h9aa0a8", "accent": "hd5d4c8"}},
+    {"id": "navy", "colors": {"primary": "h1e2a4a", "accent": "hd5d4c8"}},
+    {"id": "forest", "colors": {"primary": "h3f684b", "accent": "hd5d4c8"}},
+    {"id": "mustard", "colors": {"primary": "hc9a227", "accent": "h314858"}},
+    {"id": "dusty-pink", "colors": {"primary": "hc18491", "accent": "hd5d4c8"}}
+  ]
+}

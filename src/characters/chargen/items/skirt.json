@@ -1,0 +1,14 @@
+{
+  "id": "skirt",
+  "name": "Skirt",
+  "slot": "bottom",
+  "fit": "skirt",
+  "parts": [
+    "skirt"
+  ],
+  "variants": [
+    {"id": "stone", "colors": {"primary": "h6a655c"}},
+    {"id": "navy", "colors": {"primary": "h314858"}},
+    {"id": "mustard", "colors": {"primary": "hc9a227"}}
+  ]
+}

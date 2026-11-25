@@ -15,6 +15,7 @@ import {
   performanceLoops,
   type MotionId,
 } from './clipVocabulary';
+import { createSprings, withoutSpringTracks, type Springs } from './chargen/springs';
 
 /**
  * Leg swing amplitudes authored into `walk_lower` and `run_lower` by
@@ -151,6 +152,10 @@ export class SkeletalAnimator implements HandLayerDriver {
   };
   /** Hip height at bind, which is what the stride swings about. */
   private readonly legLength: number;
+  private readonly springs: Springs | null;
+  private readonly walkStride: number;
+  private readonly walkCadence: number;
+  private readonly runStride: number;
   /** Last mixer output and last written value per shaped property; see
    * `shapeQuaternion` for why re-reading the bone would compound. */
   private readonly shapedRootPos = {
@@ -165,6 +170,11 @@ export class SkeletalAnimator implements HandLayerDriver {
 
   constructor(root: THREE.Object3D, clips: THREE.AnimationClip[]) {
     this.mixer = new THREE.AnimationMixer(root);
+    this.springs = createSprings(root);
+    if (this.springs) clips = clips.map(withoutSpringTracks);
+    this.walkStride = root.userData.kit_walk_stride ?? WALK_STRIDE;
+    this.walkCadence = root.userData.kit_walk_cadence ?? 1;
+    this.runStride = root.userData.kit_run_stride ?? RUN_STRIDE;
     this.performanceClips = clips;
     /**
      * Resolve a locomotion base through the vocabulary's preference order.
@@ -245,11 +255,12 @@ export class SkeletalAnimator implements HandLayerDriver {
       right: this.armNodes.right?.quaternion.clone() ?? null,
     };
     const rootBone = root.getObjectByName('core_root') ?? null;
-    const legL = root.getObjectByName('extra_leg_l') ?? null;
+    const legL = root.getObjectByName('extra_leg_l') ?? root.getObjectByName('extra_thigh_l') ?? null;
+    const legR = root.getObjectByName('extra_leg_r') ?? root.getObjectByName('extra_thigh_r') ?? null;
     this.gaitNodes = {
       root: rootBone,
       hips: root.getObjectByName('core_hips') ?? null,
-      legs: { l: legL, r: root.getObjectByName('extra_leg_r') ?? null },
+      legs: { l: legL, r: legR },
     };
     this.gaitRest = {
       rootPos: this.gaitNodes.root?.position.clone() ?? null,
@@ -398,6 +409,7 @@ export class SkeletalAnimator implements HandLayerDriver {
       for (const action of Object.values(this.armRun)) action?.setEffectiveWeight(0);
       this.face?.update(dt);
       this.mixer.update(dt);
+      this.springs?.update(dt);
       return;
     }
     // Locomotion weights are driven explicitly rather than by `crossFadeTo`.
@@ -424,10 +436,10 @@ export class SkeletalAnimator implements HandLayerDriver {
     const runBlend = this.gaitBlend;
     // Cadence follows the stride actually on screen, which is the blend of the
     // two clips' strides, otherwise the feet skate through the transition.
-    const stride = THREE.MathUtils.lerp(WALK_STRIDE, RUN_STRIDE, runBlend);
+    const stride = THREE.MathUtils.lerp(this.walkStride, this.runStride, runBlend);
     const cadence = this.cadenceFor(
       opts.speed, stride, THREE.MathUtils.lerp(WALK_SKATE, RUN_SKATE, runBlend),
-    );
+    ) * THREE.MathUtils.lerp(this.walkCadence, 1, runBlend);
     if (opts.moving) {
       this.walk.setEffectiveTimeScale(cadence);
       this.phaseValue += dt * opts.speed * this.gait.rate;
@@ -472,6 +484,7 @@ export class SkeletalAnimator implements HandLayerDriver {
     this.applyGait(runBlend);
     this.applyHeldArm('left');
     this.applyHeldArm('right');
+    this.springs?.update(dt);
   }
 
   /**

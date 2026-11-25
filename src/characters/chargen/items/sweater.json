@@ -1,0 +1,16 @@
+{
+  "id": "sweater",
+  "name": "Chunky sweater",
+  "slot": "top",
+  "fit": "loose",
+  "parts": [
+    "sweater"
+  ],
+  "variants": [
+    {"id": "oatmeal", "colors": {"primary": "hc4b294"}},
+    {"id": "forest", "colors": {"primary": "h3f684b"}},
+    {"id": "rust", "colors": {"primary": "ha8532f"}},
+    {"id": "charcoal", "colors": {"primary": "h41464b"}},
+    {"id": "cream", "colors": {"primary": "he8dcc8"}}
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "trousers",
+  "name": "Trousers",
+  "slot": "bottom",
+  "fit": "loose",
+  "parts": [
+    "trousers"
+  ],
+  "variants": [
+    {"id": "stone", "colors": {"primary": "h6a655c"}},
+    {"id": "ink", "colors": {"primary": "h201f26"}},
+    {"id": "brown", "colors": {"primary": "h5c4a38"}}
+  ]
+}

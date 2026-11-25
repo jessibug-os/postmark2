@@ -1,0 +1,15 @@
+{
+  "id": "pleated",
+  "name": "Pleated skirt",
+  "slot": "bottom",
+  "fit": "skirt",
+  "parts": [
+    "pleated"
+  ],
+  "variants": [
+    {"id": "navy", "colors": {"primary": "h252b3d", "secondary": "h3f684b", "accent": "h252b3d"}},
+    {"id": "red", "colors": {"primary": "had3940", "secondary": "h252b3d", "accent": "had3940"}},
+    {"id": "grey", "colors": {"primary": "h858b8d", "secondary": "h343236", "accent": "h343236"}},
+    {"id": "camel", "colors": {"primary": "hc4a882", "secondary": "h6a4a34", "accent": "h6a4a34"}}
+  ]
+}

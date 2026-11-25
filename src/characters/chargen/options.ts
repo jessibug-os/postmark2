@@ -1,6 +1,8 @@
 import { PALETTE_CSS } from '../../art/palette';
-import { OPTIONAL_SLOTS, SLOTS, type Channel, type CharacterRecipe } from './recipe';
+import { OPTIONAL_SLOTS_V2, SLOTS_V2 } from './contract';
+import { ITEMS, isOnePiece } from './items';
 import { kit } from './kit';
+import type { CharacterRecipeV2 } from './recipeV2';
 
 type HSL = [number, number, number];
 
@@ -63,25 +65,6 @@ export const IRIS_SWATCHES = nearest(
   [[220, 0.3, 0.1], [28, 0.5, 0.15], [28, 0.4, 0.25], [100, 0.3, 0.2], [200, 0.4, 0.25], [270, 0.3, 0.2], [0, 0, 0.12]],
 );
 
-export const CLOTH_SWATCHES = nearest(
-  ([, , l]) => l >= 0.12 && l <= 0.9,
-  [
-    ...range(0.15, 0.85, 5).map((l): HSL => [0, 0, l]),
-    ...range(0, 330, 12).flatMap((h) => [0.28, 0.45, 0.65].map((l): HSL => [h, 0.4, l])),
-  ],
-);
-
-export const CHANNEL_SWATCHES: Record<Channel, string[]> = {
-  skin: SKIN_SWATCHES,
-  hair: HAIR_SWATCHES,
-  top: CLOTH_SWATCHES,
-  bottom: CLOTH_SWATCHES,
-  legs: CLOTH_SWATCHES,
-  shoes: CLOTH_SWATCHES,
-  hat: CLOTH_SWATCHES,
-  accent: CLOTH_SWATCHES,
-};
-
 export function seededRandom(seed: number): () => number {
   let t = seed >>> 0;
   return () => {
@@ -92,31 +75,26 @@ export function seededRandom(seed: number): () => number {
   };
 }
 
-export function randomRecipe(random: () => number = Math.random): CharacterRecipe {
+export function randomRecipe(random: () => number = Math.random): CharacterRecipeV2 {
   const pick = <T,>(list: readonly T[]): T => list[Math.floor(random() * list.length)];
-  const { options } = kit();
-  const parts = Object.fromEntries(SLOTS.map((slot) => {
-    const optional = OPTIONAL_SLOTS.includes(slot);
-    const chance = slot === 'hair' ? 0.92 : slot === 'hat' ? 0.45 : 0.3;
-    return [slot, optional && random() > chance ? null : pick(options[slot])];
-  })) as CharacterRecipe['parts'];
+  const outfit: CharacterRecipeV2['outfit'] = Object.fromEntries(SLOTS_V2.map((slot) => {
+    const items = ITEMS.filter((item) => item.slot === slot);
+    const chance = slot === 'hat' ? 0.45 : 0.3;
+    if (!items.length || (OPTIONAL_SLOTS_V2.includes(slot) && random() > chance)) return [slot, null];
+    const item = pick(items);
+    return [slot, { item: item.id, variant: pick(item.variants).id }];
+  }));
+  if (isOnePiece(outfit.top?.item)) outfit.bottom = null;
   const hair = pick(HAIR_SWATCHES);
+  const eyes = pick(IRIS_SWATCHES);
   return {
-    kit: 1,
+    kit: 2,
+    body: 'adult',
     height: 0.92 + random() * 0.14,
-    parts,
-    colors: {
-      skin: pick(SKIN_SWATCHES),
-      hair,
-      top: pick(CLOTH_SWATCHES),
-      bottom: pick(CLOTH_SWATCHES),
-      legs: pick(CLOTH_SWATCHES),
-      shoes: pick(CLOTH_SWATCHES.filter((c) => hsl(c)[2] < 0.45)),
-      hat: pick(CLOTH_SWATCHES),
-      accent: pick(CLOTH_SWATCHES.filter((c) => hsl(c)[2] > 0.6)),
-    },
+    skin: pick(SKIN_SWATCHES),
+    hair: { style: random() > 0.92 ? null : pick(kit().hairStyles), color: hair },
+    eyes,
     face: {
-      iris: pick(IRIS_SWATCHES),
       brow: hair,
       blush: '#e06642',
       squint: 0.86 + random() * 0.14,
@@ -126,5 +104,6 @@ export function randomRecipe(random: () => number = Math.random): CharacterRecip
       glasses: random() < 0.15,
       moustache: random() < 0.1,
     },
+    outfit,
   };
 }

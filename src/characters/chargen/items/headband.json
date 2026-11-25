@@ -1,0 +1,14 @@
+{
+  "id": "headband",
+  "name": "Headband",
+  "slot": "hat",
+  "fit": "headwear",
+  "parts": [
+    "headband"
+  ],
+  "variants": [
+    {"id": "rust", "colors": {"primary": "h8a3327"}},
+    {"id": "postal", "colors": {"primary": "hb8442f"}},
+    {"id": "navy", "colors": {"primary": "h314858"}}
+  ]
+}
