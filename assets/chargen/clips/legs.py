@@ -1,12 +1,13 @@
 import math
 
 import bpy
+import numpy
 from mathutils import Matrix, Vector
 
 SIDES = ("l", "r")
 CYCLE = 24
-WALK = {"duty": 0.6, "reach": 0.4, "lift": 0.07, "soft": 0.12, "flex": 0.0, "early": 1.0}
-RUN = {"duty": 0.5, "reach": 0.45, "lift": 0.3, "soft": 0.1, "flex": 0.45, "early": 0.7}
+WALK = {"duty": 0.42, "reach": 0.2, "center": 0.25, "lift": 0.02, "knee": 0.25, "soft": 0.08, "harmonics": 3, "hike": 0.14, "peak": 2, "float": 0.0, "early": 0.6, "contact": 11.8}
+RUN = {"duty": 0.35, "reach": 0.3, "center": 0.25, "lift": 0.04, "knee": 0.4, "soft": 0.08, "harmonics": 3, "hike": 0.16, "peak": 2, "float": 0.02, "early": 0.6, "contact": 13.0}
 IDLE = {"soften": 0.12, "shift": 0.008, "roll": 0.02}
 SEATED = {"splay": 1.25}
 TRAVEL = (4, 14)
@@ -107,6 +108,28 @@ class Legs:
             z = self.ground_z(side, y - hip.y, drop, bend, d)
         return z + drop - hip.z, z
 
+    def clearance(self, action, frame, feet):
+        self.pose(action, frame)
+        root = self.rig.pose.bones["core_root"]
+        out = []
+        for side, (x, y, lift, bend) in feet.items():
+            if bend is None:
+                continue
+            root.location[1] = 0.0
+            bpy.context.view_layer.update()
+            h, z = self.need(side, x, y, bend)
+            root.location[1] = h
+            target = Vector((x, y, z))
+            for _ in range(4):
+                bpy.context.view_layer.update()
+                self.solve(side, target)
+                gap = self.ground - self.lowest(side)
+                root.location[1] += gap
+                target.z += gap
+            out.append(root.location[1])
+        self.rest()
+        return min(out, default=None)
+
     def solve(self, side, target):
         thigh = self.rig.pose.bones[f"extra_thigh_{side}"]
         shin = self.rig.pose.bones[f"extra_shin_{side}"]
@@ -130,7 +153,7 @@ class Legs:
             bpy.context.view_layer.update()
             aim += target - shin.tail
 
-    def write(self, action, frames, legs_at, root_at=None, cap=False):
+    def write(self, action, frames, legs_at, root_at=None, cap=False, hold=False):
         out = {}
         for frame in frames:
             self.pose(action, frame)
@@ -140,19 +163,23 @@ class Legs:
                 bpy.context.view_layer.update()
             feet = legs_at(frame)
             needs = {s: self.need(s, x, y, bend) for s, (x, y, lift, bend) in feet.items() if bend is not None}
-            lead = min(needs, key=lambda s: needs[s][0], default=None)
+            lead = None if hold else min(needs, key=lambda s: needs[s][0], default=None)
             if lead and (needs[lead][0] < 0 or not cap):
                 root.location[1] += needs[lead][0]
             else:
                 lead = None
             bpy.context.view_layer.update()
             for side, (x, y, lift, bend) in feet.items():
-                z = needs[side][1] if side == lead else self.foot_z(side, x, y, self.bend0[side] if bend is None else bend)
-                target = Vector((x, y, z + lift))
-                for _ in range(2):
+                if hold:
+                    rise, z = needs[side]
+                    target = Vector((x, y, max(z - rise, z + lift)))
+                else:
+                    z = needs[side][1] if side == lead else self.foot_z(side, x, y, self.bend0[side] if bend is None else bend)
+                    target = Vector((x, y, z + lift))
+                for _ in range(12 if hold else 2):
                     self.solve(side, target)
                     gap = self.ground - self.lowest(side)
-                    target.z += gap if gap > 0 or not lift else 0.0
+                    target.z += gap if gap > 0 or not (lift or hold) else 0.0
             for side in SIDES:
                 for bone in (f"extra_thigh_{side}", f"extra_shin_{side}"):
                     out.setdefault(bone, []).append((frame, tuple(self.rig.pose.bones[bone].rotation_euler)))
@@ -198,26 +225,58 @@ def standing(legs, soften=0.0):
     return {s: (legs.ankle[s].x, legs.ankle[s].y, 0.0, legs.bend0[s] + soften) for s in SIDES}
 
 
+def tilt(action, bone, amount, frames):
+    old = channels(action).fcurves.find(f'pose.bones["{bone}"].rotation_euler', index=2)
+    base = [old.evaluate(f) if old else 0.0 for f in frames]
+    fc = curve(action, bone, "rotation_euler", 2)
+    for f, b in zip(frames, base):
+        key(fc, f, b + amount(f))
+
+
+def hike_sign(legs, action):
+    legs.pose(action, 7)
+    low = legs.hip_at("l").z
+    legs.rig.pose.bones["core_hips"].rotation_euler[2] += 0.1
+    bpy.context.view_layer.update()
+    sign = 1.0 if legs.hip_at("l").z > low else -1.0
+    legs.rest()
+    return sign
+
+
 def gait(ctx, legs, name, g):
     action = replace(ctx, name)
+    frames = frames_of(action)
     sw = 1.0 - g["duty"]
     reach = g["reach"] * legs.chain
+    off = g["contact"] - sw * CYCLE
+    hike = g["hike"] * hike_sign(legs, action)
+    roll = lambda f: hike * math.cos(2 * math.pi * (f - off - g["peak"]) / CYCLE)
+    tilt(action, "core_hips", roll, frames)
+    tilt(action, "core_spine", lambda f: -roll(f), frames)
 
-    def feet(frame):
+    def feet(frame, stance_only=False):
         out = {}
         for side in SIDES:
-            v = ((frame - 7) / CYCLE + sw / 2 + (0.5 if side == "r" else 0.0)) % 1.0
-            x, y = legs.ankle[side].x, legs.ankle[side].y
+            v = ((frame - off) / CYCLE + (0.5 if side == "r" else 0.0)) % 1.0
+            x, y = legs.ankle[side].x, legs.ankle[side].y + g["center"] * reach
+            bend = legs.bend0[side] + g["soft"]
             if v < sw:
                 s = v / sw
-                out[side] = (x, y + reach * math.cos(math.pi * s ** g["early"]), g["lift"] * legs.chain * math.sin(math.pi * s), None)
+                out[side] = (x, y + reach * math.cos(math.pi * s ** g["early"]), g["lift"] * legs.chain * math.sin(math.pi * s), bend + g["knee"] * math.sin(math.pi * s))
             else:
-                c = (v - sw) / g["duty"]
-                dy = reach * (2 * c - 1)
-                out[side] = (x, y + dy, 0.0, legs.bend0[side] + g["soft"] + g["flex"] * math.sin(math.pi * c))
-        return out
+                out[side] = (x, y + reach * (2 * (v - sw) / g["duty"] - 1), 0.0, bend)
+        return {s: f for s, f in out.items() if not (stance_only and f[2])}
 
-    legs.write(action, frames_of(action), feet, lambda frame: 0.0)
+    room = [(f, legs.clearance(action, f, feet(f, True))) for f in frames[:-1]]
+    room = [(f, c) for f, c in room if c is not None]
+    w = 4 * math.pi / CYCLE
+    basis = lambda f: [1.0] + [fn(k * w * f) for k in range(1, g["harmonics"] + 1) for fn in (math.cos, math.sin)]
+    coef = numpy.linalg.lstsq(numpy.array([basis(f) for f, c in room]), numpy.array([c for f, c in room]), rcond=None)[0]
+    fit = lambda f: float(numpy.dot(basis(f), coef))
+    floor = min(fit(f) - c for f, c in room)
+    span = (sw - 0.5) * CYCLE
+    bump = lambda f: g["float"] * math.sin(math.pi * ((f - off) % 12) / span) ** 2 if (f - off) % 12 < span else 0.0
+    legs.write(action, frames, feet, lambda frame: fit(frame) - floor + bump(frame), hold=True)
     publish(ctx, action)
     return reach / g["duty"]
 
