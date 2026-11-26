@@ -6,8 +6,8 @@ from mathutils import Matrix, Vector
 
 SIDES = ("l", "r")
 CYCLE = 24
-WALK = {"duty": 0.42, "reach": 0.2, "center": 0.25, "lift": 0.02, "knee": 0.25, "soft": 0.08, "harmonics": 3, "hike": 0.14, "peak": 2, "float": 0.0, "early": 0.6, "contact": 11.8}
-RUN = {"duty": 0.35, "reach": 0.3, "center": 0.25, "lift": 0.04, "knee": 0.4, "soft": 0.08, "harmonics": 3, "hike": 0.16, "peak": 2, "float": 0.02, "early": 0.6, "contact": 13.0}
+WALK = {"duty": 0.42, "reach": 0.2, "center": 0.25, "lift": 0.03, "knee": 0.25, "soft": 0.08, "harmonics": 3, "bob": 0.03, "float": 0.0, "early": 0.6, "contact": 11.8}
+RUN = {"duty": 0.35, "reach": 0.3, "center": 0.25, "lift": 0.05, "knee": 0.4, "soft": 0.08, "harmonics": 3, "bob": 0.032, "float": 0.02, "early": 0.6, "contact": 13.0}
 IDLE = {"soften": 0.12, "shift": 0.008, "roll": 0.02}
 SEATED = {"splay": 1.25}
 TRAVEL = (4, 14)
@@ -178,7 +178,7 @@ class Legs:
                     target = Vector((x, y, z + lift))
                 for _ in range(12 if hold else 2):
                     self.solve(side, target)
-                    gap = self.ground - self.lowest(side)
+                    gap = self.ground + (lift if hold else 0.0) - self.lowest(side)
                     target.z += gap if gap > 0 or not (lift or hold) else 0.0
             for side in SIDES:
                 for bone in (f"extra_thigh_{side}", f"extra_shin_{side}"):
@@ -225,22 +225,15 @@ def standing(legs, soften=0.0):
     return {s: (legs.ankle[s].x, legs.ankle[s].y, 0.0, legs.bend0[s] + soften) for s in SIDES}
 
 
-def tilt(action, bone, amount, frames):
-    old = channels(action).fcurves.find(f'pose.bones["{bone}"].rotation_euler', index=2)
-    base = [old.evaluate(f) if old else 0.0 for f in frames]
-    fc = curve(action, bone, "rotation_euler", 2)
-    for f, b in zip(frames, base):
-        key(fc, f, b + amount(f))
+STEADY = (("core_root", "location", 0), ("core_root", "location", 2), ("core_hips", "rotation_euler", 1), ("core_hips", "rotation_euler", 2),
+          ("core_spine", "rotation_euler", 1), ("core_spine", "rotation_euler", 2), ("core_head", "rotation_euler", 1), ("core_head", "rotation_euler", 2))
 
 
-def hike_sign(legs, action):
-    legs.pose(action, 7)
-    low = legs.hip_at("l").z
-    legs.rig.pose.bones["core_hips"].rotation_euler[2] += 0.1
-    bpy.context.view_layer.update()
-    sign = 1.0 if legs.hip_at("l").z > low else -1.0
-    legs.rest()
-    return sign
+def steady(action, frames):
+    for bone, prop, index in STEADY:
+        fc = curve(action, bone, prop, index)
+        key(fc, frames[0], 0.0)
+        key(fc, frames[-1], 0.0)
 
 
 def gait(ctx, legs, name, g):
@@ -249,10 +242,7 @@ def gait(ctx, legs, name, g):
     sw = 1.0 - g["duty"]
     reach = g["reach"] * legs.chain
     off = g["contact"] - sw * CYCLE
-    hike = g["hike"] * hike_sign(legs, action)
-    roll = lambda f: hike * math.cos(2 * math.pi * (f - off - g["peak"]) / CYCLE)
-    tilt(action, "core_hips", roll, frames)
-    tilt(action, "core_spine", lambda f: -roll(f), frames)
+    steady(action, frames)
 
     def feet(frame, stance_only=False):
         out = {}
@@ -273,10 +263,11 @@ def gait(ctx, legs, name, g):
     basis = lambda f: [1.0] + [fn(k * w * f) for k in range(1, g["harmonics"] + 1) for fn in (math.cos, math.sin)]
     coef = numpy.linalg.lstsq(numpy.array([basis(f) for f, c in room]), numpy.array([c for f, c in room]), rcond=None)[0]
     fit = lambda f: float(numpy.dot(basis(f), coef))
-    floor = min(fit(f) - c for f, c in room)
+    scale = min(1.0, g["bob"] * legs.chain / (max(map(fit, frames)) - min(map(fit, frames))))
+    floor = max(scale * fit(f) - c for f, c in room)
     span = (sw - 0.5) * CYCLE
     bump = lambda f: g["float"] * math.sin(math.pi * ((f - off) % 12) / span) ** 2 if (f - off) % 12 < span else 0.0
-    legs.write(action, frames, feet, lambda frame: fit(frame) - floor + bump(frame), hold=True)
+    legs.write(action, frames, feet, lambda frame: scale * fit(frame) - floor + bump(frame), hold=True)
     publish(ctx, action)
     return reach / g["duty"]
 

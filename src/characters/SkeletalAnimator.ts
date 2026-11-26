@@ -154,6 +154,7 @@ export class SkeletalAnimator implements HandLayerDriver {
   private readonly legLength: number;
   private readonly springs: Springs | null;
   private readonly walkStride: number;
+  private readonly kit: boolean;
   private readonly walkCadence: number;
   private readonly runStride: number;
   /** Last mixer output and last written value per shaped property; see
@@ -172,6 +173,7 @@ export class SkeletalAnimator implements HandLayerDriver {
     this.mixer = new THREE.AnimationMixer(root);
     this.springs = createSprings(root);
     if (this.springs) clips = clips.map(withoutSpringTracks);
+    this.kit = root.userData.kit_walk_stride !== undefined;
     this.walkStride = root.userData.kit_walk_stride ?? WALK_STRIDE;
     this.walkCadence = root.userData.kit_walk_cadence ?? 1;
     this.runStride = root.userData.kit_run_stride ?? RUN_STRIDE;
@@ -510,16 +512,18 @@ export class SkeletalAnimator implements HandLayerDriver {
    */
   private applyGait(runBlend: number): void {
     const { root, hips } = this.gaitNodes;
+    const bounce = this.kit ? Math.min(this.gait.bounce, 1) : this.gait.bounce;
+    const sway = this.kit ? Math.min(this.gait.sway, 1) : this.gait.sway;
     if (root && this.gaitRest.rootPos) {
       const rest = this.gaitRest.rootPos;
       this.shapeVector(root.position, this.shapedRootPos, (out) => {
-        out.lerp(rest, 1 - this.gait.bounce);
+        out.lerp(rest, 1 - bounce);
       });
     }
     if (hips && this.gaitRest.hips) {
       const rest = this.gaitRest.hips;
       this.shapeQuaternion(hips.quaternion, this.shapedHipsQuat, (out) => {
-        out.slerp(rest, 1 - this.gait.sway);
+        out.slerp(rest, 1 - sway);
       });
     }
     const lean = this.gait.posture
