@@ -38,7 +38,7 @@ export class CameraRig {
   readonly camera: THREE.PerspectiveCamera;
 
   /** Degrees below horizontal. Driven per-frame — write `basePitch` instead. */
-  pitch = 32;
+  pitch = 37;
   distance = 16;
   /** Follow smoothing factor (higher = snappier). */
   followSpeed = 5;
@@ -99,7 +99,7 @@ export class CameraRig {
    * The game's look: the angle the camera holds while the player is moving,
    * and the one every scripted move returns to.
    */
-  basePitch = 32;
+  basePitch = 37;
 
   /**
    * Where the camera drifts to once the player has stood still for
