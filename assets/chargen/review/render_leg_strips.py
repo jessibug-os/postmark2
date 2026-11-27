@@ -103,6 +103,17 @@ for name in CLIPS:
 for name in ("walk_lower", "run_lower"):
     action = actions[name]
     first, last = int(action.frame_range[0]), int(action.frame_range[1])
+    for i, r in enumerate(rigs):
+        r.rotation_euler.z = math.pi / 2
+        pose(r, action, round(first + (last - first) * i / COUNT))
+    scene.render.filepath = os.path.join(OUT, f"legs-front-{name}.png")
+    bpy.ops.render.render(write_still=True)
+    for r in rigs:
+        r.rotation_euler.z = 0.0
+
+for name in ("walk_lower", "run_lower"):
+    action = actions[name]
+    first, last = int(action.frame_range[0]), int(action.frame_range[1])
     hero = rigs[COUNT // 2]
     for obj in scene.objects:
         if obj.type == "MESH" and obj.parent in rigs:
